@@ -1,0 +1,12 @@
+targets:
+    - esp32p4
+dependencies:
+    cmake_utilities: 0.*
+    idf: '>=5.3'
+    nicolaielectronics/mipi_dsi_abstraction: "^0.0.3"
+    nicolaielectronics/tanmatsu_coprocessor: "^0.3.1"
+description: Badge BSP
+license: MIT
+issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues
+repository: git://github.com/badgeteam/esp32-component-badge-bsp.git
+url: https://github.com/badgeteam/esp32-component-badge-bsp

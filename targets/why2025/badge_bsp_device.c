@@ -3,17 +3,19 @@
 // SPDX-License-Identifier: MIT
 
 #include "bsp/device.h"
+#include "ch32v203prog.h"
 #include "coprocessor.h"
+#include "display.h"
+#include "driver/sdmmc_host.h"
+#include "dsi_panel_nicolaielectronics_st7701.h"
 #include "esp_err.h"
+#include "esp_lcd_panel_ops.h"
 #include "esp_log.h"
 #include "esp_rom_sys.h"
 #include "esp_vfs_fat.h"
-#include "freertos/idf_additions.h"
 #include "hal/gpio_types.h"
-#include "driver/sdmmc_host.h"
 #include "hardware.h"
 #include "tanmatsu_coprocessor.h"
-#include "ch32v203prog.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,11 +25,11 @@
 static char const device_name[]         = "WHY2025 badge";
 static char const device_manufacturer[] = "Badge.Team";
 
-static const char TAG[] = "why2025-bsp";
+static char const TAG[] = "why2025-bsp";
 
-tanmatsu_coprocessor_handle_t coprocessor_handle        = NULL;
-extern uint8_t const ch32_firmware_start[] asm("_binary_ch32_firmware_bin_start");
-extern uint8_t const ch32_firmware_end[] asm("_binary_ch32_firmware_bin_end");
+tanmatsu_coprocessor_handle_t coprocessor_handle = NULL;
+extern uint8_t const          ch32_firmware_start[] asm("_binary_ch32_firmware_bin_start");
+extern uint8_t const          ch32_firmware_end[] asm("_binary_ch32_firmware_bin_end");
 
 sdmmc_slot_config_t const why2025_sdio_config = {
     .clk   = BSP_SDIO_CLK,
@@ -83,8 +85,8 @@ esp_err_t bsp_device_get_manufacturer(char *output, uint8_t buffer_length) {
 
 
 void update_coprocessor() {
-    uint16_t version = 0xffff;
-    esp_err_t res              = tanmatsu_coprocessor_get_firmware_version(coprocessor_handle, &version);
+    uint16_t  version = 0xffff;
+    esp_err_t res     = tanmatsu_coprocessor_get_firmware_version(coprocessor_handle, &version);
     if (res) {
         ESP_LOGW(TAG, "Unable to read CH32 version");
     } else if (version != BSP_CH32_VERSION) {
@@ -145,7 +147,7 @@ esp_err_t bsp_init() {
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(bsp_why2025_coproc_init(&coprocessor_handle));
 
-		update_coprocessor();
+    update_coprocessor();
 
     ESP_ERROR_CHECK_WITHOUT_ABORT(
         tanmatsu_coprocessor_set_radio_state(coprocessor_handle, tanmatsu_coprocessor_radio_state_enabled_application)
@@ -158,9 +160,32 @@ esp_err_t bsp_init() {
     // Try to mount internal FAT filesystem.
     bsp_mount_fatfs();
 
+    init_display();
+
     return ESP_OK;
 }
 
 esp_err_t bsp_set_display_brightness(uint8_t brightness) {
-	return tanmatsu_coprocessor_set_display_backlight(coprocessor_handle, brightness);
+    return tanmatsu_coprocessor_set_display_backlight(coprocessor_handle, brightness);
+}
+
+void bsp_disp_update(void const *framebuffer) {
+    esp_lcd_panel_handle_t mipi_dpi_panel = st7701_get_panel();
+
+    if (mipi_dpi_panel) {
+        size_t                       h_res     = 0;
+        size_t                       v_res     = 0;
+        lcd_color_rgb_pixel_format_t color_fmt = LCD_COLOR_PIXEL_FORMAT_RGB565;
+        st7701_get_parameters(&h_res, &v_res, &color_fmt);
+        esp_lcd_panel_draw_bitmap(mipi_dpi_panel, 0, 0, h_res, v_res, framebuffer);
+    }
+}
+
+
+void bsp_disp_update_part(void const *framebuffer, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    esp_lcd_panel_handle_t mipi_dpi_panel = st7701_get_panel();
+
+    if (mipi_dpi_panel) {
+        esp_lcd_panel_draw_bitmap(mipi_dpi_panel, x, y, w, h, framebuffer);
+    }
 }

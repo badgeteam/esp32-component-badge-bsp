@@ -2,19 +2,21 @@
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
 #include "bsp/device.h"
 #include "esp_err.h"
 #include "esp_log.h"
 
-static const char device_name[] = "Generic board";
-static const char device_manufacturer[] = "Unknown";
+#include <stdbool.h>
+#include <stdint.h>
 
-static const char TAG[] = "generic-bsp-impl";
+#include <string.h>
 
-esp_err_t __attribute__((weak)) bsp_device_get_name(char* output, uint8_t buffer_length) {
+static char const device_name[]         = "Generic board";
+static char const device_manufacturer[] = "Unknown";
+
+static char const TAG[] = "generic-bsp-impl";
+
+esp_err_t __attribute__((weak)) bsp_device_get_name(char *output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -22,7 +24,7 @@ esp_err_t __attribute__((weak)) bsp_device_get_name(char* output, uint8_t buffer
     return ESP_OK;
 }
 
-esp_err_t __attribute__((weak)) bsp_device_get_manufacturer(char* output, uint8_t buffer_length) {
+esp_err_t __attribute__((weak)) bsp_device_get_manufacturer(char *output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -31,11 +33,20 @@ esp_err_t __attribute__((weak)) bsp_device_get_manufacturer(char* output, uint8_
 }
 
 esp_err_t __attribute__((weak)) bsp_init() {
-	ESP_LOGE(TAG, "init() not defined in the BSP");
-	return ESP_OK;
+    ESP_LOGE(TAG, "init() not defined in the BSP");
+    return ESP_OK;
 }
 
-esp_err_t bsp_set_display_backlight(uint8_t level) {
-	ESP_LOGE(TAG, "set_display_backlight() not defined in the BSP");
-	return ESP_FAIL;
+esp_err_t __attribute__((weak)) bsp_set_display_backlight(uint8_t level) {
+    ESP_LOGE(TAG, "set_display_backlight() not defined in the BSP");
+    return ESP_FAIL;
+}
+
+void __attribute__((weak)) bsp_disp_update(void const *framebuffer) {
+    ESP_LOGE(TAG, "bsp_disp_update() not defined in the BSP");
+}
+
+void __attribute__((weak))
+bsp_disp_update_part(void const *framebuffer, uint16_t x, uint16_t y, uint16_t w, uint16_t h) {
+    ESP_LOGE(TAG, "bsp_disp_update() not defined in the BSP");
 }

@@ -1,0 +1,15 @@
+menu "Badge.team BSP"
+	choice
+		prompt "Platform"
+		default BSP_PLATFORM_WHY2025
+
+		config BSP_PLATFORM_WHY2025
+			bool "WHY2025 badge"
+
+		config BSP_PLATFORM_P4_DEVKIT
+			bool "ESP32 P4 devkit"
+
+		config BSP_PLATFORM_MCH2022
+			bool "MCH2022 badge"
+	endchoice
+endmenu

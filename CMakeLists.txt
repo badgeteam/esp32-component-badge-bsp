@@ -1,3 +1,24 @@
+include(CMakePrintHelpers)
+
+set(BSP_REQUIRES
+		"nicolaielectronics__tanmatsu_coprocessor"
+		"nicolaielectronics__mipi_dsi_abstraction"
+		"esp32-component-ch32v203prog"
+		"driver"
+		"fatfs"
+)
+
+set(BSP_EMBED_FILES "ch32_firmware.bin")
+
+if (CONFIG_BSP_PLATFORM_WHY2025)
+	set(BSP_TARGET "why2025")
+elseif(CONFIG_BSP_PLATFORM_P4_DEVKIT)
+	set(BSP_TARGET "why2025")
+elseif(CONFIG_BSP_PLATFORM_MCH2022)
+	set(BSP_TARGET "mch2022")
+endif()
+
+
 # BSP target selection
 if (NOT DEFINED BSP_TARGET)
     set(BSP_TARGET "stub")
@@ -10,7 +31,7 @@ if("${BSP_TARGET}" STREQUAL "stub")
 else()
     IF(EXISTS "${TARGETS_FOLDER}/${BSP_TARGET}" AND IS_DIRECTORY "${TARGETS_FOLDER}/${BSP_TARGET}")
         IF(EXISTS "${TARGETS_FOLDER}/${BSP_TARGET}/target.cmake")
-            include("${TARGETS_FOLDER}/${BSP_TARGET}/target.cmake")
+					# include("${TARGETS_FOLDER}/${BSP_TARGET}/target.cmake")
         endif()
     else()
         message(FATAL_ERROR "Unsupported BSP target ${BSP_TARGET}")
@@ -33,10 +54,13 @@ if (NOT DEFINED COMMON_BSP_SRCS)
     )
 endif()
 
+cmake_print_variables(BSP_REQUIRES)
+
 idf_component_register(
     SRCS ${BSP_SRCS} ${COMMON_BSP_SRCS}
     INCLUDE_DIRS "."
     REQUIRES ${BSP_REQUIRES}
+		EMBED_FILES ${BSP_EMBED_FILES}
     WHOLE_ARCHIVE
 )
 

@@ -1,7 +1,23 @@
 # BSP target selection
-if (NOT DEFINED BSP_TARGET)
-    set(BSP_TARGET "stub")
+
+if (CONFIG_BSP_TARGET_WHY2025)
+	set(BSP_TARGET "why2025")
+elseif(CONFIG_BSP_PLATFORM_P4_DEVKIT)
+	set(BSP_TARGET "why2025")
+elseif(CONFIG_BSP_TARGET_MCH2022)
+	set(BSP_TARGET "mch2022")
+else()
+	set(BSP_TARGET "stub")
 endif()
+
+# BSP requirements for all targets
+
+set(COMMON_BSP_REQUIREMENTS
+    "esp_lcd"
+    "driver"
+)
+
+# -------------------------
 
 set(TARGETS_FOLDER "${CMAKE_CURRENT_LIST_DIR}/targets")
 
@@ -20,6 +36,8 @@ endif()
 if (NOT DEFINED BSP_REQUIRES)
   set(BSP_REQUIRES "")
 endif()
+
+list(APPEND BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
 
 if (NOT DEFINED BSP_SRCS)
     file(GLOB BSP_SRCS
@@ -54,6 +72,7 @@ target_include_directories(
     bsp_stub
     PUBLIC
     "."
+    "$<TARGET_PROPERTY:${COMPONENT_LIB},INTERFACE_INCLUDE_DIRECTORIES>"
 )
 
 target_link_libraries(${COMPONENT_LIB} PRIVATE bsp_stub)

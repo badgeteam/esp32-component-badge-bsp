@@ -1,3 +1,7 @@
+// Board support package API: WHY2025 implementation
+// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-License-Identifier: MIT
+
 #include "bsp/i2c.h"
 #include "driver/gpio.h"
 #include "driver/i2c_master.h"
@@ -5,6 +9,7 @@
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#include "why2025_hardware.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -18,9 +23,9 @@ static SemaphoreHandle_t       i2c_concurrency_semaphore = NULL;
 
 i2c_master_bus_config_t i2c_master_config_internal = {
     .clk_source                   = I2C_CLK_SRC_DEFAULT,
-    .i2c_port                     = 0,
-    .scl_io_num                   = 10,
-    .sda_io_num                   = 9,
+    .i2c_port                     = BSP_I2C_INTERNAL_BUS,
+    .scl_io_num                   = BSP_I2C_INTERNAL_SCL_PIN,
+    .sda_io_num                   = BSP_I2C_INTERNAL_SDA_PIN,
     .glitch_ignore_cnt            = 7,
     .flags.enable_internal_pullup = true,
 };

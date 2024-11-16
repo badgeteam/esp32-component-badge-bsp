@@ -12,6 +12,7 @@
 #include "esp_ldo_regulator.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
+#include "why2025_hardware.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -20,23 +21,21 @@
 
 static char const *TAG = "BSP display";
 
-#define PIN_DISPLAY_RESET 14
-
 static esp_ldo_channel_handle_t ldo_mipi_phy = NULL;
 
 static bool bsp_display_initialized = false;
 
 static esp_err_t bsp_display_enable_dsi_phy_power(void) {
     esp_ldo_channel_config_t ldo_mipi_phy_config = {
-        .chan_id    = 3,
-        .voltage_mv = 2500,
+        .chan_id    = BSP_DSI_LDO_CHAN,
+        .voltage_mv = BSP_DSI_LDO_VOLTAGE_MV,
     };
     return esp_ldo_acquire_channel(&ldo_mipi_phy_config, &ldo_mipi_phy);
 }
 
 static esp_err_t bsp_display_reset(void) {
     gpio_config_t lcd_reset_conf = {
-        .pin_bit_mask = BIT64(PIN_DISPLAY_RESET),
+        .pin_bit_mask = BIT64(BSP_LCD_RESET_PIN),
         .mode         = GPIO_MODE_INPUT_OUTPUT,
         .pull_up_en   = 0,
         .pull_down_en = 0,
@@ -45,9 +44,9 @@ static esp_err_t bsp_display_reset(void) {
 
     gpio_config(&lcd_reset_conf);
 
-    gpio_set_level(PIN_DISPLAY_RESET, false);
+    gpio_set_level(BSP_LCD_RESET_PIN, false);
     vTaskDelay(pdMS_TO_TICKS(10));
-    gpio_set_level(PIN_DISPLAY_RESET, true);
+    gpio_set_level(BSP_LCD_RESET_PIN, true);
     vTaskDelay(pdMS_TO_TICKS(100));
 
     return ESP_OK;

@@ -26,6 +26,9 @@ static esp_ldo_channel_handle_t ldo_mipi_phy = NULL;
 static bool bsp_display_initialized = false;
 
 static esp_err_t bsp_display_enable_dsi_phy_power(void) {
+    if (ldo_mipi_phy != NULL) {
+        return ESP_OK;
+    }
     esp_ldo_channel_config_t ldo_mipi_phy_config = {
         .chan_id    = BSP_DSI_LDO_CHAN,
         .voltage_mv = BSP_DSI_LDO_VOLTAGE_MV,
@@ -53,6 +56,7 @@ static esp_err_t bsp_display_reset(void) {
 }
 
 static esp_err_t bsp_display_initialize_panel(void) {
+    // TODO: extend ST7701 driver in MIPI DSI abstraction component to support error handling and fix broken display reset
     st7701_initialize(-1);
     return ESP_OK;
 }
@@ -61,8 +65,7 @@ static esp_err_t bsp_display_initialize_panel(void) {
 
 esp_err_t bsp_display_initialize(void) {
     if (bsp_display_initialized) {
-        ESP_LOGE(TAG, "Display already initialized");
-        return ESP_FAIL;
+        return ESP_OK;
     }
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
     ESP_RETURN_ON_ERROR(bsp_display_reset(), TAG, "Failed to reset display");

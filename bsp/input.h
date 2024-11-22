@@ -1,5 +1,8 @@
 #pragma once
 
+#include "esp_err.h"
+
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef enum _bsp_input_event_type {
@@ -13,18 +16,19 @@ typedef enum _bsp_input_event_type {
 typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_NONE = 0,
 
-    // Arrow keys
+    // Navigation keys
+    BSP_INPUT_NAVIGATION_KEY_ESC,
     BSP_INPUT_NAVIGATION_KEY_LEFT,
     BSP_INPUT_NAVIGATION_KEY_RIGHT,
     BSP_INPUT_NAVIGATION_KEY_UP,
     BSP_INPUT_NAVIGATION_KEY_DOWN,
-
-    // Text navigation keys
     BSP_INPUT_NAVIGATION_KEY_HOME,
     BSP_INPUT_NAVIGATION_KEY_END,
     BSP_INPUT_NAVIGATION_KEY_PGUP,
     BSP_INPUT_NAVIGATION_KEY_PGDN,
     BSP_INPUT_NAVIGATION_KEY_MENU,
+    BSP_INPUT_NAVIGATION_KEY_RETURN,
+    BSP_INPUT_NAVIGATION_KEY_SUPER,
 
     // Function keys
     BSP_INPUT_NAVIGATION_KEY_F1,
@@ -41,9 +45,22 @@ typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_F12,
 
     // Gamepad
-    BSP_INPUT_NAVIGATION_KEY_ACCEPT,
-    BSP_INPUT_NAVIGATION_KEY_BACK,
+    BSP_INPUT_NAVIGATION_KEY_GAMEPAD_A,
+    BSP_INPUT_NAVIGATION_KEY_GAMEPAD_B,
+    BSP_INPUT_NAVIGATION_KEY_GAMEPAD_X,
+    BSP_INPUT_NAVIGATION_KEY_GAMEPAD_Y,
+
+    // Volume keys
+    BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
+    BSP_INPUT_NAVIGATION_KEY_VOLUME_DOWN,
 } bsp_input_navigation_key_t;
+
+typedef enum _bsp_input_action_type {
+    BSP_INPUT_ACTION_TYPE_NONE = 0,
+    BSP_INPUT_ACTION_TYPE_SD_CARD,
+    BSP_INPUT_ACTION_TYPE_AUDIO_JACK,
+    BSP_INPUT_ACTION_TYPE_POWER_BUTTON,
+} bsp_input_action_type_t;
 
 // Modifiers
 #define BSP_INPUT_MODIFIER_CAPSLOCK  (1 << 0)
@@ -65,17 +82,19 @@ typedef enum _bsp_input_navigation_key {
 typedef struct _bsp_input_event_args_navigation {
     bsp_input_navigation_key_t key;
     uint32_t                   modifiers;
+    bool                       state;
 } bsp_input_event_args_navigation_t;
 
 typedef struct _bsp_input_event_args_keyboard {
-    char     ascii;
-    char     utf8[4];
-    uint8_t  utf8_length;
-    uint32_t modifiers;
+    char        ascii;
+    char const *utf8;
+    uint8_t     utf8_length;
+    uint32_t    modifiers;
 } bsp_input_event_args_keyboard_t;
 
 typedef struct _bsp_input_event_args_action {
-    int placeholder;
+    bsp_input_action_type_t type;
+    bool                    state;
 } bsp_input_event_args_action_t;
 
 typedef struct _bsp_input_event {
@@ -86,3 +105,5 @@ typedef struct _bsp_input_event {
         bsp_input_event_args_action_t     args_action;
     };
 } bsp_input_event_t;
+
+esp_err_t bsp_input_initialize(void);

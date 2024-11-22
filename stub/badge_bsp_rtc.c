@@ -1,0 +1,22 @@
+// Board support package API: Generic stub implementation
+// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-License-Identifier: MIT
+
+#include "bsp/rtc.h"
+#include "esp_err.h"
+
+#include <stdint.h>
+
+static char const *TAG = "BSP RTC";
+
+esp_err_t bsp_rtc_get_time(uint32_t *value) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t bsp_rtc_set_time(uint32_t value) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t bsp_rtc_update_time(void) {
+    return ESP_ERR_NOT_SUPPORTED;
+}

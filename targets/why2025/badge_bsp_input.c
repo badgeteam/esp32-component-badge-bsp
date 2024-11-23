@@ -10,6 +10,7 @@
 #include "freertos/projdefs.h"
 #include "tanmatsu_coprocessor.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 
 #include <string.h>
@@ -18,6 +19,42 @@ static char const *TAG = "BSP INPUT";
 
 static QueueHandle_t event_queue              = NULL;
 static TaskHandle_t  key_repeat_thread_handle = NULL;
+
+static bool     key_repeat_wait      = false;
+static bool     key_repeat_fast      = false;
+static char     key_repeat_ascii     = '\0';
+static char     key_repeat_utf8[5]   = {0};
+static uint32_t key_repeat_modifiers = 0;
+
+static void handle_keyboard_text_entry(
+    bool curr_state, bool prev_state, char ascii, char ascii_shift, char const *utf8, char const *utf8_shift, char const *utf8_alt, char const *utf8_shift_alt, uint32_t modifiers
+) {
+    if (curr_state && (!prev_state)) {
+        // Key pressed
+        char        value_ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? ascii_shift : ascii;
+        char const *value_utf8
+            = (modifiers & BSP_INPUT_MODIFIER_ALT_R) ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt) : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
+        ESP_LOGI(TAG, "Text: %c / %s (modifiers: %08" PRIX32 ")", value_ascii, value_utf8, modifiers);
+        bsp_input_event_t event = {
+            .type                    = INPUT_EVENT_TYPE_KEYBOARD,
+            .args_keyboard.ascii     = value_ascii,
+            .args_keyboard.utf8      = value_utf8,
+            .args_keyboard.modifiers = modifiers,
+        };
+        xQueueSend(event_queue, &event, 0);
+        key_repeat_ascii = value_ascii;
+        strncpy(key_repeat_utf8, value_utf8, sizeof(key_repeat_utf8) - 1);
+        key_repeat_modifiers = modifiers;
+        key_repeat_wait      = true;
+        key_repeat_fast      = false;
+    } else if (((!curr_state) && (prev_state)) || ((key_repeat_ascii != '\0') && (key_repeat_modifiers |= modifiers))) {
+        key_repeat_ascii = '\0';
+        memset(key_repeat_utf8, '\0', sizeof(key_repeat_utf8));
+        key_repeat_modifiers = modifiers;
+        key_repeat_wait      = false;
+        key_repeat_fast      = false;
+    }
+}
 
 void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_keys_t *prev_keys, tanmatsu_coprocessor_keys_t *keys) {
     static bool meta_key_modifier_used = false;
@@ -205,32 +242,66 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     }
 
     // Text entry keys
-    if (keys->key_tilde && (!prev_keys->key_tilde)) {
-        char  ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? '~' : '`';
-        char *utf8  = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? "~" : "`";
-        ESP_LOGI(TAG, "Text: %c", ascii);
-        bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_KEYBOARD,
-            .args_keyboard.ascii       = ascii,
-            .args_keyboard.utf8        = utf8,
-            .args_keyboard.utf8_length = strlen(utf8),
-            .args_keyboard.modifiers   = modifiers,
-        };
-        xQueueSend(event_queue, &event, 0);
-    }
-    if (keys->key_1 && (!prev_keys->key_1)) {
-        char  ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? '!' : '1';
-        char *utf8  = (modifiers & BSP_INPUT_MODIFIER_ALT_R) ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? "¹" : "¡") : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? "!" : "1");
-        ESP_LOGI(TAG, "Text: %c / %s", ascii, utf8);
-        bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_KEYBOARD,
-            .args_keyboard.ascii       = ascii,
-            .args_keyboard.utf8        = utf8,
-            .args_keyboard.utf8_length = strlen(utf8),
-            .args_keyboard.modifiers   = modifiers,
-        };
-        xQueueSend(event_queue, &event, 0);
-    }
+    handle_keyboard_text_entry(keys->key_backspace, prev_keys->key_backspace, '\b', '\b', "\b", "\b", "\b", "\b", modifiers);
+    handle_keyboard_text_entry(keys->key_tilde, prev_keys->key_tilde, '`', '~', "`", "~", "`", "~", modifiers);
+    handle_keyboard_text_entry(keys->key_1, prev_keys->key_1, '1', '!', "1", "!", "¡", "¹", modifiers);
+    handle_keyboard_text_entry(keys->key_2, prev_keys->key_2, '2', '@', "2", "@", "²", "̋", modifiers);
+    handle_keyboard_text_entry(keys->key_3, prev_keys->key_3, '3', '#', "3", "#", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_4, prev_keys->key_4, '4', '$', "4", "$", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_5, prev_keys->key_5, '5', '%', "5", "%", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_6, prev_keys->key_6, '6', '^', "6", "^", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_7, prev_keys->key_7, '7', '&', "7", "&", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_8, prev_keys->key_8, '8', '*', "8", "*", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_9, prev_keys->key_9, '9', '(', "9", "(", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_0, prev_keys->key_0, '0', ')', "0", ")", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_minus, prev_keys->key_minus, '-', '_', "-", "_", "¥", "̣", modifiers);
+    handle_keyboard_text_entry(keys->key_equals, prev_keys->key_equals, '=', '+', "=", "+", "̋", "̛", modifiers);
+    handle_keyboard_text_entry(keys->key_tab, prev_keys->key_tab, '\t', '\t', "\t", "\t", "\t", "\t", modifiers);
+    handle_keyboard_text_entry(keys->key_q, prev_keys->key_q, 'q', 'Q', "q", "Q", "ä", "Ä", modifiers);
+    handle_keyboard_text_entry(keys->key_w, prev_keys->key_w, 'w', 'W', "w", "W", "å", "Å", modifiers);
+    handle_keyboard_text_entry(keys->key_e, prev_keys->key_e, 'e', 'E', "e", "E", "é", "É", modifiers);
+    handle_keyboard_text_entry(keys->key_r, prev_keys->key_r, 'r', 'R', "r", "R", "®", "™", modifiers);
+    handle_keyboard_text_entry(keys->key_t, prev_keys->key_t, 't', 'T', "t", "T", "þ", "Þ", modifiers);
+    handle_keyboard_text_entry(keys->key_y, prev_keys->key_y, 'y', 'Y', "y", "Y", "ü", "Ü", modifiers);
+    handle_keyboard_text_entry(keys->key_u, prev_keys->key_u, 'u', 'U', "u", "U", "ú", "Ú", modifiers);
+    handle_keyboard_text_entry(keys->key_i, prev_keys->key_i, 'i', 'I', "i", "I", "í", "Í", modifiers);
+    handle_keyboard_text_entry(keys->key_o, prev_keys->key_o, 'o', 'O', "o", "O", "ó", "Ó", modifiers);
+    handle_keyboard_text_entry(keys->key_p, prev_keys->key_p, 'p', 'P', "p", "P", "ö", "Ö", modifiers);
+    handle_keyboard_text_entry(keys->key_sqbracket_open, prev_keys->key_sqbracket_open, '[', '{', "[", "{", "«", "“", modifiers);
+    handle_keyboard_text_entry(keys->key_sqbracket_close, prev_keys->key_sqbracket_close, ']', '}', "]", "}", "»", "”", modifiers);
+    handle_keyboard_text_entry(keys->key_a, prev_keys->key_a, 'a', 'A', "a", "A", "á", "Á", modifiers);
+    handle_keyboard_text_entry(keys->key_s, prev_keys->key_s, 's', 'S', "s", "S", "ß", "§", modifiers);
+    handle_keyboard_text_entry(keys->key_d, prev_keys->key_d, 'd', 'D', "d", "D", "ð", "Ð", modifiers);
+    handle_keyboard_text_entry(keys->key_f, prev_keys->key_f, 'f', 'F', "f", "F", "ë", "Ë", modifiers);
+    handle_keyboard_text_entry(keys->key_g, prev_keys->key_g, 'g', 'G', "g", "G", "g", "G", modifiers);
+    handle_keyboard_text_entry(keys->key_h, prev_keys->key_h, 'h', 'H', "h", "H", "h", "H", modifiers);
+    handle_keyboard_text_entry(keys->key_j, prev_keys->key_j, 'j', 'J', "j", "J", "ï", "Ï", modifiers);
+    handle_keyboard_text_entry(keys->key_k, prev_keys->key_k, 'k', 'K', "k", "K", "œ", "Œ", modifiers);
+    handle_keyboard_text_entry(keys->key_l, prev_keys->key_l, 'l', 'L', "l", "L", "ø", "L", modifiers);
+    handle_keyboard_text_entry(keys->key_semicolon, prev_keys->key_semicolon, ';', ':', ";", ":", "̨", "̈", modifiers);
+    handle_keyboard_text_entry(keys->key_quote, prev_keys->key_quote, '\'', '"', "'", "\"", "́", "̈", modifiers);
+    handle_keyboard_text_entry(keys->key_z, prev_keys->key_z, 'z', 'Z', "z", "Z", "æ", "Æ", modifiers);
+    handle_keyboard_text_entry(keys->key_x, prev_keys->key_x, 'x', 'X', "x", "X", "·", " ̵", modifiers);
+    handle_keyboard_text_entry(keys->key_c, prev_keys->key_c, 'c', 'C', "c", "C", "©", "¢", modifiers);
+    handle_keyboard_text_entry(keys->key_v, prev_keys->key_v, 'v', 'V', "v", "V", "v", "V", modifiers);
+    handle_keyboard_text_entry(keys->key_b, prev_keys->key_b, 'b', 'B', "b", "B", "b", "B", modifiers);
+    handle_keyboard_text_entry(keys->key_n, prev_keys->key_n, 'n', 'N', "n", "N", "ñ", "Ñ", modifiers);
+    handle_keyboard_text_entry(keys->key_m, prev_keys->key_m, 'm', 'M', "m", "M", "µ", "±", modifiers);
+    handle_keyboard_text_entry(keys->key_comma, prev_keys->key_comma, ',', '<', ",", "<", "̧", "̌", modifiers);
+    handle_keyboard_text_entry(keys->key_dot, prev_keys->key_dot, '.', '>', ".", ">", "̇", "̌", modifiers);
+    handle_keyboard_text_entry(keys->key_slash, prev_keys->key_slash, '/', '?', "/", "?", "¿", "̉", modifiers);
+    handle_keyboard_text_entry(keys->key_backslash, prev_keys->key_backslash, '\\', '|', "\\", "|", "¬", "¦", modifiers);
+    handle_keyboard_text_entry(
+        keys->key_space_l | keys->key_space_m | keys->key_space_r,
+        prev_keys->key_space_l | prev_keys->key_space_m | prev_keys->key_space_r,
+        ' ',
+        ' ',
+        " ",
+        " ",
+        " ",
+        " ",
+        modifiers
+    );
 }
 
 void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_inputs_t *prev_inputs, tanmatsu_coprocessor_inputs_t *inputs) {
@@ -265,8 +336,24 @@ void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t hand
 static void key_repeat_thread(void *ignored) {
     (void)ignored;
     while (1) {
-        vTaskDelay(pdMS_TO_TICKS(100));
-        // xQueueSend(outgoing_queue, &event, 0);
+        if (key_repeat_wait) {
+            key_repeat_fast = false;
+            key_repeat_wait = false;
+            vTaskDelay(pdMS_TO_TICKS(100));
+            continue;
+        }
+        if (key_repeat_ascii != '\0') {
+            ESP_LOGI(TAG, "Repeat text: %c / %s", key_repeat_ascii, key_repeat_utf8);
+            bsp_input_event_t event = {
+                .type                    = INPUT_EVENT_TYPE_KEYBOARD,
+                .args_keyboard.ascii     = key_repeat_ascii,
+                .args_keyboard.utf8      = key_repeat_utf8,
+                .args_keyboard.modifiers = key_repeat_modifiers,
+            };
+            xQueueSend(event_queue, &event, 0);
+        }
+        vTaskDelay(pdMS_TO_TICKS(key_repeat_fast ? 100 : 200));
+        key_repeat_fast = true;
     }
 }
 

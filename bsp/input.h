@@ -1,6 +1,8 @@
 #pragma once
 
 #include "esp_err.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -29,6 +31,9 @@ typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_MENU,
     BSP_INPUT_NAVIGATION_KEY_RETURN,
     BSP_INPUT_NAVIGATION_KEY_SUPER,
+    BSP_INPUT_NAVIGATION_KEY_TAB,
+    BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
+
 
     // Function keys
     BSP_INPUT_NAVIGATION_KEY_F1,
@@ -105,4 +110,10 @@ typedef struct _bsp_input_event {
     };
 } bsp_input_event_t;
 
+/// @brief Initialize the BSP input subsystem
+/// @return ESP-IDF error code
 esp_err_t bsp_input_initialize(void);
+
+/// @brief Get the queue handle for the input event queue
+/// @return ESP-IDF error code
+esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue);

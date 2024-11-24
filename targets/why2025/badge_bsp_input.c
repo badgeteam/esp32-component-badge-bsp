@@ -7,7 +7,9 @@
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
+#include "freertos/queue.h"
 #include "tanmatsu_coprocessor.h"
 
 #include <inttypes.h>
@@ -231,12 +233,32 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_volume_up != prev_keys->key_volume_up) {
-        ESP_LOGI(TAG, "Volume up %s", keys->key_right ? "pressed" : "released");
+        ESP_LOGI(TAG, "Volume up %s", keys->key_volume_up ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
             .args_navigation.modifiers = modifiers,
             .args_navigation.state     = keys->key_volume_up,
+        };
+        xQueueSend(event_queue, &event, 0);
+    }
+    if (keys->key_tab != prev_keys->key_tab) {
+        ESP_LOGI(TAG, "Tab %s", keys->key_tab ? "pressed" : "released");
+        bsp_input_event_t event = {
+            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_TAB,
+            .args_navigation.modifiers = modifiers,
+            .args_navigation.state     = keys->key_tab,
+        };
+        xQueueSend(event_queue, &event, 0);
+    }
+    if (keys->key_backspace != prev_keys->key_backspace) {
+        ESP_LOGI(TAG, "Backspace %s", keys->key_backspace ? "pressed" : "released");
+        bsp_input_event_t event = {
+            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
+            .args_navigation.modifiers = modifiers,
+            .args_navigation.state     = keys->key_backspace,
         };
         xQueueSend(event_queue, &event, 0);
     }
@@ -246,14 +268,14 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     handle_keyboard_text_entry(keys->key_tilde, prev_keys->key_tilde, '`', '~', "`", "~", "`", "~", modifiers);
     handle_keyboard_text_entry(keys->key_1, prev_keys->key_1, '1', '!', "1", "!", "¡", "¹", modifiers);
     handle_keyboard_text_entry(keys->key_2, prev_keys->key_2, '2', '@', "2", "@", "²", "̋", modifiers);
-    handle_keyboard_text_entry(keys->key_3, prev_keys->key_3, '3', '#', "3", "#", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_4, prev_keys->key_4, '4', '$', "4", "$", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_5, prev_keys->key_5, '5', '%', "5", "%", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_6, prev_keys->key_6, '6', '^', "6", "^", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_7, prev_keys->key_7, '7', '&', "7", "&", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_8, prev_keys->key_8, '8', '*', "8", "*", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_9, prev_keys->key_9, '9', '(', "9", "(", "A", "SA", modifiers);
-    handle_keyboard_text_entry(keys->key_0, prev_keys->key_0, '0', ')', "0", ")", "A", "SA", modifiers);
+    handle_keyboard_text_entry(keys->key_3, prev_keys->key_3, '3', '#', "3", "#", "³", "̄", modifiers);
+    handle_keyboard_text_entry(keys->key_4, prev_keys->key_4, '4', '$', "4", "$", "¤", "£", modifiers);
+    handle_keyboard_text_entry(keys->key_5, prev_keys->key_5, '5', '%', "5", "%", "€", "¸", modifiers);
+    handle_keyboard_text_entry(keys->key_6, prev_keys->key_6, '6', '^', "6", "^", "¼", "̂", modifiers);
+    handle_keyboard_text_entry(keys->key_7, prev_keys->key_7, '7', '&', "7", "&", "½", "̛", modifiers);
+    handle_keyboard_text_entry(keys->key_8, prev_keys->key_8, '8', '*', "8", "*", "¾", "̨", modifiers);
+    handle_keyboard_text_entry(keys->key_9, prev_keys->key_9, '9', '(', "9", "(", "‘", "̆", modifiers);
+    handle_keyboard_text_entry(keys->key_0, prev_keys->key_0, '0', ')', "0", ")", "’", "̊", modifiers);
     handle_keyboard_text_entry(keys->key_minus, prev_keys->key_minus, '-', '_', "-", "_", "¥", "̣", modifiers);
     handle_keyboard_text_entry(keys->key_equals, prev_keys->key_equals, '=', '+', "=", "+", "̋", "̛", modifiers);
     handle_keyboard_text_entry(keys->key_tab, prev_keys->key_tab, '\t', '\t', "\t", "\t", "\t", "\t", modifiers);
@@ -366,5 +388,16 @@ esp_err_t bsp_input_initialize(void) {
         xTaskCreate(key_repeat_thread, "Key repeat thread", 4096, NULL, tskIDLE_PRIORITY, &key_repeat_thread_handle);
         ESP_RETURN_ON_FALSE(key_repeat_thread_handle, ESP_ERR_NO_MEM, TAG, "Failed to create key repeat task");
     }
+    return ESP_OK;
+}
+
+esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue) {
+    if (out_queue == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (event_queue == NULL) {
+        return ESP_FAIL;
+    }
+    *out_queue = event_queue;
     return ESP_OK;
 }

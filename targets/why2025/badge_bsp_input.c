@@ -89,10 +89,11 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     for (uint8_t i = 0; i < TANMATSU_COPROCESSOR_KEYBOARD_NUM_REGS; i++) {
         uint8_t value = keys->raw[i];
         if (i == 2) {
-            value &= (1 << 5); // Ignore meta key
+            value &= ~(1 << 5); // Ignore meta key
         }
         if (value) {
             meta_key_modifier_used = true;
+            break;
         }
     }
     if (keys->key_meta && (!prev_keys->key_meta)) {
@@ -108,8 +109,8 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
                 .args_navigation.state     = true,
             };
             xQueueSend(event_queue, &event, 0);
-        } else {
-            ESP_LOGI(TAG, "Meta key released");
+            event.args_navigation.state = false;
+            xQueueSend(event_queue, &event, 0);
         }
     }
     if (keys->key_esc != prev_keys->key_esc) {
@@ -341,17 +342,18 @@ void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t handl
 }
 
 void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_pmic_faults_t *prev_faults, tanmatsu_coprocessor_pmic_faults_t *faults) {
-    printf(
-        "Faults changed: %s %s %s %s %s %s %s %s %s\r\n",
-        faults->watchdog ? "WATCHDOG" : "",
-        faults->boost ? "BOOST" : "",
-        faults->chrg_input ? "CHRG_INPUT" : "",
-        faults->chrg_thermal ? "CHRG_THERMAL" : "",
-        faults->chrg_safety ? "CHRG_SAFETY" : "",
-        faults->batt_ovp ? "BATT_OVP" : "",
-        faults->ntc_cold ? "NTC_COLD" : "",
-        faults->ntc_hot ? "NTC_HOT" : "",
-        faults->ntc_boost ? "NTC_BOOST" : ""
+    ESP_LOGE(
+        TAG,
+        "Faults changed: %s%s%s%s%s%s%s%s%s\r\n",
+        faults->watchdog ? "WATCHDOG " : "",
+        faults->boost ? "BOOST " : "",
+        faults->chrg_input ? "CHRG_INPUT " : "",
+        faults->chrg_thermal ? "CHRG_THERMAL " : "",
+        faults->chrg_safety ? "CHRG_SAFETY " : "",
+        faults->batt_ovp ? "BATT_OVP " : "",
+        faults->ntc_cold ? "NTC_COLD " : "",
+        faults->ntc_hot ? "NTC_HOT " : "",
+        faults->ntc_boost ? "NTC_BOOST " : ""
     );
 }
 

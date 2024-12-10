@@ -1,10 +1,18 @@
 targets:
+    - esp32
     - esp32p4
 dependencies:
     cmake_utilities: 0.*
     idf: '>=5.3'
-    nicolaielectronics/mipi_dsi_abstraction: "^0.0.3"
-    nicolaielectronics/tanmatsu_coprocessor: "^0.3.1"
+    nicolaielectronics/mipi_dsi_abstraction:
+      version: "^0.0.3"
+      rules:
+        - if: "target == esp32p4"
+    nicolaielectronics/tanmatsu_coprocessor:
+      version: "^0.3.1"
+      rules:
+        - if: "target == esp32p4"
+    espressif/esp_lcd_ili9341: ^2.0.0
 description: Badge BSP
 license: MIT
 issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues

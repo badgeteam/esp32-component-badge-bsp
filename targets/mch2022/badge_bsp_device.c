@@ -77,3 +77,7 @@ esp_err_t bsp_device_initialize(void) {
 
     return ESP_OK;
 }
+
+bsp_display_rotation_t bsp_display_get_default_rotation() {
+    return BSP_DISPLAY_ROTATION_0;
+}

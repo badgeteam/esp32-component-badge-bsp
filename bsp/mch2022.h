@@ -3,6 +3,7 @@
 #pragma once
 
 #include "esp_err.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "rp2040.h"
 

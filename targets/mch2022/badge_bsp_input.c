@@ -7,6 +7,7 @@
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 #include "portmacro.h"
 #include "rp2040.h"

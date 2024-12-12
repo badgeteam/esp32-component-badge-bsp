@@ -1,8 +1,10 @@
 // Board support package API: WHY2025 implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
 #include "bsp/device.h"
+#include "bsp/display.h"
 #include "driver/gpio.h"
 #include "dsi_panel_nicolaielectronics_st7701.h"
 #include "esp_check.h"
@@ -90,4 +92,8 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t *panel) {
     }
     *panel = st7701_get_panel();
     return ESP_OK;
+}
+
+bsp_display_rotation_t bsp_display_get_default_rotation() {
+    return BSP_DISPLAY_ROTATION_270;
 }

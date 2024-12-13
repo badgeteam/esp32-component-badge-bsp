@@ -147,3 +147,7 @@ esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t *panel_io) {
     *panel_io = panel_io_handle;
     return ESP_OK;
 }
+
+bsp_display_rotation_t bsp_display_get_default_rotation() {
+    return BSP_DISPLAY_ROTATION_0;
+}

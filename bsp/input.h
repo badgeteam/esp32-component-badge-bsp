@@ -117,3 +117,7 @@ esp_err_t bsp_input_initialize(void);
 /// @brief Get the queue handle for the input event queue
 /// @return ESP-IDF error code
 esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue);
+
+/// @brief Get whether or not the device needs an on-screen keyboard
+/// @return true if the device needs an on-screen keyboard and false if it does not
+bool needs_on_screen_keyboard();

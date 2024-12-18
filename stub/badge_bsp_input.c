@@ -18,3 +18,7 @@ esp_err_t __attribute__((weak)) bsp_input_initialize(void) {
 esp_err_t __attribute__((weak)) bsp_input_get_queue(QueueHandle_t *out_queue) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+bool __attribute__((weak)) needs_on_screen_keyboard() {
+	return false;
+}

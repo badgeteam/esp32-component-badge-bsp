@@ -26,3 +26,7 @@ esp_err_t __attribute__((weak)) bsp_input_get_backlight_brightness(float *percen
 esp_err_t __attribute__((weak)) bsp_input_set_backlight_brightness(float percentage) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+bool __attribute__((weak)) needs_on_screen_keyboard() {
+	return false;
+}

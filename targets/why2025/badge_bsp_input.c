@@ -403,3 +403,7 @@ esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue) {
     *out_queue = event_queue;
     return ESP_OK;
 }
+
+bool needs_on_screen_keyboard() {
+	return false;
+}

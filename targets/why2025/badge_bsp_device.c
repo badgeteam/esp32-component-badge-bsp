@@ -1,5 +1,6 @@
 // Board support package API: WHY2025 implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
 #include "bsp/device.h"
@@ -37,6 +38,8 @@ esp_err_t bsp_why2025_coprocessor_get_handle(tanmatsu_coprocessor_handle_t *hand
 }
 
 esp_err_t bsp_device_initialize(void) {
+    gpio_install_isr_service(0);
+
     ESP_RETURN_ON_ERROR(bsp_display_initialize(), TAG, "Display failed to initialize");
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_initialize(), TAG, "Primary I2C bus failed to initialize");
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&i2c_bus_handle_internal), TAG, "Failed to get I2C bus handle");

@@ -20,9 +20,10 @@
 
 static char const *TAG = "BSP device";
 
-static i2c_master_bus_handle_t       i2c_bus_handle_internal   = NULL;
-static SemaphoreHandle_t             i2c_concurrency_semaphore = NULL;
-static tanmatsu_coprocessor_handle_t coprocessor_handle        = NULL;
+static i2c_master_bus_handle_t       i2c_bus_handle_internal         = NULL;
+static SemaphoreHandle_t             i2c_concurrency_semaphore       = NULL;
+static tanmatsu_coprocessor_handle_t coprocessor_handle              = NULL;
+static bool                          initialized_without_coprocessor = false;
 
 static char const device_name[]         = "WHY2025 badge";
 static char const device_manufacturer[] = "Badge.Team";
@@ -42,6 +43,8 @@ esp_err_t bsp_device_initialize(void) {
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&i2c_concurrency_semaphore), TAG, "Failed to get I2C bus semaphore");
     ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
 
+    initialized_without_coprocessor = true;
+
     tanmatsu_coprocessor_config_t coprocessor_config = {
         .int_io_num            = BSP_COPROCESSOR_INTERRUPT_PIN,
         .i2c_bus               = i2c_bus_handle_internal,
@@ -53,7 +56,13 @@ esp_err_t bsp_device_initialize(void) {
     };
 
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_initialize(&coprocessor_config, &coprocessor_handle), TAG, "Failed to initialize coprocessor driver");
+
+    initialized_without_coprocessor = false;
     return ESP_OK;
+}
+
+bool bsp_why2025_device_get_initialized_without_coprocessor(void) {
+    return initialized_without_coprocessor;
 }
 
 esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length) {

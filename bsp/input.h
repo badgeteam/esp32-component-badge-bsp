@@ -117,3 +117,11 @@ esp_err_t bsp_input_initialize(void);
 /// @brief Get the queue handle for the input event queue
 /// @return ESP-IDF error code
 esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue);
+
+/// @brief Get keyboard backlight brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_input_get_backlight_brightness(float *percentage);
+
+/// @brief Set keyboard backlight brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_input_set_backlight_brightness(float percentage);

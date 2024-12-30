@@ -13,10 +13,6 @@
 // Badge BSP
 // WHY2025 specific APIs
 
-/// @brief Initialized without coprocessor status flag
-/// @return Boolean, true when initialized without coprocessor available
-bool bsp_why2025_device_get_initialized_without_coprocessor(void);
-
 /// @brief Get coprocessor handle
 /// @return ESP-IDF error code
 esp_err_t bsp_why2025_coprocessor_get_handle(tanmatsu_coprocessor_handle_t *handle);

@@ -32,3 +32,7 @@ esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length);
 ///          - ESP_OK if the output string fits in the buffer
 ///          - ESP_ERR_INVALID_ARG if the output pointer is NULL
 esp_err_t bsp_device_get_manufacturer(char *output, uint8_t buffer_length);
+
+/// @brief Initialized without coprocessor status flag
+/// @return Boolean, true when initialized without coprocessor available
+bool bsp_device_get_initialized_without_coprocessor(void);

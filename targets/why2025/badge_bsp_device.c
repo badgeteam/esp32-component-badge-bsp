@@ -64,7 +64,7 @@ esp_err_t bsp_device_initialize(void) {
     return ESP_OK;
 }
 
-bool bsp_why2025_device_get_initialized_without_coprocessor(void) {
+bool bsp_device_get_initialized_without_coprocessor(void) {
     return initialized_without_coprocessor;
 }
 

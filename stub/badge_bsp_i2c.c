@@ -3,7 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "bsp/i2c.h"
+#include "driver/i2c_master.h"
 #include "esp_err.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 
 esp_err_t __attribute__((weak)) bsp_i2c_primary_bus_initialize(void) {
     return ESP_ERR_NOT_SUPPORTED;

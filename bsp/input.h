@@ -121,3 +121,11 @@ esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue);
 /// @brief Get whether or not the device needs an on-screen keyboard
 /// @return true if the device needs an on-screen keyboard and false if it does not
 bool needs_on_screen_keyboard();
+
+/// @brief Get keyboard backlight brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_input_get_backlight_brightness(uint8_t *out_percentage);
+
+/// @brief Set keyboard backlight brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage);

@@ -1,10 +1,11 @@
-// Board support package API: WHY2025 implementation
+// Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
 #include "bsp/device.h"
 #include "bsp/display.h"
+#include "bsp/tanmatsu.h"
 #include "driver/gpio.h"
 #include "dsi_panel_nicolaielectronics_st7701.h"
 #include "esp_check.h"
@@ -14,7 +15,8 @@
 #include "esp_ldo_regulator.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
-#include "why2025_hardware.h"
+#include "tanmatsu_coprocessor.h"
+#include "tanmatsu_hardware.h"
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -96,4 +98,21 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t *panel) {
 
 bsp_display_rotation_t bsp_display_get_default_rotation() {
     return BSP_DISPLAY_ROTATION_270;
+}
+
+esp_err_t bsp_display_get_backlight_brightness(uint8_t *out_percentage) {
+    ESP_RETURN_ON_FALSE(out_percentage, ESP_ERR_INVALID_ARG, TAG, "Percentage output argument is NULL");
+    uint8_t                       raw_value;
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_display_backlight(handle, &raw_value), TAG, "Failed to get display backlight brightness");
+    *out_percentage = (raw_value * 100) / 255;
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_display_backlight(handle, (percentage * 255) / 100), TAG, "Failed to configure display backlight brightness");
+    return ESP_OK;
 }

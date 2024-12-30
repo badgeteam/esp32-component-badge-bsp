@@ -1,4 +1,4 @@
-// Board support package API: WHY2025 implementation
+// Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
@@ -9,7 +9,7 @@
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include "why2025_hardware.h"
+#include "tanmatsu_hardware.h"
 
 #include <stdbool.h>
 #include <stdint.h>

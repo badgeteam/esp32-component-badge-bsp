@@ -1,9 +1,9 @@
-// Board support package API: WHY2025 implementation
+// Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
 #include "bsp/input.h"
-#include "bsp/why2025.h"
+#include "bsp/tanmatsu.h"
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -405,5 +405,21 @@ esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue) {
 }
 
 bool needs_on_screen_keyboard() {
-	return false;
+    return false;
+}
+esp_err_t bsp_input_get_backlight_brightness(uint8_t *out_percentage) {
+    ESP_RETURN_ON_FALSE(out_percentage, ESP_ERR_INVALID_ARG, TAG, "Percentage output argument is NULL");
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    uint8_t raw_value;
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_keyboard_backlight(handle, &raw_value), TAG, "Failed to get keyboard backlight brightness");
+    *out_percentage = (raw_value * 100) / 255;
+    return ESP_OK;
+}
+
+esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_keyboard_backlight(handle, (percentage * 255) / 100), TAG, "Failed to configure keyboard backlight brightness");
+    return ESP_OK;
 }

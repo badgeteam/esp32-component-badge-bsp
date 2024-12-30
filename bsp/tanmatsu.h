@@ -11,11 +11,11 @@
 #include <stdint.h>
 
 // Badge BSP
-// WHY2025 specific APIs (internal to BSP)
+// TANMATSU specific APIs
 
 /// @brief Get coprocessor handle
 /// @return ESP-IDF error code
-esp_err_t bsp_why2025_coprocessor_get_handle(tanmatsu_coprocessor_handle_t *handle);
+esp_err_t bsp_tanmatsu_coprocessor_get_handle(tanmatsu_coprocessor_handle_t *handle);
 
 // Coprocessor callbacks
 void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_keys_t *prev_keys, tanmatsu_coprocessor_keys_t *keys);

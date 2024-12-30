@@ -50,3 +50,11 @@ esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t *io);
 /// @brief Get the default display rotation
 /// @return The default display rotation
 bsp_display_rotation_t bsp_display_get_default_rotation();
+
+/// @brief Get display brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_backlight_brightness(uint8_t *out_percentage);
+
+/// @brief Set display brightness
+/// @return ESP-IDF error code
+esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage);

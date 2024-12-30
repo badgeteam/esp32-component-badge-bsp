@@ -17,14 +17,14 @@ esp_err_t __attribute__((weak)) bsp_input_get_queue(QueueHandle_t *out_queue) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 
+bool __attribute__((weak)) needs_on_screen_keyboard() {
+    return false;
+}
+
 esp_err_t __attribute__((weak)) bsp_input_get_backlight_brightness(uint8_t *out_percentage) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 
 esp_err_t __attribute__((weak)) bsp_input_set_backlight_brightness(uint8_t percentage) {
     return ESP_ERR_NOT_SUPPORTED;
-}
-
-bool __attribute__((weak)) needs_on_screen_keyboard() {
-    return false;
 }

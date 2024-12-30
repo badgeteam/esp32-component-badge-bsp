@@ -47,3 +47,11 @@ esp_err_t __attribute__((weak)) bsp_power_get_usb_host_boost_enabled(bool *out_e
 esp_err_t __attribute__((weak)) bsp_power_set_usb_host_boost_enabled(bool enable) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+esp_err_t __attribute__((weak)) bsp_power_get_radio_enabled(bool *out_enabled) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_power_set_radio_enabled(bool enable) {
+    return ESP_ERR_NOT_SUPPORTED;
+}

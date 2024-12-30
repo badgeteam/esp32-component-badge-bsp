@@ -147,3 +147,24 @@ esp_err_t bsp_power_set_usb_host_boost_enabled(bool enable) {
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_pmic_otg_control(handle, enable), TAG, "Failed to set USB host boot configuration");
     return ESP_OK;
 }
+
+esp_err_t bsp_power_get_radio_enabled(bool *out_enabled) {
+    ESP_RETURN_ON_FALSE(out_enabled, ESP_ERR_INVALID_ARG, TAG, "Enabled output argument is NULL");
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    tanmatsu_coprocessor_radio_state_t status;
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_radio_state(handle, &status), TAG, "Failed to get radio status");
+    *out_enabled = (status == tanmatsu_coprocessor_radio_state_enabled_application);
+    return ESP_OK;
+}
+
+esp_err_t bsp_power_set_radio_enabled(bool enable) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(
+        tanmatsu_coprocessor_set_radio_state(handle, enable ? tanmatsu_coprocessor_radio_state_enabled_application : tanmatsu_coprocessor_radio_state_disabled),
+        TAG,
+        "Failed to set radio status"
+    );
+    return ESP_OK;
+}

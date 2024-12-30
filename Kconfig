@@ -1,10 +1,10 @@
 menu "Badge.Team BSP"
 	choice
 		prompt "Board"
-		default BSP_TARGET_WHY2025
+		default BSP_TARGET_TANMATSU
 
-		config BSP_TARGET_WHY2025
-			bool "WHY2025 badge"
+		config BSP_TARGET_TANMATSU
+			bool "Tanmatsu"
 
 		config BSP_TARGET_P4_DEVKIT
 			bool "ESP32 P4 devkit"

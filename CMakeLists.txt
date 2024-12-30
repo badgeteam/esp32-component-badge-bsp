@@ -1,9 +1,9 @@
 # BSP target selection
 
-if (CONFIG_BSP_TARGET_WHY2025)
-	set(BSP_TARGET "why2025")
+if (CONFIG_BSP_TARGET_TANMATSU)
+	set(BSP_TARGET "tanmatsu")
 elseif(CONFIG_BSP_PLATFORM_P4_DEVKIT)
-	set(BSP_TARGET "why2025")
+	set(BSP_TARGET "tanmatsu")
 elseif(CONFIG_BSP_TARGET_MCH2022)
 	set(BSP_TARGET "mch2022")
 else()

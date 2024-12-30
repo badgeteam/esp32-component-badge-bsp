@@ -1,9 +1,9 @@
-// Board support package API: WHY2025 implementation
+// Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
 #include "bsp/battery.h"
-#include "bsp/why2025.h"
+#include "bsp/tanmatsu.h"
 #include "esp_check.h"
 #include "tanmatsu_coprocessor.h"
 
@@ -18,7 +18,7 @@ esp_err_t bsp_battery_is_charging(bool *charging) {
     }
 
     tanmatsu_coprocessor_handle_t handle = NULL;
-    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get the coprocessor handle");
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get the coprocessor handle");
 
     bool    battery_attached;
     bool    charging_disabled;
@@ -41,7 +41,7 @@ esp_err_t bsp_battery_get_voltage(uint16_t *bat_mv) {
     }
 
     tanmatsu_coprocessor_handle_t handle = NULL;
-    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get the coprocessor handle");
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get the coprocessor handle");
 
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_pmic_vbat(handle, bat_mv), TAG, "Failed to get the battery voltage");
 

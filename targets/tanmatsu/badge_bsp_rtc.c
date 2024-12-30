@@ -1,9 +1,9 @@
-// Board support package API: WHY2025 implementation
+// Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
 #include "bsp/rtc.h"
-#include "bsp/why2025.h"
+#include "bsp/tanmatsu.h"
 #include "esp_check.h"
 #include "tanmatsu_coprocessor.h"
 
@@ -16,14 +16,14 @@ static char const *TAG = "BSP RTC";
 
 esp_err_t bsp_rtc_get_time(uint32_t *value) {
     tanmatsu_coprocessor_handle_t handle = NULL;
-    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_real_time(handle, value), TAG, "Failed to get RTC value");
     return ESP_OK;
 }
 
 esp_err_t bsp_rtc_set_time(uint32_t value) {
     tanmatsu_coprocessor_handle_t handle = NULL;
-    ESP_RETURN_ON_ERROR(bsp_why2025_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_real_time(handle, value), TAG, "Failed to set RTC value");
     return ESP_OK;
 }

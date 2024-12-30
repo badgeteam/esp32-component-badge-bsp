@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 // Badge BSP
-// WHY2025 specific APIs (internal to BSP)
+// WHY2025 specific APIs
 
 /// @brief Initialized without coprocessor status flag
 /// @return Boolean, true when initialized without coprocessor available

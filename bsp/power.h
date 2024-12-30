@@ -14,20 +14,20 @@ typedef enum {
 
 typedef struct _bsp_power_battery_information {
     char const *type;                     // Battery type (string)
-    bool        installed;                // Is a battery installed
-    uint32_t    maximum_charging_current; // Maximum charging current (mA)
-    uint32_t    voltage;                  // Current battery voltage
-    uint32_t    charging_target_voltage;  // Target voltage when full
-    float       remaining_percentage;     // Remaining capacity (%)
+    bool        power_supply_available;   // Is a power supply attached
+    bool        battery_available;        // Is a battery installed
+    bool        charging_disabled;        // Is battery charging disabled
+    bool        battery_charging;         // Is the battery being charged
+    uint16_t    maximum_charging_current; // Maximum charging current (mA)
+    uint16_t    current_charging_current; // Maximum charging current (mA)
+    uint16_t    voltage;                  // Current battery voltage
+    uint16_t    charging_target_voltage;  // Target voltage when full
+    double      remaining_percentage;     // Remaining capacity (%)
 } bsp_power_battery_information_t;
 
 /// @brief Initialize BSP power subsystem
 /// @return ESP-IDF error code
 esp_err_t bsp_power_initialize(void);
-
-/// @brief Get power button state
-/// @return ESP-IDF error code
-esp_err_t bsp_power_get_button_state(bool *pressed);
 
 /// @brief Get battery information
 /// @return ESP-IDF error code
@@ -35,35 +35,27 @@ esp_err_t bsp_power_get_battery_information(bsp_power_battery_information_t *out
 
 /// @brief Get battery voltage
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_battery_voltage(uint32_t *millivolt);
+esp_err_t bsp_power_get_battery_voltage(uint16_t *out_millivolt);
 
 /// @brief Get system voltage
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_system_voltage(uint32_t *millivolt);
+esp_err_t bsp_power_get_system_voltage(uint16_t *out_millivolt);
 
-/// @brief Get USB device port voltage
+/// @brief Get charger input voltage
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_usb_device_voltage(uint32_t *millivolt);
+esp_err_t bsp_power_get_input_voltage(uint16_t *out_millivolt);
 
-/// @brief Get charging current
+/// @brief Get battery charger configuration
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_charging_state(bool *out_enabled, bool *out_battery_attached, bool *out_active, bool *out_done, uint32_t *out_current, uint32_t *out_voltage, float *out_percentage);
+esp_err_t bsp_power_get_charging_configuration(bool *out_disabled, uint16_t *out_current);
 
-/// @brief Set charging current
+/// @brief Configure battery charger
 /// @return ESP-IDF error code
-esp_err_t bsp_power_configure_charging(bool enable, uint32_t current);
-
-/// @brief Get battery charging enabled
-/// @return ESP-IDF error code
-esp_err_t bsp_power_get_charging_enabled(bool *enabled);
-
-/// @brief Set battery charging enabled
-/// @return ESP-IDF error code
-esp_err_t bsp_power_set_charging_enabled(bool enable);
+esp_err_t bsp_power_configure_charging(bool disable, uint16_t current);
 
 /// @brief Get USB host port boost enabled
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_usb_host_boost_enabled(bool *enabled);
+esp_err_t bsp_power_get_usb_host_boost_enabled(bool *out_enabled);
 
 /// @brief Set USB host port boost enabled
 /// @return ESP-IDF error code

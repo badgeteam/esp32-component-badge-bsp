@@ -1,4 +1,4 @@
-// MCH2022 specific APIs (internal to BSP)
+// MCH2022 specific APIs
 
 #pragma once
 

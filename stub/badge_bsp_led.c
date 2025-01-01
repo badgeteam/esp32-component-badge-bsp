@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-esp_err_t __attribute__((weak)) bsp_leds_initialize(void) {
+esp_err_t __attribute__((weak)) bsp_led_initialize(void) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 

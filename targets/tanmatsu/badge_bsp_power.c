@@ -168,3 +168,9 @@ esp_err_t bsp_power_set_radio_enabled(bool enable) {
     );
     return ESP_OK;
 }
+
+esp_err_t bsp_power_off(bool enable_alarm_wakeup) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    return tanmatsu_coprocessor_power_off(handle, enable_alarm_wakeup);
+}

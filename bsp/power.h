@@ -68,3 +68,7 @@ esp_err_t bsp_power_get_radio_enabled(bool *out_enabled);
 /// @brief Set radio enabled
 /// @return ESP-IDF error code
 esp_err_t bsp_power_set_radio_enabled(bool enable);
+
+/// @brief Power off
+/// @return ESP-IDF error code
+esp_err_t bsp_power_off(bool enable_alarm_wakeup);

@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
-#include "bsp/leds.h"
+#include "bsp/led.h"
 #include "esp_err.h"
 
 #include <stdint.h>

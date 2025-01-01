@@ -3,6 +3,9 @@
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 #include "bsp/device.h"
 #include "bsp/display.h"
 #include "bsp/tanmatsu.h"
@@ -18,12 +21,7 @@
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-
-#include <string.h>
-
-static char const *TAG = "BSP display";
+static char const* TAG = "BSP display";
 
 static esp_ldo_channel_handle_t ldo_mipi_phy = NULL;
 
@@ -34,7 +32,7 @@ static esp_err_t bsp_display_enable_dsi_phy_power(void) {
         return ESP_OK;
     }
     esp_ldo_channel_config_t ldo_mipi_phy_config = {
-        .chan_id    = BSP_DSI_LDO_CHAN,
+        .chan_id = BSP_DSI_LDO_CHAN,
         .voltage_mv = BSP_DSI_LDO_VOLTAGE_MV,
     };
     return esp_ldo_acquire_channel(&ldo_mipi_phy_config, &ldo_mipi_phy);
@@ -43,10 +41,10 @@ static esp_err_t bsp_display_enable_dsi_phy_power(void) {
 static esp_err_t bsp_display_reset(void) {
     gpio_config_t lcd_reset_conf = {
         .pin_bit_mask = BIT64(BSP_LCD_RESET_PIN),
-        .mode         = GPIO_MODE_INPUT_OUTPUT,
-        .pull_up_en   = 0,
+        .mode = GPIO_MODE_INPUT_OUTPUT,
+        .pull_up_en = 0,
         .pull_down_en = 0,
-        .intr_type    = GPIO_INTR_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE,
     };
 
     gpio_config(&lcd_reset_conf);
@@ -60,7 +58,8 @@ static esp_err_t bsp_display_reset(void) {
 }
 
 static esp_err_t bsp_display_initialize_panel(void) {
-    // TODO: extend ST7701 driver in MIPI DSI abstraction component to support error handling and fix broken display reset
+    // TODO: extend ST7701 driver in MIPI DSI abstraction component to support error handling and fix broken display
+    // reset
     st7701_initialize(-1);
     return ESP_OK;
 }
@@ -78,7 +77,7 @@ esp_err_t bsp_display_initialize(void) {
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t *h_res, size_t *v_res, lcd_color_rgb_pixel_format_t *color_fmt) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt) {
     if (!bsp_display_initialized) {
         ESP_LOGE(TAG, "Display not initialized");
         return ESP_FAIL;
@@ -87,7 +86,7 @@ esp_err_t bsp_display_get_parameters(size_t *h_res, size_t *v_res, lcd_color_rgb
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t *panel) {
+esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
     if (!bsp_display_initialized) {
         ESP_LOGE(TAG, "Display not initialized");
         return ESP_FAIL;
@@ -100,12 +99,13 @@ bsp_display_rotation_t bsp_display_get_default_rotation() {
     return BSP_DISPLAY_ROTATION_270;
 }
 
-esp_err_t bsp_display_get_backlight_brightness(uint8_t *out_percentage) {
+esp_err_t bsp_display_get_backlight_brightness(uint8_t* out_percentage) {
     ESP_RETURN_ON_FALSE(out_percentage, ESP_ERR_INVALID_ARG, TAG, "Percentage output argument is NULL");
-    uint8_t                       raw_value;
+    uint8_t raw_value;
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_display_backlight(handle, &raw_value), TAG, "Failed to get display backlight brightness");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_display_backlight(handle, &raw_value), TAG,
+                        "Failed to get display backlight brightness");
     *out_percentage = (raw_value * 100) / 255;
     return ESP_OK;
 }
@@ -113,6 +113,7 @@ esp_err_t bsp_display_get_backlight_brightness(uint8_t *out_percentage) {
 esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage) {
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_display_backlight(handle, (percentage * 255) / 100), TAG, "Failed to configure display backlight brightness");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_display_backlight(handle, (percentage * 255) / 100), TAG,
+                        "Failed to configure display backlight brightness");
     return ESP_OK;
 }

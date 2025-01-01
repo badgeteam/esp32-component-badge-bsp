@@ -2,6 +2,9 @@
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
+#include <inttypes.h>
+#include <stdint.h>
+#include <string.h>
 #include "bsp/input.h"
 #include "bsp/tanmatsu.h"
 #include "esp_check.h"
@@ -12,53 +15,51 @@
 #include "freertos/queue.h"
 #include "tanmatsu_coprocessor.h"
 
-#include <inttypes.h>
-#include <stdint.h>
+static char const* TAG = "BSP INPUT";
 
-#include <string.h>
+static QueueHandle_t event_queue = NULL;
+static TaskHandle_t key_repeat_thread_handle = NULL;
 
-static char const *TAG = "BSP INPUT";
-
-static QueueHandle_t event_queue              = NULL;
-static TaskHandle_t  key_repeat_thread_handle = NULL;
-
-static bool     key_repeat_wait      = false;
-static bool     key_repeat_fast      = false;
-static char     key_repeat_ascii     = '\0';
-static char     key_repeat_utf8[5]   = {0};
+static bool key_repeat_wait = false;
+static bool key_repeat_fast = false;
+static char key_repeat_ascii = '\0';
+static char key_repeat_utf8[5] = {0};
 static uint32_t key_repeat_modifiers = 0;
 
-static void handle_keyboard_text_entry(
-    bool curr_state, bool prev_state, char ascii, char ascii_shift, char const *utf8, char const *utf8_shift, char const *utf8_alt, char const *utf8_shift_alt, uint32_t modifiers
-) {
+static void handle_keyboard_text_entry(bool curr_state, bool prev_state, char ascii, char ascii_shift, char const* utf8,
+                                       char const* utf8_shift, char const* utf8_alt, char const* utf8_shift_alt,
+                                       uint32_t modifiers) {
     if (curr_state && (!prev_state)) {
         // Key pressed
-        char        value_ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? ascii_shift : ascii;
-        char const *value_utf8
-            = (modifiers & BSP_INPUT_MODIFIER_ALT_R) ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt) : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
+        char value_ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? ascii_shift : ascii;
+        char const* value_utf8 = (modifiers & BSP_INPUT_MODIFIER_ALT_R)
+                                     ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt)
+                                     : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
         // ESP_LOGI(TAG, "Text: %c / %s (modifiers: %08" PRIX32 ")", value_ascii, value_utf8, modifiers);
         bsp_input_event_t event = {
-            .type                    = INPUT_EVENT_TYPE_KEYBOARD,
-            .args_keyboard.ascii     = value_ascii,
-            .args_keyboard.utf8      = value_utf8,
+            .type = INPUT_EVENT_TYPE_KEYBOARD,
+            .args_keyboard.ascii = value_ascii,
+            .args_keyboard.utf8 = value_utf8,
             .args_keyboard.modifiers = modifiers,
         };
         xQueueSend(event_queue, &event, 0);
         key_repeat_ascii = value_ascii;
         strncpy(key_repeat_utf8, value_utf8, sizeof(key_repeat_utf8) - 1);
         key_repeat_modifiers = modifiers;
-        key_repeat_wait      = true;
-        key_repeat_fast      = false;
+        key_repeat_wait = true;
+        key_repeat_fast = false;
     } else if (((!curr_state) && (prev_state)) || ((key_repeat_ascii != '\0') && (key_repeat_modifiers |= modifiers))) {
         key_repeat_ascii = '\0';
         memset(key_repeat_utf8, '\0', sizeof(key_repeat_utf8));
         key_repeat_modifiers = modifiers;
-        key_repeat_wait      = false;
-        key_repeat_fast      = false;
+        key_repeat_wait = false;
+        key_repeat_fast = false;
     }
 }
 
-void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_keys_t *prev_keys, tanmatsu_coprocessor_keys_t *keys) {
+void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t handle,
+                                                tanmatsu_coprocessor_keys_t* prev_keys,
+                                                tanmatsu_coprocessor_keys_t* keys) {
     static bool meta_key_modifier_used = false;
 
     // Modifier keys
@@ -89,7 +90,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     for (uint8_t i = 0; i < TANMATSU_COPROCESSOR_KEYBOARD_NUM_REGS; i++) {
         uint8_t value = keys->raw[i];
         if (i == 2) {
-            value &= ~(1 << 5); // Ignore meta key
+            value &= ~(1 << 5);  // Ignore meta key
         }
         if (value) {
             meta_key_modifier_used = true;
@@ -103,10 +104,10 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         if (!meta_key_modifier_used) {
             // ESP_LOGI(TAG, "Meta key triggered");
             bsp_input_event_t event = {
-                .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-                .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_SUPER,
+                .type = INPUT_EVENT_TYPE_NAVIGATION,
+                .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_SUPER,
                 .args_navigation.modifiers = modifiers,
-                .args_navigation.state     = true,
+                .args_navigation.state = true,
             };
             xQueueSend(event_queue, &event, 0);
             event.args_navigation.state = false;
@@ -116,156 +117,157 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     if (keys->key_esc != prev_keys->key_esc) {
         // ESP_LOGI(TAG, "Esc %s", keys->key_esc ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_ESC,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_ESC,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_esc,
+            .args_navigation.state = keys->key_esc,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f1 != prev_keys->key_f1) {
         // ESP_LOGI(TAG, "F1 %s", keys->key_f1 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F1,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F1,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f1,
+            .args_navigation.state = keys->key_f1,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f2 != prev_keys->key_f2) {
         // ESP_LOGI(TAG, "F2 %s", keys->key_f2 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F2,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F2,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f2,
+            .args_navigation.state = keys->key_f2,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f3 != prev_keys->key_f3) {
         // ESP_LOGI(TAG, "F3 %s", keys->key_f3 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F3,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F3,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f3,
+            .args_navigation.state = keys->key_f3,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f4 != prev_keys->key_f4) {
         // ESP_LOGI(TAG, "F4 %s", keys->key_f4 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F4,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F4,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f4,
+            .args_navigation.state = keys->key_f4,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f5 != prev_keys->key_f5) {
         // ESP_LOGI(TAG, "F5 %s", keys->key_f5 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F5,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F5,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f5,
+            .args_navigation.state = keys->key_f5,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f6 != prev_keys->key_f6) {
         // ESP_LOGI(TAG, "F6 %s", keys->key_f6 ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F6,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_F6,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_f6,
+            .args_navigation.state = keys->key_f6,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_return != prev_keys->key_return) {
         // ESP_LOGI(TAG, "Return %s", keys->key_return ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_RETURN,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_RETURN,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_return,
+            .args_navigation.state = keys->key_return,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_up != prev_keys->key_up) {
         // ESP_LOGI(TAG, "Up %s", keys->key_up ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_UP,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_UP,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_up,
+            .args_navigation.state = keys->key_up,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_left != prev_keys->key_left) {
         // ESP_LOGI(TAG, "Left %s", keys->key_left ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_LEFT,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_LEFT,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_left,
+            .args_navigation.state = keys->key_left,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_down != prev_keys->key_down) {
         // ESP_LOGI(TAG, "Down %s", keys->key_down ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_DOWN,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_DOWN,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_down,
+            .args_navigation.state = keys->key_down,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_right != prev_keys->key_right) {
         // ESP_LOGI(TAG, "Right %s", keys->key_right ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_RIGHT,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_RIGHT,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_right,
+            .args_navigation.state = keys->key_right,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_volume_up != prev_keys->key_volume_up) {
         // ESP_LOGI(TAG, "Volume up %s", keys->key_volume_up ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_volume_up,
+            .args_navigation.state = keys->key_volume_up,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_tab != prev_keys->key_tab) {
         // ESP_LOGI(TAG, "Tab %s", keys->key_tab ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_TAB,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_TAB,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_tab,
+            .args_navigation.state = keys->key_tab,
         };
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_backspace != prev_keys->key_backspace) {
         // ESP_LOGI(TAG, "Backspace %s", keys->key_backspace ? "pressed" : "released");
         bsp_input_event_t event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
+            .type = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key = BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
             .args_navigation.modifiers = modifiers,
-            .args_navigation.state     = keys->key_backspace,
+            .args_navigation.state = keys->key_backspace,
         };
         xQueueSend(event_queue, &event, 0);
     }
 
     // Text entry keys
-    handle_keyboard_text_entry(keys->key_backspace, prev_keys->key_backspace, '\b', '\b', "\b", "\b", "\b", "\b", modifiers);
+    handle_keyboard_text_entry(keys->key_backspace, prev_keys->key_backspace, '\b', '\b', "\b", "\b", "\b", "\b",
+                               modifiers);
     handle_keyboard_text_entry(keys->key_tilde, prev_keys->key_tilde, '`', '~', "`", "~", "`", "~", modifiers);
     handle_keyboard_text_entry(keys->key_1, prev_keys->key_1, '1', '!', "1", "!", "¡", "¹", modifiers);
     handle_keyboard_text_entry(keys->key_2, prev_keys->key_2, '2', '@', "2", "@", "²", "̋", modifiers);
@@ -290,8 +292,10 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     handle_keyboard_text_entry(keys->key_i, prev_keys->key_i, 'i', 'I', "i", "I", "í", "Í", modifiers);
     handle_keyboard_text_entry(keys->key_o, prev_keys->key_o, 'o', 'O', "o", "O", "ó", "Ó", modifiers);
     handle_keyboard_text_entry(keys->key_p, prev_keys->key_p, 'p', 'P', "p", "P", "ö", "Ö", modifiers);
-    handle_keyboard_text_entry(keys->key_sqbracket_open, prev_keys->key_sqbracket_open, '[', '{', "[", "{", "«", "“", modifiers);
-    handle_keyboard_text_entry(keys->key_sqbracket_close, prev_keys->key_sqbracket_close, ']', '}', "]", "}", "»", "”", modifiers);
+    handle_keyboard_text_entry(keys->key_sqbracket_open, prev_keys->key_sqbracket_open, '[', '{', "[", "{", "«", "“",
+                               modifiers);
+    handle_keyboard_text_entry(keys->key_sqbracket_close, prev_keys->key_sqbracket_close, ']', '}', "]", "}", "»", "”",
+                               modifiers);
     handle_keyboard_text_entry(keys->key_a, prev_keys->key_a, 'a', 'A', "a", "A", "á", "Á", modifiers);
     handle_keyboard_text_entry(keys->key_s, prev_keys->key_s, 's', 'S', "s", "S", "ß", "§", modifiers);
     handle_keyboard_text_entry(keys->key_d, prev_keys->key_d, 'd', 'D', "d", "D", "ð", "Ð", modifiers);
@@ -313,21 +317,16 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
     handle_keyboard_text_entry(keys->key_comma, prev_keys->key_comma, ',', '<', ",", "<", "̧", "̌", modifiers);
     handle_keyboard_text_entry(keys->key_dot, prev_keys->key_dot, '.', '>', ".", ">", "̇", "̌", modifiers);
     handle_keyboard_text_entry(keys->key_slash, prev_keys->key_slash, '/', '?', "/", "?", "¿", "̉", modifiers);
-    handle_keyboard_text_entry(keys->key_backslash, prev_keys->key_backslash, '\\', '|', "\\", "|", "¬", "¦", modifiers);
-    handle_keyboard_text_entry(
-        keys->key_space_l | keys->key_space_m | keys->key_space_r,
-        prev_keys->key_space_l | prev_keys->key_space_m | prev_keys->key_space_r,
-        ' ',
-        ' ',
-        " ",
-        " ",
-        " ",
-        " ",
-        modifiers
-    );
+    handle_keyboard_text_entry(keys->key_backslash, prev_keys->key_backslash, '\\', '|', "\\", "|", "¬", "¦",
+                               modifiers);
+    handle_keyboard_text_entry(keys->key_space_l | keys->key_space_m | keys->key_space_r,
+                               prev_keys->key_space_l | prev_keys->key_space_m | prev_keys->key_space_r, ' ', ' ', " ",
+                               " ", " ", " ", modifiers);
 }
 
-void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_inputs_t *prev_inputs, tanmatsu_coprocessor_inputs_t *inputs) {
+void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t handle,
+                                             tanmatsu_coprocessor_inputs_t* prev_inputs,
+                                             tanmatsu_coprocessor_inputs_t* inputs) {
     if (inputs->sd_card_detect != prev_inputs->sd_card_detect) {
         ESP_LOGW(TAG, "SD card %s", inputs->sd_card_detect ? "inserted" : "removed");
     }
@@ -341,23 +340,17 @@ void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t handl
     }
 }
 
-void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t handle, tanmatsu_coprocessor_pmic_faults_t *prev_faults, tanmatsu_coprocessor_pmic_faults_t *faults) {
-    ESP_LOGE(
-        TAG,
-        "Faults changed: %s%s%s%s%s%s%s%s%s\r\n",
-        faults->watchdog ? "WATCHDOG " : "",
-        faults->boost ? "BOOST " : "",
-        faults->chrg_input ? "CHRG_INPUT " : "",
-        faults->chrg_thermal ? "CHRG_THERMAL " : "",
-        faults->chrg_safety ? "CHRG_SAFETY " : "",
-        faults->batt_ovp ? "BATT_OVP " : "",
-        faults->ntc_cold ? "NTC_COLD " : "",
-        faults->ntc_hot ? "NTC_HOT " : "",
-        faults->ntc_boost ? "NTC_BOOST " : ""
-    );
+void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t handle,
+                                              tanmatsu_coprocessor_pmic_faults_t* prev_faults,
+                                              tanmatsu_coprocessor_pmic_faults_t* faults) {
+    ESP_LOGE(TAG, "Faults changed: %s%s%s%s%s%s%s%s%s\r\n", faults->watchdog ? "WATCHDOG " : "",
+             faults->boost ? "BOOST " : "", faults->chrg_input ? "CHRG_INPUT " : "",
+             faults->chrg_thermal ? "CHRG_THERMAL " : "", faults->chrg_safety ? "CHRG_SAFETY " : "",
+             faults->batt_ovp ? "BATT_OVP " : "", faults->ntc_cold ? "NTC_COLD " : "",
+             faults->ntc_hot ? "NTC_HOT " : "", faults->ntc_boost ? "NTC_BOOST " : "");
 }
 
-static void key_repeat_thread(void *ignored) {
+static void key_repeat_thread(void* ignored) {
     (void)ignored;
     while (1) {
         if (key_repeat_wait) {
@@ -369,9 +362,9 @@ static void key_repeat_thread(void *ignored) {
         if (key_repeat_ascii != '\0') {
             // ESP_LOGI(TAG, "Repeat text: %c / %s", key_repeat_ascii, key_repeat_utf8);
             bsp_input_event_t event = {
-                .type                    = INPUT_EVENT_TYPE_KEYBOARD,
-                .args_keyboard.ascii     = key_repeat_ascii,
-                .args_keyboard.utf8      = key_repeat_utf8,
+                .type = INPUT_EVENT_TYPE_KEYBOARD,
+                .args_keyboard.ascii = key_repeat_ascii,
+                .args_keyboard.utf8 = key_repeat_utf8,
                 .args_keyboard.modifiers = key_repeat_modifiers,
             };
             xQueueSend(event_queue, &event, 0);
@@ -393,7 +386,7 @@ esp_err_t bsp_input_initialize(void) {
     return ESP_OK;
 }
 
-esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue) {
+esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue) {
     if (out_queue == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -407,12 +400,13 @@ esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue) {
 bool needs_on_screen_keyboard() {
     return false;
 }
-esp_err_t bsp_input_get_backlight_brightness(uint8_t *out_percentage) {
+esp_err_t bsp_input_get_backlight_brightness(uint8_t* out_percentage) {
     ESP_RETURN_ON_FALSE(out_percentage, ESP_ERR_INVALID_ARG, TAG, "Percentage output argument is NULL");
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     uint8_t raw_value;
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_keyboard_backlight(handle, &raw_value), TAG, "Failed to get keyboard backlight brightness");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_keyboard_backlight(handle, &raw_value), TAG,
+                        "Failed to get keyboard backlight brightness");
     *out_percentage = (raw_value * 100) / 255;
     return ESP_OK;
 }
@@ -420,6 +414,7 @@ esp_err_t bsp_input_get_backlight_brightness(uint8_t *out_percentage) {
 esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage) {
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_keyboard_backlight(handle, (percentage * 255) / 100), TAG, "Failed to configure keyboard backlight brightness");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_keyboard_backlight(handle, (percentage * 255) / 100), TAG,
+                        "Failed to configure keyboard backlight brightness");
     return ESP_OK;
 }

@@ -36,7 +36,7 @@ static void handle_keyboard_text_entry(
         char        value_ascii = (modifiers & BSP_INPUT_MODIFIER_SHIFT) ? ascii_shift : ascii;
         char const *value_utf8
             = (modifiers & BSP_INPUT_MODIFIER_ALT_R) ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt) : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
-        ESP_LOGI(TAG, "Text: %c / %s (modifiers: %08" PRIX32 ")", value_ascii, value_utf8, modifiers);
+        // ESP_LOGI(TAG, "Text: %c / %s (modifiers: %08" PRIX32 ")", value_ascii, value_utf8, modifiers);
         bsp_input_event_t event = {
             .type                    = INPUT_EVENT_TYPE_KEYBOARD,
             .args_keyboard.ascii     = value_ascii,
@@ -97,11 +97,11 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         }
     }
     if (keys->key_meta && (!prev_keys->key_meta)) {
-        ESP_LOGI(TAG, "Meta key pressed");
+        // ESP_LOGI(TAG, "Meta key pressed");
         meta_key_modifier_used = false;
     } else if ((!keys->key_meta) && prev_keys->key_meta) {
         if (!meta_key_modifier_used) {
-            ESP_LOGI(TAG, "Meta key triggered");
+            // ESP_LOGI(TAG, "Meta key triggered");
             bsp_input_event_t event = {
                 .type                      = INPUT_EVENT_TYPE_NAVIGATION,
                 .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_SUPER,
@@ -114,7 +114,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         }
     }
     if (keys->key_esc != prev_keys->key_esc) {
-        ESP_LOGI(TAG, "Esc %s", keys->key_esc ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Esc %s", keys->key_esc ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_ESC,
@@ -124,7 +124,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f1 != prev_keys->key_f1) {
-        ESP_LOGI(TAG, "F1 %s", keys->key_f1 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F1 %s", keys->key_f1 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F1,
@@ -134,7 +134,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f2 != prev_keys->key_f2) {
-        ESP_LOGI(TAG, "F2 %s", keys->key_f2 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F2 %s", keys->key_f2 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F2,
@@ -144,7 +144,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f3 != prev_keys->key_f3) {
-        ESP_LOGI(TAG, "F3 %s", keys->key_f3 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F3 %s", keys->key_f3 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F3,
@@ -154,7 +154,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f4 != prev_keys->key_f4) {
-        ESP_LOGI(TAG, "F4 %s", keys->key_f4 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F4 %s", keys->key_f4 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F4,
@@ -164,7 +164,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f5 != prev_keys->key_f5) {
-        ESP_LOGI(TAG, "F5 %s", keys->key_f5 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F5 %s", keys->key_f5 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F5,
@@ -174,7 +174,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_f6 != prev_keys->key_f6) {
-        ESP_LOGI(TAG, "F6 %s", keys->key_f6 ? "pressed" : "released");
+        // ESP_LOGI(TAG, "F6 %s", keys->key_f6 ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_F6,
@@ -184,7 +184,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_return != prev_keys->key_return) {
-        ESP_LOGI(TAG, "Return %s", keys->key_return ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Return %s", keys->key_return ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_RETURN,
@@ -194,7 +194,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_up != prev_keys->key_up) {
-        ESP_LOGI(TAG, "Up %s", keys->key_up ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Up %s", keys->key_up ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_UP,
@@ -204,7 +204,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_left != prev_keys->key_left) {
-        ESP_LOGI(TAG, "Left %s", keys->key_left ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Left %s", keys->key_left ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_LEFT,
@@ -214,7 +214,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_down != prev_keys->key_down) {
-        ESP_LOGI(TAG, "Down %s", keys->key_down ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Down %s", keys->key_down ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_DOWN,
@@ -224,7 +224,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_right != prev_keys->key_right) {
-        ESP_LOGI(TAG, "Right %s", keys->key_right ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Right %s", keys->key_right ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_RIGHT,
@@ -234,7 +234,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_volume_up != prev_keys->key_volume_up) {
-        ESP_LOGI(TAG, "Volume up %s", keys->key_volume_up ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Volume up %s", keys->key_volume_up ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
@@ -244,7 +244,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_tab != prev_keys->key_tab) {
-        ESP_LOGI(TAG, "Tab %s", keys->key_tab ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Tab %s", keys->key_tab ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_TAB,
@@ -254,7 +254,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         xQueueSend(event_queue, &event, 0);
     }
     if (keys->key_backspace != prev_keys->key_backspace) {
-        ESP_LOGI(TAG, "Backspace %s", keys->key_backspace ? "pressed" : "released");
+        // ESP_LOGI(TAG, "Backspace %s", keys->key_backspace ? "pressed" : "released");
         bsp_input_event_t event = {
             .type                      = INPUT_EVENT_TYPE_NAVIGATION,
             .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
@@ -367,7 +367,7 @@ static void key_repeat_thread(void *ignored) {
             continue;
         }
         if (key_repeat_ascii != '\0') {
-            ESP_LOGI(TAG, "Repeat text: %c / %s", key_repeat_ascii, key_repeat_utf8);
+            // ESP_LOGI(TAG, "Repeat text: %c / %s", key_repeat_ascii, key_repeat_utf8);
             bsp_input_event_t event = {
                 .type                    = INPUT_EVENT_TYPE_KEYBOARD,
                 .args_keyboard.ascii     = key_repeat_ascii,

@@ -25,6 +25,12 @@ typedef struct _bsp_power_battery_information {
     double      remaining_percentage;     // Remaining capacity (%)
 } bsp_power_battery_information_t;
 
+typedef enum {
+    BSP_POWER_RADIO_STATE_OFF         = 0,
+    BSP_POWER_RADIO_STATE_BOOTLOADER  = 1,
+    BSP_POWER_RADIO_STATE_APPLICATION = 2,
+} bsp_radio_state_t;
+
 /// @brief Initialize BSP power subsystem
 /// @return ESP-IDF error code
 esp_err_t bsp_power_initialize(void);
@@ -63,11 +69,11 @@ esp_err_t bsp_power_set_usb_host_boost_enabled(bool enable);
 
 /// @brief Get radio enabled
 /// @return ESP-IDF error code
-esp_err_t bsp_power_get_radio_enabled(bool *out_enabled);
+esp_err_t bsp_power_get_radio_state(bsp_radio_state_t *out_state);
 
 /// @brief Set radio enabled
 /// @return ESP-IDF error code
-esp_err_t bsp_power_set_radio_enabled(bool enable);
+esp_err_t bsp_power_set_radio_state(bsp_radio_state_t state);
 
 /// @brief Power off
 /// @return ESP-IDF error code

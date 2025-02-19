@@ -1,13 +1,13 @@
 # BSP target selection
 
 if (CONFIG_BSP_TARGET_TANMATSU)
-	set(BSP_TARGET "tanmatsu")
+    set(BSP_TARGET "tanmatsu")
 elseif(CONFIG_BSP_PLATFORM_P4_DEVKIT)
-	set(BSP_TARGET "tanmatsu")
+    set(BSP_TARGET "tanmatsu")
 elseif(CONFIG_BSP_TARGET_MCH2022)
-	set(BSP_TARGET "mch2022")
+    set(BSP_TARGET "mch2022")
 else()
-	set(BSP_TARGET "stub")
+    set(BSP_TARGET "stub")
 endif()
 
 # BSP requirements for all targets
@@ -17,27 +17,32 @@ set(COMMON_BSP_REQUIREMENTS
     "driver"
 )
 
+# BSP requirements only used for ESP32 targets
+
+set(ESP32_BSP_REQUIREMENTS
+    "espressif__esp_lcd_ili9341"
+    "badgeteam__mch2022-rp2040"
+)
+
+# BSP requirements only used on for ESP32-P4 targets
+
+set(ESP32P4_BSP_REQUIREMENTS
+    "nicolaielectronics__tanmatsu_coprocessor"
+    "nicolaielectronics__mipi_dsi_abstraction"
+    "es8156"
+)
+
 # -------------------------
 
-set(TARGETS_FOLDER "${CMAKE_CURRENT_LIST_DIR}/targets")
+set(BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
 
-if("${BSP_TARGET}" STREQUAL "stub")
-    message(WARNING "No BSP target selected")
+if("${IDF_TARGET}" STREQUAL "esp32")
+    list(APPEND BSP_REQUIRES ${ESP32_BSP_REQUIREMENTS})
+elseif("${IDF_TARGET}" STREQUAL "esp32p4")
+    list(APPEND BSP_REQUIRES ${ESP32P4_BSP_REQUIREMENTS})
 else()
-    IF(EXISTS "${TARGETS_FOLDER}/${BSP_TARGET}" AND IS_DIRECTORY "${TARGETS_FOLDER}/${BSP_TARGET}")
-        IF(EXISTS "${TARGETS_FOLDER}/${BSP_TARGET}/target.cmake")
-            include("${TARGETS_FOLDER}/${BSP_TARGET}/target.cmake")
-        endif()
-    else()
-        message(FATAL_ERROR "Unsupported BSP target ${BSP_TARGET}")
-    endif()
+    message(WARNING "BSP: unsupported target ${target}")
 endif()
-
-if (NOT DEFINED BSP_REQUIRES)
-  set(BSP_REQUIRES "")
-endif()
-
-list(APPEND BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
 
 if (NOT DEFINED BSP_SRCS)
     file(GLOB BSP_SRCS

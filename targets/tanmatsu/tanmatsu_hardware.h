@@ -11,8 +11,12 @@
 #define BSP_I2C_INTERNAL_SCL_PIN 10
 
 // Coprocessor
+#if defined(OLD_PROTOTYPE)
 #define BSP_COPROCESSOR_INTERRUPT_PIN 6
-#define BSP_COPROCESSOR_I2C_ADDRESS   0x5f
+#else
+#define BSP_COPROCESSOR_INTERRUPT_PIN 1
+#endif
+#define BSP_COPROCESSOR_I2C_ADDRESS 0x5f
 
 // ESP32-C6 radio
 #define BSP_SDIO_CLK   17
@@ -50,3 +54,9 @@
 #define BSP_DSI_LDO_CHAN       3
 #define BSP_DSI_LDO_VOLTAGE_MV 2500
 #define BSP_LCD_RESET_PIN      14
+
+// BMI270 IMU
+#define BSP_BMI270_I2C_ADDRESS 0x68
+
+// ES8156 audio codec
+#define BSP_ES8156_I2C_ADDRESS 0x08

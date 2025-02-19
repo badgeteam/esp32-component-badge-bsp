@@ -19,3 +19,7 @@ esp_err_t bsp_audio_get_volume(float *out_percentage);
 /// @brief BSP audio set volume
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_set_volume(float percentage);
+
+/// @brief Enable or disable speaker amplifier
+/// @return ESP-IDF error code
+esp_err_t bsp_audio_set_amplifier(bool enable);

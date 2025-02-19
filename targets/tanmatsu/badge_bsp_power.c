@@ -148,24 +148,32 @@ esp_err_t bsp_power_set_usb_host_boost_enabled(bool enable) {
     return ESP_OK;
 }
 
-esp_err_t bsp_power_get_radio_enabled(bool *out_enabled) {
-    ESP_RETURN_ON_FALSE(out_enabled, ESP_ERR_INVALID_ARG, TAG, "Enabled output argument is NULL");
+esp_err_t bsp_power_get_radio_state(bsp_radio_state_t *out_state) {
+    ESP_RETURN_ON_FALSE(out_state, ESP_ERR_INVALID_ARG, TAG, "State output argument is NULL");
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     tanmatsu_coprocessor_radio_state_t status;
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_radio_state(handle, &status), TAG, "Failed to get radio status");
-    *out_enabled = (status == tanmatsu_coprocessor_radio_state_enabled_application);
+    switch (status) {
+        case tanmatsu_coprocessor_radio_state_disabled:
+        default: *out_state = BSP_POWER_RADIO_STATE_OFF; break;
+        case tanmatsu_coprocessor_radio_state_enabled_bootloader: *out_state = BSP_POWER_RADIO_STATE_BOOTLOADER; break;
+        case tanmatsu_coprocessor_radio_state_enabled_application: *out_state = BSP_POWER_RADIO_STATE_APPLICATION; break;
+    }
     return ESP_OK;
 }
 
-esp_err_t bsp_power_set_radio_enabled(bool enable) {
+esp_err_t bsp_power_set_radio_state(bsp_radio_state_t state) {
+    tanmatsu_coprocessor_radio_state_t target_state = tanmatsu_coprocessor_radio_state_disabled;
+    switch (state) {
+        case BSP_POWER_RADIO_STATE_OFF:
+        default: target_state = tanmatsu_coprocessor_radio_state_disabled; break;
+        case BSP_POWER_RADIO_STATE_BOOTLOADER: target_state = tanmatsu_coprocessor_radio_state_enabled_bootloader; break;
+        case BSP_POWER_RADIO_STATE_APPLICATION: target_state = tanmatsu_coprocessor_radio_state_enabled_application; break;
+    }
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(
-        tanmatsu_coprocessor_set_radio_state(handle, enable ? tanmatsu_coprocessor_radio_state_enabled_application : tanmatsu_coprocessor_radio_state_disabled),
-        TAG,
-        "Failed to set radio status"
-    );
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_radio_state(handle, target_state), TAG, "Failed to set radio status");
     return ESP_OK;
 }
 

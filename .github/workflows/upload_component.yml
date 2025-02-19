@@ -15,7 +15,7 @@ jobs:
       - name: Upload components to component service
         uses: espressif/upload-components-ci-action@v1
         with:
-          name: "bsp"
+          name: "badge-bsp"
           version: ${{ github.ref_name }}
           namespace: "badgeteam"
           api_token: ${{ secrets.IDF_COMPONENT_API_TOKEN }}

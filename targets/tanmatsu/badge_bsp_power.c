@@ -133,18 +133,18 @@ esp_err_t bsp_power_configure_charging(bool disable, uint16_t current) {
     return ESP_OK;
 }
 
-/*esp_err_t bsp_power_get_usb_host_boost_enabled(bool *out_enabled) {
+esp_err_t bsp_power_get_usb_host_boost_enabled(bool *out_enabled) {
     ESP_RETURN_ON_FALSE(out_enabled, ESP_ERR_INVALID_ARG, TAG, "Enabled output argument is NULL");
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_pmic_otg_control(handle, out_enabled), TAG, "Failed to get USB host boot status");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_pmic_otg_control(handle, out_enabled), TAG, "Failed to get USB host boost status");
     return ESP_OK;
-}*/
+}
 
 esp_err_t bsp_power_set_usb_host_boost_enabled(bool enable) {
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
-    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_pmic_otg_control(handle, enable), TAG, "Failed to set USB host boot configuration");
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_pmic_otg_control(handle, enable), TAG, "Failed to set USB host boost configuration");
     return ESP_OK;
 }
 

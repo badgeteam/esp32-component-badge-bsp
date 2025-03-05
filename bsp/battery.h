@@ -9,8 +9,8 @@
 
 /// @brief Get whether or not the battery is charging
 /// @return ESP-IDF error code
-esp_err_t bsp_battery_is_charging(bool *charging);
+esp_err_t bsp_battery_is_charging(bool* charging);
 
 /// @brief Get the battery voltage in mV
 /// @return ESP-IDF error code
-esp_err_t bsp_battery_get_voltage(uint16_t *bat_mv);
+esp_err_t bsp_battery_get_voltage(uint16_t* bat_mv);

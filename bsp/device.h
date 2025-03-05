@@ -1,9 +1,8 @@
 #pragma once
 
-#include "esp_err.h"
-
 #include <stdbool.h>
 #include <stdint.h>
+#include "esp_err.h"
 
 // Badge BSP
 // Device related APIs
@@ -22,7 +21,7 @@ esp_err_t bsp_device_initialize(void);
 /// @return ESP-IDF error code
 ///          - ESP_OK if the output string fits in the buffer
 ///          - ESP_ERR_INVALID_ARG if the output pointer is NULL
-esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length);
+esp_err_t bsp_device_get_name(char* output, uint8_t buffer_length);
 
 /// @brief Get the name of the manufacturer as a string
 /// @details Returns the name as a null terminated string
@@ -31,7 +30,7 @@ esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length);
 /// @return ESP-IDF error code
 ///          - ESP_OK if the output string fits in the buffer
 ///          - ESP_ERR_INVALID_ARG if the output pointer is NULL
-esp_err_t bsp_device_get_manufacturer(char *output, uint8_t buffer_length);
+esp_err_t bsp_device_get_manufacturer(char* output, uint8_t buffer_length);
 
 /// @brief Initialized without coprocessor status flag
 /// @return Boolean, true when initialized without coprocessor available

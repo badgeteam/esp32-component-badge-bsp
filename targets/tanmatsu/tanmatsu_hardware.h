@@ -5,6 +5,9 @@
 
 #pragma once
 
+// GPIO buttons
+#define BSP_GPIO_BTN_VOLUME_DOWN 35
+
 // Internal I2C bus
 #define BSP_I2C_INTERNAL_BUS     0
 #define BSP_I2C_INTERNAL_SDA_PIN 9

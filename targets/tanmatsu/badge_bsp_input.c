@@ -7,13 +7,16 @@
 #include <string.h>
 #include "bsp/input.h"
 #include "bsp/tanmatsu.h"
+#include "driver/gpio.h"
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/queue.h"
+#include "hal/gpio_types.h"
 #include "tanmatsu_coprocessor.h"
+#include "tanmatsu_hardware.h"
 
 static char const* TAG = "BSP INPUT";
 
@@ -25,6 +28,23 @@ static bool     key_repeat_fast      = false;
 static char     key_repeat_ascii     = '\0';
 static char     key_repeat_utf8[5]   = {0};
 static uint32_t key_repeat_modifiers = 0;
+
+static bool prev_volume_down_state = false;
+
+IRAM_ATTR static void volume_down_gpio_interrupt_handler(void *pvParameters) {
+    bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN); // GPIO is active low
+    if (state != prev_volume_down_state) {
+        prev_volume_down_state  = state;
+        // ESP_EARLY_LOGI(TAG, "Volume down %s", state ? "pressed" : "released");
+        bsp_input_event_t event = {
+            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
+            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_VOLUME_DOWN,
+            .args_navigation.modifiers = 0,
+            .args_navigation.state     = state,
+        };
+        xQueueSendFromISR(event_queue, &event, false);
+    }
+}
 
 static void handle_keyboard_text_entry(bool curr_state, bool prev_state, char ascii, char ascii_shift, char const* utf8,
                                        char const* utf8_shift, char const* utf8_alt, char const* utf8_shift_alt,
@@ -383,6 +403,17 @@ esp_err_t bsp_input_initialize(void) {
         xTaskCreate(key_repeat_thread, "Key repeat thread", 4096, NULL, tskIDLE_PRIORITY, &key_repeat_thread_handle);
         ESP_RETURN_ON_FALSE(key_repeat_thread_handle, ESP_ERR_NO_MEM, TAG, "Failed to create key repeat task");
     }
+
+    gpio_config_t int_pin_cfg = {
+        .pin_bit_mask = BIT64(BSP_GPIO_BTN_VOLUME_DOWN),
+        .mode         = GPIO_MODE_INPUT,
+        .pull_up_en   = false,
+        .pull_down_en = false,
+        .intr_type    = GPIO_INTR_ANYEDGE,
+    };
+    ESP_RETURN_ON_ERROR(gpio_config(&int_pin_cfg), TAG, "Failed to configure volume down button GPIO");
+    ESP_RETURN_ON_ERROR(gpio_isr_handler_add(BSP_GPIO_BTN_VOLUME_DOWN, volume_down_gpio_interrupt_handler, NULL), TAG, "Failed to add interrupt handler for volume down button GPIO");
+
     return ESP_OK;
 }
 

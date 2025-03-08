@@ -3,6 +3,9 @@
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 #include "bsp/device.h"
 #include "bsp/display.h"
 #include "bsp/i2c.h"
@@ -16,12 +19,7 @@
 #include "mch2022_hardware.h"
 #include "rp2040.h"
 
-#include <stdbool.h>
-#include <stdint.h>
-
-#include <string.h>
-
-static char const *TAG = "BSP device";
+static char const* TAG = "BSP device";
 
 static i2c_master_bus_handle_t i2c_handle    = NULL;
 static SemaphoreHandle_t       i2c_semaphore = NULL;
@@ -32,7 +30,7 @@ static bool   rp2040_initialised = false;
 static char const device_name[]         = "MCH2022 badge";
 static char const device_manufacturer[] = "Badge.Team";
 
-esp_err_t bsp_mch2022_coprocessor_get_handle(RP2040 *handle) {
+esp_err_t bsp_mch2022_coprocessor_get_handle(RP2040* handle) {
     if (!rp2040_initialised) {
         return ESP_FAIL;
     }
@@ -40,7 +38,7 @@ esp_err_t bsp_mch2022_coprocessor_get_handle(RP2040 *handle) {
     return ESP_OK;
 }
 
-esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length) {
+esp_err_t bsp_device_get_name(char* output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
@@ -48,7 +46,7 @@ esp_err_t bsp_device_get_name(char *output, uint8_t buffer_length) {
     return ESP_OK;
 }
 
-esp_err_t bsp_device_get_manufacturer(char *output, uint8_t buffer_length) {
+esp_err_t bsp_device_get_manufacturer(char* output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;
     }

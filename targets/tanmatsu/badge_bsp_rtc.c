@@ -2,19 +2,17 @@
 // SPDX-FileCopyrightText: 2024 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
+#include <stdint.h>
+#include <sys/time.h>
+#include <time.h>
 #include "bsp/rtc.h"
 #include "bsp/tanmatsu.h"
 #include "esp_check.h"
 #include "tanmatsu_coprocessor.h"
 
-#include <stdint.h>
+static char const* TAG = "BSP RTC";
 
-#include <sys/time.h>
-#include <time.h>
-
-static char const *TAG = "BSP RTC";
-
-esp_err_t bsp_rtc_get_time(uint32_t *value) {
+esp_err_t bsp_rtc_get_time(uint32_t* value) {
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_real_time(handle, value), TAG, "Failed to get RTC time");
@@ -39,7 +37,7 @@ esp_err_t bsp_rtc_update_time(void) {
     return ESP_OK;
 }
 
-esp_err_t bsp_rtc_get_alarm(uint32_t *value) {
+esp_err_t bsp_rtc_get_alarm(uint32_t* value) {
     tanmatsu_coprocessor_handle_t handle = NULL;
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_alarm_time(handle, value), TAG, "Failed to get alarm time");

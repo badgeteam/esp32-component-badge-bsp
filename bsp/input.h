@@ -1,11 +1,10 @@
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
-
-#include <stdbool.h>
-#include <stdint.h>
 
 typedef enum _bsp_input_event_type {
     INPUT_EVENT_TYPE_NONE       = 0,
@@ -33,7 +32,6 @@ typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_SUPER,
     BSP_INPUT_NAVIGATION_KEY_TAB,
     BSP_INPUT_NAVIGATION_KEY_BACKSPACE,
-
 
     // Function keys
     BSP_INPUT_NAVIGATION_KEY_F1,
@@ -92,7 +90,7 @@ typedef struct _bsp_input_event_args_navigation {
 
 typedef struct _bsp_input_event_args_keyboard {
     char        ascii;
-    char const *utf8;
+    char const* utf8;
     uint32_t    modifiers;
 } bsp_input_event_args_keyboard_t;
 
@@ -116,7 +114,7 @@ esp_err_t bsp_input_initialize(void);
 
 /// @brief Get the queue handle for the input event queue
 /// @return ESP-IDF error code
-esp_err_t bsp_input_get_queue(QueueHandle_t *out_queue);
+esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue);
 
 /// @brief Get whether or not the device needs an on-screen keyboard
 /// @return true if the device needs an on-screen keyboard and false if it does not
@@ -124,7 +122,7 @@ bool needs_on_screen_keyboard();
 
 /// @brief Get keyboard backlight brightness
 /// @return ESP-IDF error code
-esp_err_t bsp_input_get_backlight_brightness(uint8_t *out_percentage);
+esp_err_t bsp_input_get_backlight_brightness(uint8_t* out_percentage);
 
 /// @brief Set keyboard backlight brightness
 /// @return ESP-IDF error code

@@ -5,7 +5,7 @@ dependencies:
     cmake_utilities: 0.*
     idf: '>=5.3'
     nicolaielectronics/mipi_dsi_abstraction:
-      version: "^0.0.4"
+      version: "^0.1.0"
       rules:
         - if: "target == esp32p4"
     nicolaielectronics/tanmatsu_coprocessor:

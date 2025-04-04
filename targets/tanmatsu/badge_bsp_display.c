@@ -14,18 +14,22 @@
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_lcd_mipi_dsi.h"
+#include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_ldo_regulator.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/idf_additions.h"
+#include "hal/gpio_types.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
 
 static char const* TAG = "BSP display";
 
-static esp_ldo_channel_handle_t ldo_mipi_phy = NULL;
-
-static bool bsp_display_initialized = false;
+static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
+static bool                     bsp_display_initialized = false;
+static bsp_display_te_mode_t    display_te_mode         = BSP_DISPLAY_TE_DISABLED;
+static SemaphoreHandle_t        te_semaphore            = NULL;
 
 static esp_err_t bsp_display_enable_dsi_phy_power(void) {
     if (ldo_mipi_phy != NULL) {
@@ -64,6 +68,28 @@ static esp_err_t bsp_display_initialize_panel(void) {
     return ESP_OK;
 }
 
+IRAM_ATTR static void te_gpio_interrupt_handler(void* pvParameters) {
+    xSemaphoreGiveFromISR(te_semaphore, NULL);
+}
+
+static esp_err_t bsp_display_initialize_te(void) {
+    te_semaphore = xSemaphoreCreateBinary();
+
+    gpio_config_t te_pin_cfg = {
+        .pin_bit_mask = BIT64(BSP_LCD_TE_PIN),
+        .mode         = GPIO_MODE_INPUT,
+        .pull_up_en   = false,
+        .pull_down_en = false,
+        .intr_type    = GPIO_INTR_POSEDGE,
+    };
+    esp_err_t res = gpio_config(&te_pin_cfg);
+    if (res != ESP_OK) {
+        return res;
+    }
+    res = gpio_isr_handler_add(BSP_LCD_TE_PIN, te_gpio_interrupt_handler, NULL);
+    return res;
+}
+
 // Public functions
 
 esp_err_t bsp_display_initialize(void) {
@@ -73,6 +99,7 @@ esp_err_t bsp_display_initialize(void) {
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
     ESP_RETURN_ON_ERROR(bsp_display_reset(), TAG, "Failed to reset display");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(), TAG, "Failed to initialize panel");
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_te(), TAG, "Failed to TE pin");
     bsp_display_initialized = true;
     return ESP_OK;
 }
@@ -92,6 +119,16 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
         return ESP_FAIL;
     }
     *panel = st7701_get_panel();
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t* panel_io) {
+    if (!bsp_display_initialized) {
+        ESP_LOGE(TAG, "Display not initialised");
+        return ESP_FAIL;
+    }
+
+    *panel_io = st7701_get_panel_io();
     return ESP_OK;
 }
 
@@ -115,5 +152,46 @@ esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage) {
     ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_set_display_backlight(handle, (percentage * 255) / 100), TAG,
                         "Failed to configure display backlight brightness");
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_set_tearing_effect_mode(bsp_display_te_mode_t mode) {
+    if (!bsp_display_initialized) {
+        ESP_LOGE(TAG, "Display not initialised");
+        return ESP_FAIL;
+    }
+
+    esp_lcd_panel_io_handle_t panel_io = st7701_get_panel_io();
+
+    esp_err_t res = ESP_OK;
+
+    if (mode == BSP_DISPLAY_TE_DISABLED) {
+        res = esp_lcd_panel_io_tx_param(panel_io, LCD_CMD_TEOFF, (uint8_t[]){0}, 0);
+    } else {
+        res = esp_lcd_panel_io_tx_param(panel_io, LCD_CMD_TEON,
+                                        (uint8_t[]){(mode == BSP_DISPLAY_TE_V_AND_H_BLANKING) ? 1 : 0}, 1);
+    }
+
+    if (res != ESP_OK) {
+        return res;
+    }
+
+    display_te_mode = mode;
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_get_tearing_effect_mode(bsp_display_te_mode_t* mode) {
+    if (mode == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    *mode = display_te_mode;
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore) {
+    if (semaphore == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    *semaphore = te_semaphore;
     return ESP_OK;
 }

@@ -57,6 +57,7 @@
 #define BSP_DSI_LDO_CHAN       3
 #define BSP_DSI_LDO_VOLTAGE_MV 2500
 #define BSP_LCD_RESET_PIN      14
+#define BSP_LCD_TE_PIN         11
 
 // BMI270 IMU
 #define BSP_BMI270_I2C_ADDRESS 0x68

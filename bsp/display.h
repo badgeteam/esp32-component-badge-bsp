@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "esp_err.h"
 #include "esp_lcd_types.h"
+#include "freertos/FreeRTOS.h"
 
 // Badge BSP
 // Display related APIs
@@ -16,6 +17,14 @@ typedef enum {
     BSP_DISPLAY_ROTATION_180,
     BSP_DISPLAY_ROTATION_270,
 } bsp_display_rotation_t;
+
+/// @brief Tearing effect pin modi
+/// @details Mode of tearing effect pin of display
+typedef enum {
+    BSP_DISPLAY_TE_DISABLED,
+    BSP_DISPLAY_TE_V_BLANKING,
+    BSP_DISPLAY_TE_V_AND_H_BLANKING,
+} bsp_display_te_mode_t;
 
 /// @brief Initialize the display
 /// @details Initialize the display
@@ -56,3 +65,15 @@ esp_err_t bsp_display_get_backlight_brightness(uint8_t* out_percentage);
 /// @brief Set display brightness
 /// @return ESP-IDF error code
 esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage);
+
+/// @brief Set tearing effect (TE) output mode
+/// @return ESP-IDF error code
+esp_err_t bsp_display_set_tearing_effect_mode(bsp_display_te_mode_t mode);
+
+/// @brief Read current tearing effect (TE) output mode
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_tearing_effect_mode(bsp_display_te_mode_t* mode);
+
+/// @brief Get handle for the tearing effect (TE) semaphore
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore);

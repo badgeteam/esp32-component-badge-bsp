@@ -31,8 +31,8 @@ static uint32_t key_repeat_modifiers = 0;
 
 static bool prev_volume_down_state = false;
 
-IRAM_ATTR static void volume_down_gpio_interrupt_handler(void *pvParameters) {
-    bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN); // GPIO is active low
+IRAM_ATTR static void volume_down_gpio_interrupt_handler(void* pvParameters) {
+    bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN);  // GPIO is active low
     if (state != prev_volume_down_state) {
         prev_volume_down_state  = state;
         // ESP_EARLY_LOGI(TAG, "Volume down %s", state ? "pressed" : "released");
@@ -412,7 +412,8 @@ esp_err_t bsp_input_initialize(void) {
         .intr_type    = GPIO_INTR_ANYEDGE,
     };
     ESP_RETURN_ON_ERROR(gpio_config(&int_pin_cfg), TAG, "Failed to configure volume down button GPIO");
-    ESP_RETURN_ON_ERROR(gpio_isr_handler_add(BSP_GPIO_BTN_VOLUME_DOWN, volume_down_gpio_interrupt_handler, NULL), TAG, "Failed to add interrupt handler for volume down button GPIO");
+    ESP_RETURN_ON_ERROR(gpio_isr_handler_add(BSP_GPIO_BTN_VOLUME_DOWN, volume_down_gpio_interrupt_handler, NULL), TAG,
+                        "Failed to add interrupt handler for volume down button GPIO");
 
     return ESP_OK;
 }

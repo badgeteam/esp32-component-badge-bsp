@@ -6,7 +6,7 @@
 #include "bsp/audio.h"
 #include "esp_err.h"
 
-esp_err_t __attribute__((weak)) bsp_audio_initialize(void) {
+esp_err_t __attribute__((weak)) bsp_audio_initialize(uint32_t rate) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 
@@ -19,5 +19,9 @@ esp_err_t __attribute__((weak)) bsp_audio_set_volume(float percentage) {
 }
 
 esp_err_t __attribute__((weak)) bsp_audio_set_amplifier(bool enable) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_audio_get_i2s_handle(i2s_chan_handle_t* out_handle) {
     return ESP_ERR_NOT_SUPPORTED;
 }

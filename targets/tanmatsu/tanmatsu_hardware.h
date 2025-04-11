@@ -64,3 +64,7 @@
 
 // ES8156 audio codec
 #define BSP_ES8156_I2C_ADDRESS 0x08
+#define BSP_I2S_MCLK           30
+#define BSP_I2S_BCLK           29
+#define BSP_I2S_WS             31
+#define BSP_I2S_DOUT           28

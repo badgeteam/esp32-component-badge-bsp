@@ -25,22 +25,22 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
     switch (input) {
         case RP2040_INPUT_BUTTON_HOME:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F1;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_HOME;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_MENU:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F2;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_MENU;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_SELECT:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F3;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_SELECT;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_START:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F4;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_START;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_ACCEPT:
@@ -76,7 +76,7 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
             break;
         case RP2040_INPUT_JOYSTICK_PRESS:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_RETURN;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_JOYSTICK_PRESS;
             event.args_navigation.state = state;
             break;
         default:

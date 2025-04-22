@@ -11,6 +11,7 @@
 #include "bsp/i2c.h"
 #include "bsp/input.h"
 #include "bsp/tanmatsu.h"
+#include "driver/gpio.h"
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -24,8 +25,16 @@ static SemaphoreHandle_t             i2c_concurrency_semaphore       = NULL;
 static tanmatsu_coprocessor_handle_t coprocessor_handle              = NULL;
 static bool                          initialized_without_coprocessor = false;
 
+#if defined(CONFIG_BSP_TARGET_TANMATSU)
 static char const device_name[]         = "Tanmatsu";
 static char const device_manufacturer[] = "Nicolai Electronics";
+#elif defined(CONFIG_BSP_TARGET_HACKERHOTEL_2026)
+static char const device_name[]         = "Hackerhotel 2026 badge";
+static char const device_manufacturer[] = "Badge.Team";
+#else
+static char const device_name[]         = "Konsool";
+static char const device_manufacturer[] = "Badge.Team";
+#endif
 
 esp_err_t bsp_tanmatsu_coprocessor_get_handle(tanmatsu_coprocessor_handle_t* handle) {
     if (coprocessor_handle == NULL) {

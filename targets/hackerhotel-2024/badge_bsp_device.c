@@ -1,4 +1,4 @@
-// Board support package API: ESP32-P4 Function EV board implementation
+// Board support package API: Hackerhotel 2024 implementation
 // SPDX-FileCopyrightText: 2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
@@ -16,8 +16,8 @@
 
 static char const* TAG = "BSP device";
 
-static char const device_name[]         = "ESP32-P4 Function EV board";
-static char const device_manufacturer[] = "Espressif";
+static char const device_name[]         = "Hackerhotel 2024 badge";
+static char const device_manufacturer[] = "Badge.Team";
 
 esp_err_t bsp_device_initialize(void) {
     gpio_install_isr_service(0);

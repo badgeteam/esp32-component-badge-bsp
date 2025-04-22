@@ -479,3 +479,100 @@ esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage) {
                         "Failed to configure keyboard backlight brightness");
     return ESP_OK;
 }
+
+esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    tanmatsu_coprocessor_keys_t keys;
+    if (key != BSP_GPIO_BTN_VOLUME_DOWN) {
+        ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_keyboard_keys(handle, &keys), TAG, "Failed to read keyboard keys");
+    }
+    switch (key) {
+        case BSP_INPUT_NAVIGATION_KEY_ESC:
+            *out_state = keys.key_esc;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_LEFT:
+            *out_state = keys.key_left;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_RIGHT:
+            *out_state = keys.key_right;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_UP:
+            *out_state = keys.key_up;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_DOWN:
+            *out_state = keys.key_down;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_RETURN:
+            *out_state = keys.key_return;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SUPER:
+            *out_state = keys.key_meta;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_TAB:
+            *out_state = keys.key_tab;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_BACKSPACE:
+            *out_state = keys.key_backspace;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SPACE_L:
+            *out_state = keys.key_space_l;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SPACE_M:
+            *out_state = keys.key_space_m;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SPACE_R:
+            *out_state = keys.key_space_r;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F1:
+            *out_state = keys.key_f1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F2:
+            *out_state = keys.key_f2;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F3:
+            *out_state = keys.key_f3;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F4:
+            *out_state = keys.key_f4;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F5:
+            *out_state = keys.key_f5;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F6:
+            *out_state = keys.key_f6;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_VOLUME_UP:
+            *out_state = keys.key_volume_up;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_VOLUME_DOWN:
+            *out_state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN);
+            break;
+        default:
+            *out_state = false;
+            break;
+    }
+    return ESP_OK;
+}
+
+esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get coprocessor handle");
+    tanmatsu_coprocessor_inputs_t inputs;
+    ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_inputs(handle, &inputs), TAG, "Failed to read inputs");
+    switch (action) {
+        case BSP_INPUT_ACTION_TYPE_POWER_BUTTON:
+            *out_state = inputs.power_button;
+            break;
+        case BSP_INPUT_ACTION_TYPE_AUDIO_JACK:
+            *out_state = inputs.headphone_detect;
+            break;
+        case BSP_INPUT_ACTION_TYPE_SD_CARD:
+            *out_state = inputs.sd_card_detect;
+            break;
+        default:
+            *out_state = false;
+            break;
+    }
+    return ESP_OK;
+}

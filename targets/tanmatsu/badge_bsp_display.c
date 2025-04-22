@@ -21,6 +21,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "hal/gpio_types.h"
+#include "hal/lcd_types.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
 
@@ -104,12 +105,16 @@ esp_err_t bsp_display_initialize(void) {
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
+                                     lcd_rgb_data_endian_t* data_endian) {
     if (!bsp_display_initialized) {
         ESP_LOGE(TAG, "Display not initialized");
         return ESP_FAIL;
     }
     st7701_get_parameters(h_res, v_res, color_fmt);
+    if (data_endian) {
+        *data_endian = LCD_RGB_DATA_ENDIAN_LITTLE;
+    }
     return ESP_OK;
 }
 

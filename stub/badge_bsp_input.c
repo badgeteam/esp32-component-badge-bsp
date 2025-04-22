@@ -27,3 +27,11 @@ esp_err_t __attribute__((weak)) bsp_input_get_backlight_brightness(uint8_t* out_
 esp_err_t __attribute__((weak)) bsp_input_set_backlight_brightness(uint8_t percentage) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+esp_err_t __attribute__((weak)) bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_input_read_action(bsp_input_action_type_t action, bool* out_state) {
+    return ESP_ERR_NOT_SUPPORTED;
+}

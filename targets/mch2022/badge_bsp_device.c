@@ -11,6 +11,7 @@
 #include "bsp/i2c.h"
 #include "bsp/input.h"
 #include "bsp/mch2022.h"
+#include "bsp/power.h"
 #include "driver/gpio.h"
 #include "driver/i2c_types.h"
 #include "esp_check.h"
@@ -72,6 +73,7 @@ esp_err_t bsp_device_initialize(void) {
     rp2040_initialised = true;
 
     ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
+    ESP_RETURN_ON_ERROR(bsp_power_initialize(), TAG, "Failed to initialize BSP power framework");
 
     return ESP_OK;
 }

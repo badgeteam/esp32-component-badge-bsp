@@ -1,6 +1,6 @@
 // Board support package API: Tanmatsu implementation
 // SPDX-FileCopyrightText: 2024 Orange-Murker
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2024-2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
 #include <math.h>

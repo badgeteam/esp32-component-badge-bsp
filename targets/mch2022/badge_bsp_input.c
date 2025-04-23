@@ -25,22 +25,22 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
     switch (input) {
         case RP2040_INPUT_BUTTON_HOME:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F1;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_HOME;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_MENU:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F2;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_MENU;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_SELECT:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F3;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_SELECT;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_START:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_F4;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_START;
             event.args_navigation.state = state;
             break;
         case RP2040_INPUT_BUTTON_ACCEPT:
@@ -76,7 +76,7 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
             break;
         case RP2040_INPUT_JOYSTICK_PRESS:
             event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
-            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_RETURN;
+            event.args_navigation.key   = BSP_INPUT_NAVIGATION_KEY_JOYSTICK_PRESS;
             event.args_navigation.state = state;
             break;
         default:
@@ -113,4 +113,63 @@ esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue) {
 
 bool needs_on_screen_keyboard() {
     return true;
+}
+
+esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state) {
+    uint16_t value;
+    ESP_RETURN_ON_ERROR(rp2040_read_buttons(&rp2040, &value), TAG, "Failed to get coprocessor handle");
+    switch (key) {
+        case BSP_INPUT_NAVIGATION_KEY_LEFT:
+            *out_state = (value >> RP2040_INPUT_JOYSTICK_LEFT) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_RIGHT:
+            *out_state = (value >> RP2040_INPUT_JOYSTICK_RIGHT) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_UP:
+            *out_state = (value >> RP2040_INPUT_JOYSTICK_UP) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_DOWN:
+            *out_state = (value >> RP2040_INPUT_JOYSTICK_DOWN) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_HOME:
+            *out_state = (value >> RP2040_INPUT_BUTTON_HOME) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_MENU:
+            *out_state = (value >> RP2040_INPUT_BUTTON_MENU) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_START:
+            *out_state = (value >> RP2040_INPUT_BUTTON_START) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SELECT:
+            *out_state = (value >> RP2040_INPUT_BUTTON_SELECT) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_GAMEPAD_A:
+            *out_state = (value >> RP2040_INPUT_BUTTON_ACCEPT) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_GAMEPAD_B:
+            *out_state = (value >> RP2040_INPUT_BUTTON_BACK) & 1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_JOYSTICK_PRESS:
+            *out_state = (value >> RP2040_INPUT_JOYSTICK_PRESS) & 1;
+            break;
+        default:
+            *out_state = false;
+            break;
+    }
+    return ESP_OK;
+}
+
+esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state) {
+    uint16_t value;
+    if (action == BSP_INPUT_ACTION_TYPE_FPGA_CDONE) {
+        ESP_RETURN_ON_ERROR(rp2040_read_buttons(&rp2040, &value), TAG, "Failed to read buttons");
+    }
+    switch (action) {
+        case BSP_INPUT_ACTION_TYPE_FPGA_CDONE:
+            *out_state = (value >> RP2040_INPUT_FPGA_CDONE) & 1;
+        default:
+            *out_state = false;
+            break;
+    }
+    return ESP_OK;
 }

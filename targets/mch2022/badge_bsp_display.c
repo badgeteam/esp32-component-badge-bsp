@@ -104,8 +104,8 @@ esp_err_t bsp_display_initialize(void) {
 
     esp_lcd_panel_dev_config_t lcd_panel_dev_config = {
         .reset_gpio_num = BSP_LCD_RESET_PIN,
-        .data_endian    = LCD_RGB_ENDIAN_RGB,
-        // RBG
+        .rgb_endian     = LCD_RGB_ENDIAN_BGR,
+        //.data_endian    = LCD_RGB_DATA_ENDIAN_BIG, // Not used by driver, needs manual action from graphics stack
         .bits_per_pixel = 16,
         .vendor_config  = &vendor_config,
     };
@@ -122,11 +122,12 @@ esp_err_t bsp_display_initialize(void) {
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt) {
-    *h_res     = H_RES;
-    *v_res     = V_RES;
-    *color_fmt = COLOUR_FMT;
-
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
+                                     lcd_rgb_data_endian_t* data_endian) {
+    if (h_res) *h_res = H_RES;
+    if (v_res) *v_res = V_RES;
+    if (color_fmt) *color_fmt = COLOUR_FMT;
+    if (data_endian) *data_endian = LCD_RGB_DATA_ENDIAN_BIG;
     return ESP_OK;
 }
 

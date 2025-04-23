@@ -157,6 +157,8 @@ typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_PGUP,
     BSP_INPUT_NAVIGATION_KEY_PGDN,
     BSP_INPUT_NAVIGATION_KEY_MENU,
+    BSP_INPUT_NAVIGATION_KEY_START,
+    BSP_INPUT_NAVIGATION_KEY_SELECT,
     BSP_INPUT_NAVIGATION_KEY_RETURN,
     BSP_INPUT_NAVIGATION_KEY_SUPER,
     BSP_INPUT_NAVIGATION_KEY_TAB,
@@ -184,6 +186,7 @@ typedef enum _bsp_input_navigation_key {
     BSP_INPUT_NAVIGATION_KEY_GAMEPAD_B,
     BSP_INPUT_NAVIGATION_KEY_GAMEPAD_X,
     BSP_INPUT_NAVIGATION_KEY_GAMEPAD_Y,
+    BSP_INPUT_NAVIGATION_KEY_JOYSTICK_PRESS,
 
     // Volume keys
     BSP_INPUT_NAVIGATION_KEY_VOLUME_UP,
@@ -195,6 +198,7 @@ typedef enum _bsp_input_action_type {
     BSP_INPUT_ACTION_TYPE_SD_CARD,
     BSP_INPUT_ACTION_TYPE_AUDIO_JACK,
     BSP_INPUT_ACTION_TYPE_POWER_BUTTON,
+    BSP_INPUT_ACTION_TYPE_FPGA_CDONE,
 } bsp_input_action_type_t;
 
 // Modifiers
@@ -264,3 +268,11 @@ esp_err_t bsp_input_get_backlight_brightness(uint8_t* out_percentage);
 /// @brief Set keyboard backlight brightness
 /// @return ESP-IDF error code
 esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage);
+
+/// @brief Read the current state of a navigation key
+/// @return ESP-IDF error code
+esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state);
+
+/// @brief Read the current state of an action
+/// @return ESP-IDF error code
+esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state);

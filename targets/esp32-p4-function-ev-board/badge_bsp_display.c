@@ -26,7 +26,9 @@ static char const* TAG = "BSP display";
 static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
 static bool                     bsp_display_initialized = false;
 
-#define BSP_LCD_RESET_PIN      7
+#define BSP_LCD_RESET_PIN 7
+#define BSP_LCD_PWM_PIN   8
+
 #define BSP_DSI_LDO_CHAN       3
 #define BSP_DSI_LDO_VOLTAGE_MV 2500
 
@@ -41,25 +43,6 @@ static esp_err_t bsp_display_enable_dsi_phy_power(void) {
     return esp_ldo_acquire_channel(&ldo_mipi_phy_config, &ldo_mipi_phy);
 }
 
-static esp_err_t bsp_display_reset(void) {
-    gpio_config_t lcd_reset_conf = {
-        .pin_bit_mask = BIT64(BSP_LCD_RESET_PIN),
-        .mode         = GPIO_MODE_INPUT_OUTPUT,
-        .pull_up_en   = 0,
-        .pull_down_en = 0,
-        .intr_type    = GPIO_INTR_DISABLE,
-    };
-
-    gpio_config(&lcd_reset_conf);
-
-    gpio_set_level(BSP_LCD_RESET_PIN, false);
-    vTaskDelay(pdMS_TO_TICKS(10));
-    gpio_set_level(BSP_LCD_RESET_PIN, true);
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    return ESP_OK;
-}
-
 static esp_err_t bsp_display_initialize_panel(void) {
     ek79007_initialize(BSP_LCD_RESET_PIN);
     return ESP_OK;
@@ -72,7 +55,6 @@ esp_err_t bsp_display_initialize(void) {
         return ESP_OK;
     }
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
-    ESP_RETURN_ON_ERROR(bsp_display_reset(), TAG, "Failed to reset display");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(), TAG, "Failed to initialize panel");
     bsp_display_initialized = true;
     return ESP_OK;

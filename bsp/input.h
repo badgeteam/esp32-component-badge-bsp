@@ -259,7 +259,7 @@ esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue);
 
 /// @brief Get whether or not the device needs an on-screen keyboard
 /// @return true if the device needs an on-screen keyboard and false if it does not
-bool needs_on_screen_keyboard();
+bool bsp_input_needs_on_screen_keyboard(void);
 
 /// @brief Get keyboard backlight brightness
 /// @return ESP-IDF error code

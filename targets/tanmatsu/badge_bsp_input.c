@@ -458,7 +458,7 @@ esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue) {
     return ESP_OK;
 }
 
-bool needs_on_screen_keyboard() {
+bool bsp_input_needs_on_screen_keyboard(void) {
     return false;
 }
 esp_err_t bsp_input_get_backlight_brightness(uint8_t* out_percentage) {

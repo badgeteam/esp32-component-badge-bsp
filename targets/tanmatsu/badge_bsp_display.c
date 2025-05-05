@@ -1,5 +1,5 @@
 // Board support package API: Tanmatsu implementation
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2024-2025 Nicolai Electronics
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
@@ -20,6 +20,7 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
+#include "freertos/projdefs.h"
 #include "hal/gpio_types.h"
 #include "hal/lcd_types.h"
 #include "tanmatsu_coprocessor.h"
@@ -31,6 +32,13 @@ static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
 static bool                     bsp_display_initialized = false;
 static bsp_display_te_mode_t    display_te_mode         = BSP_DISPLAY_TE_DISABLED;
 static SemaphoreHandle_t        te_semaphore            = NULL;
+static SemaphoreHandle_t        flush_semaphore         = NULL;
+
+IRAM_ATTR static bool bsp_display_flush_ready(esp_lcd_panel_handle_t panel, esp_lcd_dpi_panel_event_data_t* edata,
+                                              void* user_ctx) {
+    xSemaphoreGiveFromISR(flush_semaphore, NULL);
+    return false;
+}
 
 static esp_err_t bsp_display_enable_dsi_phy_power(void) {
     if (ldo_mipi_phy != NULL) {
@@ -73,8 +81,18 @@ IRAM_ATTR static void te_gpio_interrupt_handler(void* pvParameters) {
     xSemaphoreGiveFromISR(te_semaphore, NULL);
 }
 
+static esp_err_t bsp_display_initialize_flush(void) {
+    flush_semaphore = xSemaphoreCreateBinary();
+    xSemaphoreGive(flush_semaphore);
+    esp_lcd_dpi_panel_event_callbacks_t callbacks = {
+        .on_color_trans_done = bsp_display_flush_ready,
+    };
+    return esp_lcd_dpi_panel_register_event_callbacks(st7701_get_panel(), &callbacks, NULL);
+}
+
 static esp_err_t bsp_display_initialize_te(void) {
     te_semaphore = xSemaphoreCreateBinary();
+    xSemaphoreGive(te_semaphore);
 
     gpio_config_t te_pin_cfg = {
         .pin_bit_mask = BIT64(BSP_LCD_TE_PIN),
@@ -100,7 +118,8 @@ esp_err_t bsp_display_initialize(void) {
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
     ESP_RETURN_ON_ERROR(bsp_display_reset(), TAG, "Failed to reset display");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(), TAG, "Failed to initialize panel");
-    ESP_RETURN_ON_ERROR(bsp_display_initialize_te(), TAG, "Failed to TE pin");
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_flush(), TAG, "Failed to initialize flush callback");
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_te(), TAG, "Failed to tearing effect callback");
     bsp_display_initialized = true;
     return ESP_OK;
 }
@@ -199,4 +218,9 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
     }
     *semaphore = te_semaphore;
     return ESP_OK;
+}
+
+esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
+    xSemaphoreTake(flush_semaphore, pdMS_TO_TICKS(1000));
+    return esp_lcd_panel_draw_bitmap(st7701_get_panel(), x_start, y_start, x_end, y_end, buffer);
 }

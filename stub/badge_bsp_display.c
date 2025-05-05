@@ -48,3 +48,8 @@ esp_err_t __attribute__((weak)) bsp_display_get_tearing_effect_mode(bsp_display_
 esp_err_t __attribute__((weak)) bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+esp_err_t __attribute__((weak)) bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end,
+                                                 const void* buffer) {
+    return ESP_ERR_NOT_SUPPORTED;
+}

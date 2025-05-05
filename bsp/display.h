@@ -78,3 +78,7 @@ esp_err_t bsp_display_get_tearing_effect_mode(bsp_display_te_mode_t* mode);
 /// @brief Get handle for the tearing effect (TE) semaphore
 /// @return ESP-IDF error code
 esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore);
+
+/// @brief Send pixel data to the display
+/// @return ESP-IDF error code
+esp_err_t bsp_display_blit(size_t x, size_t y, size_t width, size_t height, const void* buffer);

@@ -1,4 +1,5 @@
 // Board support package API: MCH2022 implementation
+// SPDX-FileCopyrightText: 2025 Nicolai Electronics
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +12,7 @@
 #include "esp_lcd_ili9341.h"
 #include "esp_lcd_io_spi.h"
 #include "esp_lcd_panel_dev.h"
+#include "esp_lcd_panel_io.h"
 #include "esp_lcd_panel_ops.h"
 #include "esp_lcd_types.h"
 #include "esp_log.h"
@@ -27,6 +29,7 @@ static char const* TAG = "BSP display";
 
 static esp_lcd_panel_handle_t    panel_handle    = NULL;
 static esp_lcd_panel_io_handle_t panel_io_handle = NULL;
+static SemaphoreHandle_t         flush_semaphore = NULL;
 
 static ili9341_lcd_init_cmd_t const lcd_init_cmds[] = {
     //  {cmd, { data }, data_size, delay_ms}
@@ -65,6 +68,24 @@ static ili9341_lcd_init_cmd_t const lcd_init_cmds[] = {
     {0xE1, (uint8_t[]){0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F}, 15,
      0},
 };
+
+IRAM_ATTR static bool bsp_display_flush_ready(esp_lcd_panel_io_handle_t panel_io, esp_lcd_panel_io_event_data_t* edata,
+                                              void* user_ctx) {
+    xSemaphoreGiveFromISR(flush_semaphore, NULL);
+    return false;
+}
+
+static esp_err_t bsp_display_initialize_flush(void) {
+    flush_semaphore = xSemaphoreCreateBinary();
+    xSemaphoreGive(flush_semaphore);
+
+    esp_lcd_panel_io_handle_t display_lcd_panel_io = NULL;
+    ESP_RETURN_ON_ERROR(bsp_display_get_panel_io(&display_lcd_panel_io), TAG, "Failed to get panel io handle");
+    esp_lcd_panel_io_callbacks_t callbacks = {
+        .on_color_trans_done = bsp_display_flush_ready,
+    };
+    return esp_lcd_panel_io_register_event_callbacks(display_lcd_panel_io, &callbacks, NULL);
+}
 
 esp_err_t bsp_display_initialize(void) {
     ESP_RETURN_ON_ERROR(gpio_set_direction(BSP_LCD_MODE_PIN, GPIO_MODE_OUTPUT), TAG,
@@ -119,6 +140,7 @@ esp_err_t bsp_display_initialize(void) {
     ESP_RETURN_ON_ERROR(esp_lcd_panel_swap_xy(panel_handle, true), TAG, "Failed to swap x and y on the LCD");
     ESP_RETURN_ON_ERROR(esp_lcd_panel_disp_on_off(panel_handle, true), TAG, "Failed to turn on the LCD panel");
 
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_flush(), TAG, "Failed to initialize flush callback");
     return ESP_OK;
 }
 
@@ -153,4 +175,9 @@ esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t* panel_io) {
 
 bsp_display_rotation_t bsp_display_get_default_rotation() {
     return BSP_DISPLAY_ROTATION_0;
+}
+
+esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
+    xSemaphoreTake(flush_semaphore, pdMS_TO_TICKS(1000));
+    return esp_lcd_panel_draw_bitmap(panel_handle, x_start, y_start, x_end, y_end, buffer);
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef ESP_PLATFORM
+
 #include <stdbool.h>
 #include <stdint.h>
 #include "driver/i2c_master.h"
@@ -26,3 +28,5 @@ void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t  hand
 void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t       handle,
                                               tanmatsu_coprocessor_pmic_faults_t* prev_faults,
                                               tanmatsu_coprocessor_pmic_faults_t* faults);
+
+#endif

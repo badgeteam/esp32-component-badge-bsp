@@ -7,9 +7,11 @@
 // Badge BSP
 // LED APIs
 
+#ifdef ESP_PLATFORM
 /// @brief Initialize BSP led subsystem
 /// @return ESP-IDF error code
 esp_err_t bsp_led_initialize(void);
+#endif
 
 /// @brief Write data to LEDs
 /// @return ESP-IDF error code

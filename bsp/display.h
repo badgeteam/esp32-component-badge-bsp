@@ -3,7 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "esp_err.h"
+#ifdef ESP_PLATFORM
 #include "esp_lcd_types.h"
+#endif
 #include "freertos/FreeRTOS.h"
 
 // Badge BSP
@@ -26,12 +28,14 @@ typedef enum {
     BSP_DISPLAY_TE_V_AND_H_BLANKING,
 } bsp_display_te_mode_t;
 
+#ifdef ESP_PLATFORM
 /// @brief Initialize the display
 /// @details Initialize the display
 /// @return ESP-IDF error code
 ///          - ESP_OK if BSP initialized correctly
 ///          - ESP_FAIL if the BSP could not initialize
 esp_err_t bsp_display_initialize(void);
+#endif
 
 /// @brief Get display parameters
 /// @details Get display parameters
@@ -41,6 +45,7 @@ esp_err_t bsp_display_initialize(void);
 esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
                                      lcd_rgb_data_endian_t* data_endian);
 
+#ifdef ESP_PLATFORM
 /// @brief Get display panel
 /// @details Get display panel
 /// @return ESP-IDF error code
@@ -54,6 +59,7 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel);
 ///          - ESP_OK if succesful
 ///          - ESP_FAIL if not initialized
 esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t* io);
+#endif
 
 /// @brief Get the default display rotation
 /// @return The default display rotation

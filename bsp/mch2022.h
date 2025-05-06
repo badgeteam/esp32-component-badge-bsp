@@ -2,6 +2,8 @@
 
 #pragma once
 
+#ifdef ESP_PLATFORM
+
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
@@ -17,3 +19,5 @@ esp_err_t bsp_mch2022_coprocessor_get_queue(QueueHandle_t* queue);
 
 /// @brief Coprocessor input callback
 void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state);
+
+#endif

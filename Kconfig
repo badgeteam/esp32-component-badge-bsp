@@ -15,6 +15,9 @@ menu "Badge.Team BSP"
 		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
 			bool "ESP32-P4 Function EV Board"
 
+		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD_LT8912B
+			bool "ESP32-P4 Function EV Board LT8912B HDMI"
+
 		config BSP_TARGET_MCH2022
 			bool "MCH2022 badge"
 

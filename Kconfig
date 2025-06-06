@@ -3,25 +3,28 @@ menu "Badge.Team BSP"
 		prompt "Board"
 		default BSP_TARGET_TANMATSU
 
-		config BSP_TARGET_TANMATSU
-			bool "Tanmatsu"
-
-		config BSP_TARGET_KONSOOL
-			bool "Konsool"
-
-		config BSP_TARGET_HACKERHOTEL_2026
-			bool "Hackerhotel 2026 badge"
-
-		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
-			bool "ESP32-P4 Function EV Board"
-
-		config BSP_TARGET_MCH2022
-			bool "MCH2022 badge"
-
-		config BSP_TARGET_HACKERHOTEL_2024
-			bool "Hackerhotel 2024 badge"
-
 		config BSP_TARGET_STUB
 			bool "Generic (stub)"
+
+		config BSP_TARGET_TANMATSU
+			bool "Nicolai Electronics Tanmatsu"
+
+		config BSP_TARGET_KAMI
+			bool "Nicolai Electronics Kami"
+
+		config BSP_TARGET_KONSOOL
+			bool "Badge.Team Konsool"
+
+		config BSP_TARGET_MCH2022
+			bool "Badge.Team MCH2022 badge"
+
+		config BSP_TARGET_HACKERHOTEL_2024
+			bool "Badge.Team Hackerhotel 2024 badge"
+
+		config BSP_TARGET_HACKERHOTEL_2026
+			bool "Badge.Team Hackerhotel 2026 badge"
+
+		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
+			bool "Espressif ESP32-P4 Function EV Board"
 	endchoice
 endmenu

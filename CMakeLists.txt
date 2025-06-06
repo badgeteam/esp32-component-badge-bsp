@@ -12,6 +12,8 @@ elseif(CONFIG_BSP_TARGET_MCH2022)
     set(BSP_TARGET "mch2022")
 elseif(CONFIG_BSP_TARGET_HACKERHOTEL_2024)
     set(BSP_TARGET "hackerhotel-2024")
+elseif(CONFIG_BSP_TARGET_KAMI)
+    set(BSP_TARGET "kami")
 else()
     set(BSP_TARGET "stub")
 endif()
@@ -21,6 +23,7 @@ endif()
 set(COMMON_BSP_REQUIREMENTS
     "esp_lcd"
     "driver"
+    "ssd1619"
 )
 
 # BSP requirements only used for ESP32 targets

@@ -5,6 +5,10 @@ targets:
 dependencies:
     cmake_utilities: 0.*
     idf: '>=5.3'
+    espressif/esp_lcd_ili9341:
+      version: ^2.0.0
+    nicolaielectronics/ssd1619:
+      version:  ^0.0.1
     nicolaielectronics/mipi_dsi_abstraction:
       version: "^0.1.0"
       rules:
@@ -14,10 +18,9 @@ dependencies:
       rules:
         - if: "target == esp32p4"
     nicolaielectronics/es8156:
-      version: "*"
+      version: "^0.0.1"
       rules:
         - if: "target == esp32p4"
-    espressif/esp_lcd_ili9341: ^2.0.0
     badgeteam/mch2022-rp2040:
       version: "^0.0.2"
       rules:

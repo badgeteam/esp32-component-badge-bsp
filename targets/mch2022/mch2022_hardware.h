@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2024 Orange-Murker
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
 // SPI
 #define BSP_SPI_MOSI 23
 #define BSP_SPI_MISO 35

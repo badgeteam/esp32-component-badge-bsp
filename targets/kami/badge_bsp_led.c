@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include "bsp/led.h"
-#include "bsp/tanmatsu.h"
 #include "esp_check.h"
 #include "esp_err.h"
 

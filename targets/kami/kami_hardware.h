@@ -34,6 +34,7 @@
 
 // Addressable LEDs
 #define BSP_LED_DATA_PIN 32
+#define BSP_LED_NUM      6
 
 // Expansion port
 #define BSP_EXP_E0_PIN 39
@@ -45,3 +46,24 @@
 // SAO port
 #define BSP_SAO_IO1_PIN BSP_EXP_E0_PIN
 #define BSP_SAO_IO2_PIN BSP_EXP_E1_PIN
+
+// MPR121 touch controller
+#define BSP_MPR121_I2C_BUS     BSP_I2C_BUS
+#define BSP_MPR121_I2C_ADDRESS 0x5A
+#define BSP_MPR121_INT_PIN     25
+
+#define BSP_MPR121_PIN_BTN_A        0
+#define BSP_MPR121_PIN_BTN_B        1
+#define BSP_MPR121_PIN_BTN_START    2
+#define BSP_MPR121_PIN_BTN_SELECT   3
+#define BSP_MPR121_PIN_BTN_DOWN     4
+#define BSP_MPR121_PIN_BTN_RIGHT    5
+#define BSP_MPR121_PIN_BTN_UP       6
+#define BSP_MPR121_PIN_BTN_LEFT     7
+#define BSP_MPR121_PIN_BTN_MENU     8
+#define BSP_MPR121_PIN_BTN_HOME     9
+#define BSP_MPR121_PIN_INPUT_CHRG   10
+#define BSP_MPR121_PIN_INPUT_SD_DET 11
+
+// Power management
+#define BSP_POWER_ENABLE_PIN 33

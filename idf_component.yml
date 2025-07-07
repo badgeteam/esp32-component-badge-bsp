@@ -8,7 +8,9 @@ dependencies:
     espressif/esp_lcd_ili9341:
       version: ^2.0.0
     nicolaielectronics/ssd1619:
-      version:  ^0.0.1
+      version: ^0.0.1
+    espressif/led_strip:
+      version: ^3.0.1
     nicolaielectronics/mipi_dsi_abstraction:
       version: "^0.1.0"
       rules:

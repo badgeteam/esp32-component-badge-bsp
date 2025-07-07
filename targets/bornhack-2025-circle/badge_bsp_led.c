@@ -6,7 +6,7 @@
 #include "driver/gpio.h"
 #include "esp_check.h"
 #include "esp_err.h"
-#include "kami_hardware.h"
+#include "circle_hardware.h"
 #include "led_strip.h"
 
 static char const* TAG = "BSP: LEDs";

@@ -35,18 +35,6 @@ esp_err_t bsp_led_initialize(void) {
             },
     };
 
-    gpio_config_t power_enable_pin_conf = {
-        .pin_bit_mask = BIT64(BSP_POWER_ENABLE_PIN),
-        .mode         = GPIO_MODE_INPUT_OUTPUT,
-        .pull_up_en   = 0,
-        .pull_down_en = 0,
-        .intr_type    = GPIO_INTR_DISABLE,
-    };
-
-    gpio_config(&power_enable_pin_conf);
-
-    gpio_set_level(BSP_POWER_ENABLE_PIN, true);
-
     return led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip);
 }
 

@@ -2,6 +2,7 @@ targets:
     - esp32
     - esp32p4
     - esp32c6
+    - esp32c3
 dependencies:
     cmake_utilities: 0.*
     idf: '>=5.3'

@@ -26,5 +26,8 @@ menu "Badge.Team BSP"
 
 		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
 			bool "Espressif ESP32-P4 Function EV Board"
+
+		config BSP_TARGET_BORNHACK_2025_CIRCLE
+			bool "Bornhack 2025 circle"
 	endchoice
 endmenu

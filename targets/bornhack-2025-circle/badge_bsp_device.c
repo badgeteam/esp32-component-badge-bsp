@@ -21,6 +21,7 @@ static char const device_manufacturer[] = "Thomas Flummer";
 esp_err_t bsp_device_initialize(void) {
     gpio_install_isr_service(0);
     bsp_display_initialize();  // Allow display init to fail
+    ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
     return ESP_OK;
 }
 

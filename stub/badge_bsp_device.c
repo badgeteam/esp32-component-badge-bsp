@@ -5,8 +5,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "bootloader_common.h"
 #include "bsp/device.h"
 #include "esp_err.h"
+#include "esp_system.h"
 
 static char const device_name[]         = "Generic board";
 static char const device_manufacturer[] = "Unknown";
@@ -33,4 +35,15 @@ esp_err_t __attribute__((weak)) bsp_device_get_manufacturer(char* output, uint8_
 
 bool __attribute__((weak)) bsp_device_get_initialized_without_coprocessor(void) {
     return false;
+}
+
+void __attribute__((weak)) bsp_device_restart_to_launcher(void) {
+    // This function is common to all supported devices, but it can still be overridden if needed
+    rtc_retain_mem_t* mem = bootloader_common_get_rtc_retain_mem();
+
+    // Remove the magic value set by the launcher to invalidated appfs bootloader struct
+    memset(mem->custom, 0, sizeof(uint64_t));
+
+    // Restart the device
+    esp_restart();
 }

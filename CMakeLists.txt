@@ -26,6 +26,7 @@ set(COMMON_BSP_REQUIREMENTS
     "esp_lcd"
     "driver"
     "ssd1619"
+    "bootloader_support"
 )
 
 # BSP requirements only used for ESP32 targets

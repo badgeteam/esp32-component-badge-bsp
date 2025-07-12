@@ -35,3 +35,6 @@ esp_err_t bsp_device_get_manufacturer(char* output, uint8_t buffer_length);
 /// @brief Initialized without coprocessor status flag
 /// @return Boolean, true when initialized without coprocessor available
 bool bsp_device_get_initialized_without_coprocessor(void);
+
+/// @brief Restarts the device, returning to the launcher
+void bsp_device_restart_to_launcher(void);

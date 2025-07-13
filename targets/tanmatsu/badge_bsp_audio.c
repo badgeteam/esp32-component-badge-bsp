@@ -9,7 +9,6 @@
 #include "es8156.h"
 #include "esp_check.h"
 #include "esp_err.h"
-#include "freertos/projdefs.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
 
@@ -99,7 +98,9 @@ esp_err_t bsp_audio_set_amplifier(bool enable) {
 }
 
 esp_err_t bsp_audio_get_i2s_handle(i2s_chan_handle_t* out_handle) {
-    ESP_RETURN_ON_ERROR(ESP_ERR_INVALID_ARG, TAG, "Invalid argument");
+    if (out_handle == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
     *out_handle = i2s_handle;
     return ESP_OK;
 }

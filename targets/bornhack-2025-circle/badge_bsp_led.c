@@ -3,10 +3,10 @@
 
 #include <stdint.h>
 #include "bsp/led.h"
+#include "circle_hardware.h"
 #include "driver/gpio.h"
 #include "esp_check.h"
 #include "esp_err.h"
-#include "circle_hardware.h"
 #include "led_strip.h"
 
 static char const* TAG = "BSP: LEDs";
@@ -38,7 +38,7 @@ esp_err_t bsp_led_initialize(void) {
     return led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip);
 }
 
-esp_err_t bsp_led_write(uint8_t* data, uint32_t length) {
+esp_err_t bsp_led_write(const uint8_t* data, uint32_t length) {
     if (led_strip == NULL) {
         return ESP_ERR_INVALID_STATE;
     }

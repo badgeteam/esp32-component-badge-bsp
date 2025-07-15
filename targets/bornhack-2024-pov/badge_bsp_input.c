@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Julian Schefferss
+// SPDX-FileCopyrightText: 2025 Julian Schefferss
 // SPDX-License-Identifier: MIT
 
 #include <stdint.h>

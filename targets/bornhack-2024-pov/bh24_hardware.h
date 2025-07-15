@@ -1,5 +1,5 @@
 
-// SPDX-FileCopyrightText: 2025 Julian Scheffers <julian@scheffers.net>
+// SPDX-FileCopyrightText: 2025 Julian Scheffers
 // SPDX-License-Identifier: MIT
 
 #pragma once

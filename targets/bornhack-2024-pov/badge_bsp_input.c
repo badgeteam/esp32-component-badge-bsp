@@ -1,5 +1,4 @@
-// Board support package API: Generic stub implementation
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2024 Julian Schefferss
 // SPDX-License-Identifier: MIT
 
 #include <stdint.h>

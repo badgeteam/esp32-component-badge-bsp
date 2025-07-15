@@ -13,4 +13,4 @@ esp_err_t bsp_led_initialize(void);
 
 /// @brief Write data to LEDs
 /// @return ESP-IDF error code
-esp_err_t bsp_led_write(uint8_t* data, uint32_t length);
+esp_err_t bsp_led_write(const uint8_t* data, uint32_t length);

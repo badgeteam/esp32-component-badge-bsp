@@ -37,7 +37,7 @@ esp_err_t bsp_led_initialize(void) {
     return led_strip_new_rmt_device(&strip_config, &rmt_config, &led_strip);
 }
 
-esp_err_t bsp_led_write(uint8_t* data, uint32_t length) {
+esp_err_t bsp_led_write(const uint8_t* data, uint32_t length) {
     if (led_strip == NULL) {
         return ESP_ERR_INVALID_STATE;
     }

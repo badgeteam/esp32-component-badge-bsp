@@ -249,10 +249,6 @@ typedef struct _bsp_input_event {
     };
 } bsp_input_event_t;
 
-/// @brief Initialize the BSP input subsystem
-/// @return ESP-IDF error code
-esp_err_t bsp_input_initialize(void);
-
 /// @brief Get the queue handle for the input event queue
 /// @return ESP-IDF error code
 esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue);

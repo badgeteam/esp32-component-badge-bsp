@@ -55,14 +55,9 @@ esp_err_t bsp_device_get_manufacturer(char* output, uint8_t buffer_length) {
     return ESP_OK;
 }
 
-esp_err_t bsp_device_initialize(void) {
-    gpio_install_isr_service(0);
-
-    ESP_RETURN_ON_ERROR(bsp_display_initialize(), TAG, "Display failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_initialize(), TAG, "Primary I2C bus failed to initialize");
-
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&i2c_handle), TAG, "Could not get the I2C handle");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&i2c_semaphore), TAG, "Could not get the I2C semaphore");
+esp_err_t bsp_device_initialize_custom(void) {
+    BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_get_handle(&i2c_handle));
+    BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_get_semaphore(&i2c_semaphore));
 
     rp2040.i2c_bus_handle = i2c_handle;
     rp2040.i2c_address    = BSP_RP2040_I2C_ADDR;
@@ -71,9 +66,5 @@ esp_err_t bsp_device_initialize(void) {
     rp2040.i2c_semaphore  = i2c_semaphore;
     ESP_RETURN_ON_ERROR(rp2040_init(&rp2040), TAG, "Failed to initialise the coprocessor");
     rp2040_initialised = true;
-
-    ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
-    ESP_RETURN_ON_ERROR(bsp_power_initialize(), TAG, "Failed to initialize BSP power framework");
-
     return ESP_OK;
 }

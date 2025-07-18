@@ -19,22 +19,6 @@ static char const* TAG = "BSP device";
 static char const device_name[]         = "Kami";
 static char const device_manufacturer[] = "Nicolai Electronics";
 
-static i2c_master_bus_handle_t i2c_bus_handle_internal   = NULL;
-static SemaphoreHandle_t       i2c_concurrency_semaphore = NULL;
-
-esp_err_t bsp_device_initialize(void) {
-    gpio_install_isr_service(0);
-
-    ESP_RETURN_ON_ERROR(bsp_display_initialize(), TAG, "Display failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_initialize(), TAG, "Primary I2C bus failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
-    return ESP_OK;
-}
-
-bool bsp_device_get_initialized_without_coprocessor(void) {
-    return false;
-}
-
 esp_err_t bsp_device_get_name(char* output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;

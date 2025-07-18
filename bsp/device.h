@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include "esp_err.h"
 
-// Badge BSP
-// Device related APIs
-
 /// @brief Initialize the hardware managed by the BSP
 /// @details Initialize the hardware and related drivers managed by the BSP
 /// @return ESP-IDF error code

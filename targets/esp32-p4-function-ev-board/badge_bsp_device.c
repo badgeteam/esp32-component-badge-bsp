@@ -19,18 +19,6 @@ static char const* TAG = "BSP device";
 static char const device_name[]         = "ESP32-P4 Function EV board";
 static char const device_manufacturer[] = "Espressif";
 
-esp_err_t bsp_device_initialize(void) {
-    gpio_install_isr_service(0);
-
-    ESP_RETURN_ON_ERROR(bsp_display_initialize(), TAG, "Display failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Input failed to initialize");
-    return ESP_OK;
-}
-
-bool bsp_device_get_initialized_without_coprocessor(void) {
-    return false;
-}
-
 esp_err_t bsp_device_get_name(char* output, uint8_t buffer_length) {
     if (output == NULL) {
         return ESP_ERR_INVALID_ARG;

@@ -30,10 +30,6 @@ typedef enum {
     BSP_POWER_RADIO_STATE_APPLICATION = 2,
 } bsp_radio_state_t;
 
-/// @brief Initialize BSP power subsystem
-/// @return ESP-IDF error code
-esp_err_t bsp_power_initialize(void);
-
 /// @brief Get battery information
 /// @return ESP-IDF error code
 esp_err_t bsp_power_get_battery_information(bsp_power_battery_information_t* out_information);

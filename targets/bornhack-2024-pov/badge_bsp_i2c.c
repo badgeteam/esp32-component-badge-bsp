@@ -29,12 +29,12 @@ i2c_master_bus_config_t i2c_master_config_internal = {
 };
 
 esp_err_t bsp_i2c_primary_bus_initialize(void) {
-    ESP_RETURN_ON_ERROR(i2c_new_master_bus(&i2c_master_config_internal, &i2c_bus_handle_internal), TAG,
-                        "Failed to initialize I2C bus");
     i2c_concurrency_semaphore = xSemaphoreCreateBinary();
     if (i2c_concurrency_semaphore == NULL) {
         return ESP_ERR_NO_MEM;
     }
+    ESP_RETURN_ON_ERROR(i2c_new_master_bus(&i2c_master_config_internal, &i2c_bus_handle_internal), TAG,
+                        "Failed to initialize I2C bus");
     xSemaphoreGive(i2c_concurrency_semaphore);
     return ESP_OK;
 }

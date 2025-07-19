@@ -10,6 +10,7 @@
 #include "bsp/display.h"
 #include "bsp/i2c.h"
 #include "bsp/input.h"
+#include "bsp/macro.h"
 #include "bsp/mch2022.h"
 #include "bsp/power.h"
 #include "driver/gpio.h"

@@ -8,15 +8,10 @@
 #include "bsp/display.h"
 #include "bsp/i2c.h"
 #include "bsp/input.h"
-#include "bsp/tanmatsu.h"
 #include "driver/gpio.h"
 #include "esp_check.h"
 #include "esp_err.h"
 #include "esp_log.h"
-#include "tanmatsu_coprocessor.h"
-#include "tanmatsu_hardware.h"
-
-static char const* TAG = "BSP device";
 
 static char const device_name[]         = "Bornhack 2025 badge";
 static char const device_manufacturer[] = "Thomas Flummer";

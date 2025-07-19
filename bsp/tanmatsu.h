@@ -9,9 +9,6 @@
 #include "freertos/semphr.h"
 #include "tanmatsu_coprocessor.h"
 
-// Badge BSP
-// TANMATSU specific APIs
-
 /// @brief Get coprocessor handle
 /// @return ESP-IDF error code
 esp_err_t bsp_tanmatsu_coprocessor_get_handle(tanmatsu_coprocessor_handle_t* handle);

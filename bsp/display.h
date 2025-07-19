@@ -6,9 +6,6 @@
 #include "esp_lcd_types.h"
 #include "freertos/FreeRTOS.h"
 
-// Badge BSP
-// Display related APIs
-
 /// @brief Display rotation
 /// @details Relative to how you would rotate the display clockwise
 typedef enum {
@@ -25,13 +22,6 @@ typedef enum {
     BSP_DISPLAY_TE_V_BLANKING,
     BSP_DISPLAY_TE_V_AND_H_BLANKING,
 } bsp_display_te_mode_t;
-
-/// @brief Initialize the display
-/// @details Initialize the display
-/// @return ESP-IDF error code
-///          - ESP_OK if BSP initialized correctly
-///          - ESP_FAIL if the BSP could not initialize
-esp_err_t bsp_display_initialize(void);
 
 /// @brief Get display parameters
 /// @details Get display parameters

@@ -6,6 +6,10 @@
 #include "bsp/rtc.h"
 #include "esp_err.h"
 
+esp_err_t __attribute__((weak)) bsp_rtc_initialize(void) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
 esp_err_t __attribute__((weak)) bsp_rtc_get_time(uint32_t* value) {
     return ESP_ERR_NOT_SUPPORTED;
 }

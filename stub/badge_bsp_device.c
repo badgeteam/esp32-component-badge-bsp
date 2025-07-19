@@ -1,5 +1,5 @@
 // Board support package API: Generic stub implementation
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
 #include <stdbool.h>
@@ -8,12 +8,13 @@
 #include "bootloader_common.h"
 #include "bsp/device.h"
 #include "esp_err.h"
+#include "esp_log.h"
 #include "esp_system.h"
 
 static char const device_name[]         = "Generic board";
 static char const device_manufacturer[] = "Unknown";
 
-esp_err_t __attribute__((weak)) bsp_device_initialize(void) {
+esp_err_t __attribute__((weak)) bsp_device_initialize_custom(void) {
     return ESP_OK;
 }
 

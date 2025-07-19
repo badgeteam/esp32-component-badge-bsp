@@ -48,15 +48,9 @@ static IRAM_ATTR void gpio_isr(void* arg) {
 }
 
 esp_err_t bsp_input_initialize(void) {
-    // Create input queue.
-    if (event_queue) {
-        return ESP_OK;
-    }
-
     event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
     ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
 
-    ESP_ERROR_CHECK(gpio_install_isr_service(0));
     for (int i = 0; i < 3; i++) {
         ESP_ERROR_CHECK(gpio_set_direction(input_pins[i], GPIO_MODE_INPUT));
         ESP_ERROR_CHECK(gpio_set_intr_type(input_pins[i], GPIO_INTR_ANYEDGE));

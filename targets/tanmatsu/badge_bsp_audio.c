@@ -20,7 +20,6 @@ static es8156_handle_t         codec_handle            = NULL;
 static i2s_chan_handle_t       i2s_handle              = NULL;
 
 static esp_err_t initialize_i2s(uint32_t rate) {
-    // I2S audio
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(0, I2S_ROLE_MASTER);
 
     esp_err_t res = i2s_new_channel(&chan_cfg, &i2s_handle, NULL);
@@ -63,6 +62,11 @@ static esp_err_t initialize_i2s(uint32_t rate) {
     return ESP_OK;
 }
 
+esp_err_t bsp_audio_set_rate(uint32_t rate) {
+    i2s_std_clk_config_t clk_config = I2S_STD_CLK_DEFAULT_CONFIG(rate);
+    return i2s_channel_reconfig_std_clock(i2s_handle, &clk_config);
+}
+
 esp_err_t bsp_audio_initialize(uint32_t rate) {
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&codec_i2c_bus_handle), TAG, "Failed to get I2C bus handle");
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&codec_i2c_bus_semaphore), TAG,
@@ -79,7 +83,7 @@ esp_err_t bsp_audio_initialize(uint32_t rate) {
     res = es8156_configure(codec_handle);
     if (res != ESP_OK) return res;
 
-    return initialize_i2s(rate);
+    return initialize_i2s(44100);
 }
 
 esp_err_t bsp_audio_get_volume(float* out_percentage) {

@@ -5,12 +5,9 @@
 #include "driver/i2s_types.h"
 #include "esp_err.h"
 
-// Badge BSP
-// Audio APIs
-
-/// @brief Initialize BSP audio subsystem
+/// @brief BSP audio set sample rate
 /// @return ESP-IDF error code
-esp_err_t bsp_audio_initialize(uint32_t rate);
+esp_err_t bsp_audio_set_rate(uint32_t rate);
 
 /// @brief BSP audio get volume
 /// @return ESP-IDF error code

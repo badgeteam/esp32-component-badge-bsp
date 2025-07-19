@@ -10,6 +10,7 @@
 #include "bsp/display.h"
 #include "bsp/i2c.h"
 #include "bsp/input.h"
+#include "bsp/macro.h"
 #include "bsp/tanmatsu.h"
 #include "driver/gpio.h"
 #include "esp_check.h"
@@ -44,17 +45,12 @@ esp_err_t bsp_tanmatsu_coprocessor_get_handle(tanmatsu_coprocessor_handle_t* han
     return ESP_OK;
 }
 
-esp_err_t bsp_device_initialize(void) {
-    gpio_install_isr_service(0);
-
-    ESP_RETURN_ON_ERROR(bsp_display_initialize(), TAG, "Display failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_initialize(), TAG, "Primary I2C bus failed to initialize");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&i2c_bus_handle_internal), TAG, "Failed to get I2C bus handle");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&i2c_concurrency_semaphore), TAG,
-                        "Failed to get I2C bus semaphore");
-    ESP_RETURN_ON_ERROR(bsp_input_initialize(), TAG, "Failed to initialize BSP input framework");
-
+esp_err_t bsp_device_initialize_custom(void) {
+    printf("Tanmatsu coprocessor!\r\n");
     initialized_without_coprocessor = true;
+
+    BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_get_handle(&i2c_bus_handle_internal));
+    BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_get_semaphore(&i2c_concurrency_semaphore));
 
     tanmatsu_coprocessor_config_t coprocessor_config = {
         .int_io_num            = BSP_COPROCESSOR_INTERRUPT_PIN,

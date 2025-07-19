@@ -4,9 +4,6 @@
 #include <stdint.h>
 #include "esp_err.h"
 
-// Badge BSP
-// Real Time Clock APIs
-
 /// @brief Get time
 /// @return ESP-IDF error code
 esp_err_t bsp_rtc_get_time(uint32_t* value);

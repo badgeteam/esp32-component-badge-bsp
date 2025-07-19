@@ -9,8 +9,8 @@
 
 static char const* TAG = "BSP I2C";
 
-static i2c_master_bus_handle_t i2c_bus_handle = NULL;
-static SemaphoreHandle_t       i2c_semaphore  = NULL;
+static i2c_master_bus_handle_t i2c_bus_handle_internal   = NULL;
+static SemaphoreHandle_t       i2c_concurrency_semaphore = NULL;
 
 i2c_master_bus_config_t i2c_master_config_internal = {
     .i2c_port                     = BSP_I2C_BUS,
@@ -22,13 +22,13 @@ i2c_master_bus_config_t i2c_master_config_internal = {
 };
 
 esp_err_t bsp_i2c_primary_bus_initialize(void) {
-    ESP_RETURN_ON_ERROR(i2c_new_master_bus(&i2c_master_config_internal, &i2c_bus_handle), TAG,
-                        "Failed to initialize I2C bus");
-    i2c_semaphore = xSemaphoreCreateBinary();
-    if (i2c_semaphore == NULL) {
+    i2c_concurrency_semaphore = xSemaphoreCreateBinary();
+    if (i2c_concurrency_semaphore == NULL) {
         return ESP_ERR_NO_MEM;
     }
-    xSemaphoreGive(i2c_semaphore);
+    ESP_RETURN_ON_ERROR(i2c_new_master_bus(&i2c_master_config_internal, &i2c_bus_handle_internal), TAG,
+                        "Failed to initialize I2C bus");
+    xSemaphoreGive(i2c_concurrency_semaphore);
     return ESP_OK;
 }
 
@@ -36,7 +36,7 @@ esp_err_t bsp_i2c_primary_bus_get_handle(i2c_master_bus_handle_t* handle) {
     if (handle == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
-    *handle = i2c_bus_handle;
+    *handle = i2c_bus_handle_internal;
     return ESP_OK;
 }
 
@@ -44,13 +44,13 @@ esp_err_t bsp_i2c_primary_bus_get_semaphore(SemaphoreHandle_t* semaphore) {
     if (semaphore == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
-    *semaphore = i2c_semaphore;
+    *semaphore = i2c_concurrency_semaphore;
     return ESP_OK;
 }
 
 esp_err_t bsp_i2c_primary_bus_claim(void) {
-    if (i2c_semaphore != NULL) {
-        xSemaphoreTake(i2c_semaphore, portMAX_DELAY);
+    if (i2c_concurrency_semaphore != NULL) {
+        xSemaphoreTake(i2c_concurrency_semaphore, portMAX_DELAY);
     } else {
         ESP_LOGW(TAG, "No concurrency semaphore");
     }
@@ -58,8 +58,8 @@ esp_err_t bsp_i2c_primary_bus_claim(void) {
 }
 
 esp_err_t bsp_i2c_primary_bus_release(void) {
-    if (i2c_semaphore != NULL) {
-        xSemaphoreGive(i2c_semaphore);
+    if (i2c_concurrency_semaphore != NULL) {
+        xSemaphoreGive(i2c_concurrency_semaphore);
     }
     return ESP_OK;
 }

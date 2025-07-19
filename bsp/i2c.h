@@ -7,13 +7,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
-// Badge BSP
-// I2C APIs
-
-/// @brief Initialize the primary I2C bus
-/// @return ESP-IDF error code
-esp_err_t bsp_i2c_primary_bus_initialize(void);
-
 /// @brief Get the primary I2C bus handle
 /// @return ESP-IDF error code
 esp_err_t bsp_i2c_primary_bus_get_handle(i2c_master_bus_handle_t* handle);

@@ -11,8 +11,6 @@
 static led_strip_handle_t led_strip = NULL;
 
 esp_err_t bsp_led_initialize(void) {
-    ESP_LOGI("led", "test");
-
     led_strip_config_t strip_config = {
         .strip_gpio_num         = BSP_LED_DATA_PIN,
         .max_leds               = BSP_LED_NUM,

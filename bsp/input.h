@@ -199,6 +199,7 @@ typedef enum _bsp_input_action_type {
     BSP_INPUT_ACTION_TYPE_AUDIO_JACK,
     BSP_INPUT_ACTION_TYPE_POWER_BUTTON,
     BSP_INPUT_ACTION_TYPE_FPGA_CDONE,
+    BSP_INPUT_ACTION_TYPE_PMIC_FAULT,
 } bsp_input_action_type_t;
 
 // Modifiers

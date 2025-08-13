@@ -24,7 +24,6 @@ static esp_err_t initialize_i2s(uint32_t rate) {
 
     esp_err_t res = i2s_new_channel(&chan_cfg, &i2s_handle, NULL);
     if (res != ESP_OK) {
-        ESP_LOGE(TAG, "Initializing I2S channel failed");
         return res;
     }
 
@@ -49,13 +48,11 @@ static esp_err_t initialize_i2s(uint32_t rate) {
 
     res = i2s_channel_init_std_mode(i2s_handle, &i2s_config);
     if (res != ESP_OK) {
-        ESP_LOGE(TAG, "Configuring I2S channel failed");
         return res;
     }
 
     res = i2s_channel_enable(i2s_handle);
     if (res != ESP_OK) {
-        ESP_LOGE(TAG, "Enabling I2S channel failed");
         return res;
     }
 

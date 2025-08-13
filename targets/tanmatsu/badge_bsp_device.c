@@ -46,7 +46,6 @@ esp_err_t bsp_tanmatsu_coprocessor_get_handle(tanmatsu_coprocessor_handle_t* han
 }
 
 esp_err_t bsp_device_initialize_custom(void) {
-    printf("Tanmatsu coprocessor!\r\n");
     initialized_without_coprocessor = true;
 
     BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_get_handle(&i2c_bus_handle_internal));

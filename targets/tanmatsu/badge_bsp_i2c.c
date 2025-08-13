@@ -59,8 +59,6 @@ esp_err_t bsp_i2c_primary_bus_get_semaphore(SemaphoreHandle_t* semaphore) {
 esp_err_t bsp_i2c_primary_bus_claim(void) {
     if (i2c_concurrency_semaphore != NULL) {
         xSemaphoreTake(i2c_concurrency_semaphore, portMAX_DELAY);
-    } else {
-        ESP_LOGW(TAG, "No concurrency semaphore");
     }
     return ESP_OK;
 }

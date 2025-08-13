@@ -127,7 +127,6 @@ esp_err_t bsp_display_initialize(void) {
 esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
                                      lcd_rgb_data_endian_t* data_endian) {
     if (!bsp_display_initialized) {
-        ESP_LOGE(TAG, "Display not initialized");
         return ESP_FAIL;
     }
     st7701_get_parameters(h_res, v_res, color_fmt);
@@ -139,7 +138,6 @@ esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb
 
 esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
     if (!bsp_display_initialized) {
-        ESP_LOGE(TAG, "Display not initialized");
         return ESP_FAIL;
     }
     *panel = st7701_get_panel();
@@ -148,7 +146,6 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
 
 esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t* panel_io) {
     if (!bsp_display_initialized) {
-        ESP_LOGE(TAG, "Display not initialised");
         return ESP_FAIL;
     }
 
@@ -181,7 +178,6 @@ esp_err_t bsp_display_set_backlight_brightness(uint8_t percentage) {
 
 esp_err_t bsp_display_set_tearing_effect_mode(bsp_display_te_mode_t mode) {
     if (!bsp_display_initialized) {
-        ESP_LOGE(TAG, "Display not initialised");
         return ESP_FAIL;
     }
 

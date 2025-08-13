@@ -155,7 +155,6 @@ esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb
 
 esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
     if (!panel_handle) {
-        ESP_LOGE(TAG, "Display not initialised");
         return ESP_FAIL;
     }
 
@@ -165,7 +164,6 @@ esp_err_t bsp_display_get_panel(esp_lcd_panel_handle_t* panel) {
 
 esp_err_t bsp_display_get_panel_io(esp_lcd_panel_io_handle_t* panel_io) {
     if (!panel_handle) {
-        ESP_LOGE(TAG, "Display IO not initialised");
         return ESP_FAIL;
     }
 

@@ -1,33 +1,33 @@
 targets:
-    - esp32
-    - esp32p4
-    - esp32c6
-    - esp32c3
+  - esp32
+  - esp32p4
+  - esp32c6
+  - esp32c3
 dependencies:
-    cmake_utilities: 0.*
-    idf: '>=5.3'
-    espressif/esp_lcd_ili9341:
-      version: ^2.0.0
-    nicolaielectronics/ssd1619:
-      version: ^0.0.1
-    espressif/led_strip:
-      version: ^3.0.1
-    nicolaielectronics/mipi_dsi_abstraction:
-      version: "^0.1.0"
-      rules:
-        - if: "target == esp32p4"
-    nicolaielectronics/tanmatsu_coprocessor:
-      version: "^0.5.0"
-      rules:
-        - if: "target == esp32p4"
-    nicolaielectronics/es8156:
-      version: "^0.0.1"
-      rules:
-        - if: "target == esp32p4"
-    badgeteam/mch2022-rp2040:
-      version: "^0.0.2"
-      rules:
-        - if: "target == esp32"
+  cmake_utilities: 0.*
+  idf: ">=5.3"
+  espressif/esp_lcd_ili9341:
+    version: "^2.0.0"
+  nicolaielectronics/ssd1619:
+    version: "=>0.0.1"
+  espressif/led_strip:
+    version: "^3.0.1"
+  nicolaielectronics/mipi_dsi_abstraction:
+    version: "^0.1.0"
+    rules:
+      - if: "target == esp32p4"
+  nicolaielectronics/tanmatsu_coprocessor:
+    version: "=>0.5.0"
+    rules:
+      - if: "target == esp32p4"
+  nicolaielectronics/es8156:
+    version: ">=0.0.2"
+    rules:
+      - if: "target == esp32p4"
+  badgeteam/mch2022-rp2040:
+    version: "=>0.0.2"
+    rules:
+      - if: "target == esp32"
 description: Badge BSP
 license: MIT
 issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues

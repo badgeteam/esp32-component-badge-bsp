@@ -391,11 +391,16 @@ void bsp_internal_coprocessor_input_callback(tanmatsu_coprocessor_handle_t  hand
 void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t       handle,
                                               tanmatsu_coprocessor_pmic_faults_t* prev_faults,
                                               tanmatsu_coprocessor_pmic_faults_t* faults) {
-    ESP_LOGE(TAG, "Faults changed: %s%s%s%s%s%s%s%s%s\r\n", faults->watchdog ? "WATCHDOG " : "",
-             faults->boost ? "BOOST " : "", faults->chrg_input ? "CHRG_INPUT " : "",
-             faults->chrg_thermal ? "CHRG_THERMAL " : "", faults->chrg_safety ? "CHRG_SAFETY " : "",
-             faults->batt_ovp ? "BATT_OVP " : "", faults->ntc_cold ? "NTC_COLD " : "",
-             faults->ntc_hot ? "NTC_HOT " : "", faults->ntc_boost ? "NTC_BOOST " : "");
+    if (prev_faults->watchdog != faults->watchdog || prev_faults->boost != faults->boost ||
+        prev_faults->chrg_input != faults->chrg_input || prev_faults->chrg_thermal != faults->chrg_thermal ||
+        prev_faults->chrg_safety != faults->chrg_safety || prev_faults->batt_ovp != faults->batt_ovp ||
+        prev_faults->ntc_cold != faults->ntc_cold || prev_faults->ntc_hot != faults->ntc_hot ||
+        prev_faults->ntc_boost != faults->ntc_boost) {
+        send_action_event(BSP_INPUT_ACTION_TYPE_PMIC_FAULT, faults->watchdog || faults->boost || faults->chrg_input ||
+                                                                faults->chrg_thermal || faults->chrg_safety ||
+                                                                faults->batt_ovp || faults->ntc_cold ||
+                                                                faults->ntc_hot || faults->ntc_boost);
+    }
 }
 
 /*static void key_repeat_thread(void* ignored) {
@@ -408,7 +413,6 @@ void bsp_internal_coprocessor_faults_callback(tanmatsu_coprocessor_handle_t     
             continue;
         }
         if (key_repeat_ascii != '\0') {
-            // ESP_LOGI(TAG, "Repeat text: %c / %s", key_repeat_ascii, key_repeat_utf8);
             bsp_input_event_t event = {
                 .type                    = INPUT_EVENT_TYPE_KEYBOARD,
                 .args_keyboard.ascii     = key_repeat_ascii,

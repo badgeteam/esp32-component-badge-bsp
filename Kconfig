@@ -32,5 +32,8 @@ menu "Badge.Team BSP"
 
 		config BSP_TARGET_BORNHACK_2025_CIRCLE
 			bool "Bornhack 2025 circle"
+		
+		config BSP_TARGET_WHY2025
+			bool "WHY2025 badge"
 	endchoice
 endmenu

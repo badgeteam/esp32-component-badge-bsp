@@ -20,6 +20,10 @@ dependencies:
     version: ">=0.1.0"
     rules:
       - if: "target == esp32p4"
+  espressif/esp_lcd_st7703:
+    version: ">=1.0.3"
+    rules:
+      - if: "target == esp32p4"
   nicolaielectronics/tanmatsu_coprocessor:
     version: ">=0.5.0"
     rules:

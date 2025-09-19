@@ -21,6 +21,7 @@ esp_err_t bsp_input_initialize(void);
 esp_err_t bsp_led_initialize(void);
 esp_err_t bsp_power_initialize(void);
 esp_err_t bsp_rtc_initialize(void);
+esp_err_t bsp_orientation_initialize(void);
 
 esp_err_t bsp_device_initialize(void) {
     // Install the ISR service for GPIO interrupts
@@ -50,6 +51,9 @@ esp_err_t bsp_device_initialize(void) {
 
     // Initialize LEDs
     BSP_RETURN_ON_FAILURE(bsp_led_initialize(), ESP_LOGE(TAG, "Failed to initialize LED subsystem"));
+
+    // Initialize orientation sensor
+    BSP_RETURN_ON_FAILURE(bsp_orientation_initialize(), ESP_LOGE(TAG, "Failed to initialize orientation sensor"));
 
     return ESP_OK;
 }

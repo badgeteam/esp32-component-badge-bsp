@@ -8,7 +8,7 @@
 #include "esp_err.h"
 
 esp_err_t __attribute__((weak)) bsp_power_initialize(void) {
-    return ESP_ERR_NOT_SUPPORTED;
+    return ESP_OK;
 }
 
 esp_err_t __attribute__((weak)) bsp_power_get_button_state(bool* pressed) {

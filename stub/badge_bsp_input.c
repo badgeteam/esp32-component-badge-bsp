@@ -9,7 +9,7 @@
 #include "freertos/queue.h"
 
 esp_err_t __attribute__((weak)) bsp_input_initialize(void) {
-    return ESP_ERR_NOT_SUPPORTED;
+    return ESP_OK;
 }
 
 esp_err_t __attribute__((weak)) bsp_input_get_queue(QueueHandle_t* out_queue) {

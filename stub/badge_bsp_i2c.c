@@ -9,7 +9,7 @@
 #include "freertos/semphr.h"
 
 esp_err_t __attribute__((weak)) bsp_i2c_primary_bus_initialize(void) {
-    return ESP_ERR_NOT_SUPPORTED;
+    return ESP_OK;
 }
 
 esp_err_t __attribute__((weak)) bsp_i2c_primary_bus_get_handle(i2c_master_bus_handle_t* handle) {

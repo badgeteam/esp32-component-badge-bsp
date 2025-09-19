@@ -7,7 +7,7 @@
 #include "esp_err.h"
 
 esp_err_t __attribute__((weak)) bsp_led_initialize(void) {
-    return ESP_ERR_NOT_SUPPORTED;
+    return ESP_OK;
 }
 
 esp_err_t __attribute__((weak)) bsp_led_write(const uint8_t* data, uint32_t length) {

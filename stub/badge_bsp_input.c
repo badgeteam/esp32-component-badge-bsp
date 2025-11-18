@@ -1,5 +1,5 @@
 // Board support package API: Generic stub implementation
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
+// SPDX-FileCopyrightText: 2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
 #include <stdint.h>
@@ -29,6 +29,10 @@ esp_err_t __attribute__((weak)) bsp_input_set_backlight_brightness(uint8_t perce
 }
 
 esp_err_t __attribute__((weak)) bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_input_read_scancode(bsp_input_scancode_t key, bool* out_state) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 

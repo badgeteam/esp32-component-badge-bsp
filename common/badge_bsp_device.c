@@ -30,15 +30,15 @@ esp_err_t bsp_device_initialize(void) {
     // Initialize the primary I2C bus
     BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_initialize(), ESP_LOGE(TAG, "Failed to initialize primary I2C bus"));
 
+    // Initialize device specific hardware
+    BSP_RETURN_ON_FAILURE(bsp_device_initialize_custom(),
+                          ESP_LOGE(TAG, "Failed to initialize device specific hardware"));
+
     // Initialize the display
     BSP_RETURN_ON_FAILURE(bsp_display_initialize(), ESP_LOGE(TAG, "Failed to initialize display"));
 
     // Initialize the input framework
     BSP_RETURN_ON_FAILURE(bsp_input_initialize(), ESP_LOGE(TAG, "Failed to initialize input framework"));
-
-    // Initialize device specific hardware
-    BSP_RETURN_ON_FAILURE(bsp_device_initialize_custom(),
-                          ESP_LOGE(TAG, "Failed to initialize device specific hardware"));
 
     // Initialize power
     BSP_RETURN_ON_FAILURE(bsp_power_initialize(), ESP_LOGE(TAG, "Failed to initialize power subsystem"));

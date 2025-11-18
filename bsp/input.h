@@ -15,6 +15,8 @@ typedef enum _bsp_input_event_type {
     INPUT_EVENT_TYPE_LAST,
 } bsp_input_event_type_t;
 
+#define BSP_INPUT_NUM_SCANCODES 122
+
 typedef enum _bsp_input_scancode {
     BSP_INPUT_SCANCODE_NONE                = 0x00,
     BSP_INPUT_SCANCODE_ESC                 = 0x01,
@@ -269,6 +271,10 @@ esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage);
 /// @brief Read the current state of a navigation key
 /// @return ESP-IDF error code
 esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state);
+
+/// @brief Read the current state of a key by scancode
+/// @return ESP-IDF error code
+esp_err_t bsp_input_read_scancode(bsp_input_scancode_t key, bool* out_state);
 
 /// @brief Read the current state of an action
 /// @return ESP-IDF error code

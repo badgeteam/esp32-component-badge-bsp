@@ -54,7 +54,8 @@ static esp_err_t bsp_display_initialize_epaper_lut() {
     return res;
 }
 
-esp_err_t bsp_display_initialize(void) {
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
+    (void)configuration;
     ESP_RETURN_ON_ERROR(bsp_display_initialize_epaper_lut(), TAG, "Failed to initialize e-paper LUT");
 
     spi_bus_config_t spi_bus_config = {

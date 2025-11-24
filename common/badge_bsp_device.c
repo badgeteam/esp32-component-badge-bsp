@@ -15,7 +15,7 @@ static char const TAG[] = "BSP: device";
 // Internal BSP functions to initialize the subsystems
 esp_err_t bsp_device_initialize_custom(void);
 esp_err_t bsp_audio_initialize(void);
-esp_err_t bsp_display_initialize(void);
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration);
 esp_err_t bsp_i2c_primary_bus_initialize(void);
 esp_err_t bsp_input_initialize(void);
 esp_err_t bsp_led_initialize(void);
@@ -23,7 +23,7 @@ esp_err_t bsp_power_initialize(void);
 esp_err_t bsp_rtc_initialize(void);
 esp_err_t bsp_orientation_initialize(void);
 
-esp_err_t bsp_device_initialize(void) {
+esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     // Install the ISR service for GPIO interrupts
     gpio_install_isr_service(0);
 
@@ -35,7 +35,8 @@ esp_err_t bsp_device_initialize(void) {
                           ESP_LOGE(TAG, "Failed to initialize device specific hardware"));
 
     // Initialize the display
-    BSP_RETURN_ON_FAILURE(bsp_display_initialize(), ESP_LOGE(TAG, "Failed to initialize display"));
+    BSP_RETURN_ON_FAILURE(bsp_display_initialize(configuration != NULL ? &configuration->display : NULL),
+                          ESP_LOGE(TAG, "Failed to initialize display"));
 
     // Initialize the input framework
     BSP_RETURN_ON_FAILURE(bsp_input_initialize(), ESP_LOGE(TAG, "Failed to initialize input framework"));

@@ -20,7 +20,8 @@
 
 static char const* TAG = "BSP display";
 
-esp_err_t bsp_display_initialize(void) {
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
+    (void)configuration;
     return ESP_OK;
 }
 

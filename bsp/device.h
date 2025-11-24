@@ -2,14 +2,19 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "display.h"
 #include "esp_err.h"
+
+typedef struct {
+    bsp_display_configuration_t display;
+} bsp_configuration_t;
 
 /// @brief Initialize the hardware managed by the BSP
 /// @details Initialize the hardware and related drivers managed by the BSP
 /// @return ESP-IDF error code
 ///          - ESP_OK if BSP initialized correctly
 ///          - ESP_FAIL if the BSP could not initialize
-esp_err_t bsp_device_initialize(void);
+esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration);
 
 /// @brief Get the name of the device as a string
 /// @details Returns the name as a null terminated string

@@ -87,7 +87,8 @@ static esp_err_t bsp_display_initialize_flush(void) {
     return esp_lcd_panel_io_register_event_callbacks(display_lcd_panel_io, &callbacks, NULL);
 }
 
-esp_err_t bsp_display_initialize(void) {
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
+    (void)configuration;
     ESP_RETURN_ON_ERROR(gpio_set_direction(BSP_LCD_MODE_PIN, GPIO_MODE_OUTPUT), TAG,
                         "Could not set the LCD mode pin direction");
 

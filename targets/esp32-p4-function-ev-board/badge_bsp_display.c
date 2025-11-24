@@ -59,19 +59,23 @@ static esp_err_t bsp_display_initialize_flush(void) {
     return esp_lcd_dpi_panel_register_event_callbacks(ek79007_get_panel(), &callbacks, NULL);
 }
 
-static esp_err_t bsp_display_initialize_panel(void) {
-    ek79007_initialize(BSP_LCD_RESET_PIN);
+static esp_err_t bsp_display_initialize_panel(const bsp_display_configuration_t* configuration) {
+    ek79007_configuration_t ek79007_config = {
+        .reset_pin = BSP_LCD_RESET_PIN,
+        .num_fbs   = configuration != NULL ? configuration->num_fbs : 1,
+    };
+    ek79007_initialize(&ek79007_config);
     return ESP_OK;
 }
 
 // Public functions
 
-esp_err_t bsp_display_initialize(void) {
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
     if (bsp_display_initialized) {
         return ESP_OK;
     }
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
-    ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(), TAG, "Failed to initialize panel");
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(configuration), TAG, "Failed to initialize panel");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_flush(), TAG, "Failed to initialize flush callback");
     bsp_display_initialized = true;
     return ESP_OK;

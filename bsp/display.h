@@ -6,6 +6,11 @@
 #include "esp_lcd_types.h"
 #include "freertos/FreeRTOS.h"
 
+typedef struct {
+    lcd_color_rgb_pixel_format_t requested_color_format;  // Requested color format, applied if supported by the display
+    size_t                       num_fbs;                 // Number of framebuffers to allocate
+} bsp_display_configuration_t;
+
 /// @brief Display rotation
 /// @details Relative to how you would rotate the display clockwise
 typedef enum {

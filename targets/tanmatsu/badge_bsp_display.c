@@ -51,29 +51,15 @@ static esp_err_t bsp_display_enable_dsi_phy_power(void) {
     return esp_ldo_acquire_channel(&ldo_mipi_phy_config, &ldo_mipi_phy);
 }
 
-static esp_err_t bsp_display_reset(void) {
-    gpio_config_t lcd_reset_conf = {
-        .pin_bit_mask = BIT64(BSP_LCD_RESET_PIN),
-        .mode         = GPIO_MODE_INPUT_OUTPUT,
-        .pull_up_en   = 0,
-        .pull_down_en = 0,
-        .intr_type    = GPIO_INTR_DISABLE,
+static esp_err_t bsp_display_initialize_panel(const bsp_display_configuration_t* configuration) {
+    st7701_configuration_t config = {
+        .reset_pin = BSP_LCD_RESET_PIN,
+        .use_24_bit_color =
+            configuration ? (configuration->requested_color_format == LCD_COLOR_PIXEL_FORMAT_RGB888) : false,
+        .num_fbs = configuration ? configuration->num_fbs : 1,
     };
 
-    gpio_config(&lcd_reset_conf);
-
-    gpio_set_level(BSP_LCD_RESET_PIN, false);
-    vTaskDelay(pdMS_TO_TICKS(10));
-    gpio_set_level(BSP_LCD_RESET_PIN, true);
-    vTaskDelay(pdMS_TO_TICKS(100));
-
-    return ESP_OK;
-}
-
-static esp_err_t bsp_display_initialize_panel(void) {
-    // TODO: extend ST7701 driver in MIPI DSI abstraction component to support error handling and fix broken display
-    // reset
-    st7701_initialize(-1);
+    st7701_initialize(&config);
     return ESP_OK;
 }
 
@@ -111,13 +97,12 @@ static esp_err_t bsp_display_initialize_te(void) {
 
 // Public functions
 
-esp_err_t bsp_display_initialize(void) {
+esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
     if (bsp_display_initialized) {
         return ESP_OK;
     }
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
-    ESP_RETURN_ON_ERROR(bsp_display_reset(), TAG, "Failed to reset display");
-    ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(), TAG, "Failed to initialize panel");
+    ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(configuration), TAG, "Failed to initialize panel");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_flush(), TAG, "Failed to initialize flush callback");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_te(), TAG, "Failed to tearing effect callback");
     bsp_display_initialized = true;

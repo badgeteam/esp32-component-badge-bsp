@@ -68,3 +68,6 @@
 #define BSP_I2S_BCLK           29
 #define BSP_I2S_WS             31
 #define BSP_I2S_DOUT           28
+
+// LEDs
+#define BSP_LED_COUNT 6

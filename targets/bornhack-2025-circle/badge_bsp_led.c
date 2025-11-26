@@ -50,3 +50,56 @@ esp_err_t bsp_led_write(const uint8_t* data, uint32_t length) {
     }
     return led_strip_refresh(led_strip);
 }
+
+esp_err_t bsp_led_set_mode(bool automatic) {
+    if (automatic) {
+        return ESP_ERR_NOT_SUPPORTED;
+    } else {
+        return ESP_OK;
+    }
+}
+
+esp_err_t bsp_led_send(void) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return led_strip_refresh(led_strip);
+}
+
+esp_err_t bsp_led_clear(void) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return led_strip_clear(led_strip);
+}
+
+esp_err_t bsp_led_set_pixel(uint32_t index, uint32_t color) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    uint8_t red   = (color >> 16) & 0xFF;
+    uint8_t green = (color >> 8) & 0xFF;
+    uint8_t blue  = color & 0xFF;
+    return led_strip_set_pixel(led_strip, index, red, green, blue);
+}
+
+esp_err_t bsp_led_set_pixel_rgb(uint32_t index, uint8_t red, uint8_t green, uint8_t blue) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return led_strip_set_pixel(led_strip, index, red, green, blue);
+}
+
+esp_err_t bsp_led_set_pixel_rgbw(uint32_t index, uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return led_strip_set_pixel_rgbw(led_strip, index, red, green, blue, white);
+}
+
+esp_err_t bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation, uint8_t value) {
+    if (led_strip == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    return led_strip_set_pixel_hsv(led_strip, index, hue, saturation, value);
+}

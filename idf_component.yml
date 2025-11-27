@@ -19,7 +19,7 @@ dependencies:
   nicolaielectronics/bmi270:
     version: ">=1.0.1"
   nicolaielectronics/mipi_dsi_abstraction:
-    version: ">=0.3.0"
+    version: ">=0.3.1"
     rules:
       - if: "target == esp32p4"
   nicolaielectronics/tanmatsu_coprocessor:

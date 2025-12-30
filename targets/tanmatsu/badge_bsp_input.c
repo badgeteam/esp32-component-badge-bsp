@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <string.h>
+#include "badge_bsp_input_hooks.h"
 #include "bsp/input.h"
 #include "bsp/tanmatsu.h"
 #include "driver/gpio.h"
@@ -33,6 +34,19 @@ static bool prev_volume_down_state = false;
 
 static tanmatsu_coprocessor_keys_t current_keys = {0};
 
+// Inject an input event into the queue (bypasses hooks)
+esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
+    if (event == NULL || event_queue == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (xQueueSend(event_queue, event, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+
+    return ESP_OK;
+}
+
 IRAM_ATTR static void volume_down_gpio_interrupt_handler(void* pvParameters) {
     bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN);  // GPIO is active low
     if (state != prev_volume_down_state) {
@@ -60,7 +74,10 @@ static void send_navigation_event(bsp_input_navigation_key_t key, bool state, ui
         .args_navigation.modifiers = modifiers,
         .args_navigation.state     = state,
     };
-    xQueueSend(event_queue, &event, 0);
+    // Offer to hooks first; if consumed, don't queue
+    if (!bsp_input_hooks_process(&event)) {
+        xQueueSend(event_queue, &event, 0);
+    }
 }
 
 static void send_keyboard_event(char ascii, char const* utf8, uint32_t modifiers) {
@@ -70,7 +87,10 @@ static void send_keyboard_event(char ascii, char const* utf8, uint32_t modifiers
         .args_keyboard.utf8      = utf8,
         .args_keyboard.modifiers = modifiers,
     };
-    xQueueSend(event_queue, &event, 0);
+    // Offer to hooks first; if consumed, don't queue
+    if (!bsp_input_hooks_process(&event)) {
+        xQueueSend(event_queue, &event, 0);
+    }
 }
 
 static void send_action_event(bsp_input_action_type_t action, bool state) {
@@ -79,7 +99,10 @@ static void send_action_event(bsp_input_action_type_t action, bool state) {
         .args_action.type  = action,
         .args_action.state = state,
     };
-    xQueueSend(event_queue, &event, 0);
+    // Offer to hooks first; if consumed, don't queue
+    if (!bsp_input_hooks_process(&event)) {
+        xQueueSend(event_queue, &event, 0);
+    }
 }
 
 static void send_scancode_event(bsp_input_scancode_t scancode, bool state) {
@@ -87,7 +110,10 @@ static void send_scancode_event(bsp_input_scancode_t scancode, bool state) {
         .type                   = INPUT_EVENT_TYPE_SCANCODE,
         .args_scancode.scancode = scancode | (state ? 0 : BSP_INPUT_SCANCODE_RELEASE_MODIFIER),
     };
-    xQueueSend(event_queue, &event, 0);
+    // Offer to hooks first; if consumed, don't queue
+    if (!bsp_input_hooks_process(&event)) {
+        xQueueSend(event_queue, &event, 0);
+    }
 }
 
 static void handle_keyboard_text_entry(bool curr_state, bool prev_state, char ascii, char ascii_shift, char const* utf8,
@@ -435,6 +461,9 @@ esp_err_t bsp_input_initialize(void) {
         event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
         ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
     }
+
+    // Initialize input hooks system (from common/)
+    bsp_input_hooks_init();
 
     /*if (key_repeat_thread_handle == NULL) {
         xTaskCreate(key_repeat_thread, "Key repeat thread", 4096, NULL, tskIDLE_PRIORITY, &key_repeat_thread_handle);

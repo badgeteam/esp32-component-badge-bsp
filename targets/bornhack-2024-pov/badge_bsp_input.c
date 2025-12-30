@@ -104,3 +104,19 @@ esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* ou
 esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+// NOTE: This target does not support input hooks because events are sent
+// directly from GPIO ISR using xQueueSendFromISR(). Hook processing requires
+// taking a mutex, which cannot be done from ISR context. The hook functions
+// will fall back to weak stubs (bsp_input_hook_register returns -1).
+// Only bsp_input_inject_event() is implemented for this target.
+
+esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
+    if (event == NULL || event_queue == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (xQueueSend(event_queue, event, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+    return ESP_OK;
+}

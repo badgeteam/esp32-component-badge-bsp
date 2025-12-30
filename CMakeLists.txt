@@ -72,7 +72,7 @@ endif()
 
 idf_component_register(
     SRCS ${BSP_SRCS} ${COMMON_BSP_SRCS}
-    INCLUDE_DIRS "."
+    INCLUDE_DIRS "." "common"
     REQUIRES ${BSP_REQUIRES}
     WHOLE_ARCHIVE
 )

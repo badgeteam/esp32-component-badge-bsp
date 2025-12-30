@@ -4,6 +4,7 @@
 
 #include <inttypes.h>
 #include <stdint.h>
+#include "badge_bsp_input_hooks.h"
 #include "bsp/input.h"
 #include "bsp/mch2022.h"
 #include "esp_check.h"
@@ -84,7 +85,10 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
             return;
     }
 
-    xQueueSend(event_queue, &event, portMAX_DELAY);
+    // Process through hooks first; if consumed, don't queue
+    if (!bsp_input_hooks_process(&event)) {
+        xQueueSend(event_queue, &event, portMAX_DELAY);
+    }
 }
 
 esp_err_t bsp_input_initialize(void) {
@@ -94,6 +98,9 @@ esp_err_t bsp_input_initialize(void) {
         event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
         ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
     }
+
+    // Initialize input hooks system (from common/)
+    bsp_input_hooks_init();
 
     return ESP_OK;
 }
@@ -170,6 +177,17 @@ esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state)
         default:
             *out_state = false;
             break;
+    }
+    return ESP_OK;
+}
+
+// Inject an input event into the queue (bypasses hooks)
+esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
+    if (event == NULL || event_queue == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    if (xQueueSend(event_queue, event, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
     }
     return ESP_OK;
 }

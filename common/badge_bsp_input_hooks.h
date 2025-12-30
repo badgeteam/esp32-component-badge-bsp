@@ -1,5 +1,5 @@
 // Board support package API: Input hook system
-// SPDX-FileCopyrightText: 2025 Nicolai Electronics
+// SPDX-FileCopyrightText: 2025 Rene Schickbauer
 // SPDX-License-Identifier: MIT
 
 #pragma once

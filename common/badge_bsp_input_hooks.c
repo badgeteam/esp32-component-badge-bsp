@@ -1,5 +1,5 @@
 // Board support package API: Input hook system implementation
-// SPDX-FileCopyrightText: 2025 Nicolai Electronics
+// SPDX-FileCopyrightText: 2025 Rene Schickbauer
 // SPDX-License-Identifier: MIT
 
 #include "badge_bsp_input_hooks.h"

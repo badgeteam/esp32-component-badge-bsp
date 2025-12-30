@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <string.h>
+#include "badge_bsp_input_hooks.h"
 #include "bsp/input.h"
 #include "bsp/tanmatsu.h"
 #include "driver/gpio.h"
@@ -33,92 +34,7 @@ static bool prev_volume_down_state = false;
 
 static tanmatsu_coprocessor_keys_t current_keys = {0};
 
-// ============================================
-// Input Hook System
-// ============================================
-
-#define BSP_INPUT_MAX_HOOKS 8
-
-typedef struct {
-    bsp_input_hook_cb_t callback;
-    void*               user_data;
-    bool                in_use;
-} bsp_input_hook_entry_t;
-
-static bsp_input_hook_entry_t input_hooks[BSP_INPUT_MAX_HOOKS] = {0};
-static SemaphoreHandle_t      input_hooks_mutex                = NULL;
-
-// Initialize hooks mutex (called from bsp_input_initialize)
-static void input_hooks_init(void) {
-    if (input_hooks_mutex == NULL) {
-        input_hooks_mutex = xSemaphoreCreateMutex();
-    }
-}
-
-// Call all registered hooks for an event
-// Returns true if any hook consumed the event
-static bool input_hooks_process(bsp_input_event_t* event) {
-    if (input_hooks_mutex == NULL) {
-        return false;
-    }
-
-    bool consumed = false;
-
-    if (xSemaphoreTake(input_hooks_mutex, pdMS_TO_TICKS(10)) == pdTRUE) {
-        for (int i = 0; i < BSP_INPUT_MAX_HOOKS; i++) {
-            if (input_hooks[i].in_use && input_hooks[i].callback != NULL) {
-                if (input_hooks[i].callback(event, input_hooks[i].user_data)) {
-                    consumed = true;
-                    break;  // Event consumed, stop processing
-                }
-            }
-        }
-        xSemaphoreGive(input_hooks_mutex);
-    }
-
-    return consumed;
-}
-
-// Register an input hook
-// Returns hook ID (>= 0) on success, -1 on failure
-int bsp_input_hook_register(bsp_input_hook_cb_t callback, void* user_data) {
-    if (callback == NULL || input_hooks_mutex == NULL) {
-        return -1;
-    }
-
-    int hook_id = -1;
-
-    if (xSemaphoreTake(input_hooks_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
-        for (int i = 0; i < BSP_INPUT_MAX_HOOKS; i++) {
-            if (!input_hooks[i].in_use) {
-                input_hooks[i].callback  = callback;
-                input_hooks[i].user_data = user_data;
-                input_hooks[i].in_use    = true;
-                hook_id                  = i;
-                break;
-            }
-        }
-        xSemaphoreGive(input_hooks_mutex);
-    }
-
-    return hook_id;
-}
-
-// Unregister an input hook
-void bsp_input_hook_unregister(int hook_id) {
-    if (hook_id < 0 || hook_id >= BSP_INPUT_MAX_HOOKS || input_hooks_mutex == NULL) {
-        return;
-    }
-
-    if (xSemaphoreTake(input_hooks_mutex, pdMS_TO_TICKS(100)) == pdTRUE) {
-        input_hooks[hook_id].callback  = NULL;
-        input_hooks[hook_id].user_data = NULL;
-        input_hooks[hook_id].in_use    = false;
-        xSemaphoreGive(input_hooks_mutex);
-    }
-}
-
-// Inject an input event into the queue
+// Inject an input event into the queue (bypasses hooks)
 esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
     if (event == NULL || event_queue == NULL) {
         return ESP_ERR_INVALID_ARG;
@@ -130,10 +46,6 @@ esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
 
     return ESP_OK;
 }
-
-// ============================================
-// End Input Hook System
-// ============================================
 
 IRAM_ATTR static void volume_down_gpio_interrupt_handler(void* pvParameters) {
     bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN);  // GPIO is active low
@@ -163,7 +75,7 @@ static void send_navigation_event(bsp_input_navigation_key_t key, bool state, ui
         .args_navigation.state     = state,
     };
     // Offer to hooks first; if consumed, don't queue
-    if (!input_hooks_process(&event)) {
+    if (!bsp_input_hooks_process(&event)) {
         xQueueSend(event_queue, &event, 0);
     }
 }
@@ -176,7 +88,7 @@ static void send_keyboard_event(char ascii, char const* utf8, uint32_t modifiers
         .args_keyboard.modifiers = modifiers,
     };
     // Offer to hooks first; if consumed, don't queue
-    if (!input_hooks_process(&event)) {
+    if (!bsp_input_hooks_process(&event)) {
         xQueueSend(event_queue, &event, 0);
     }
 }
@@ -188,7 +100,7 @@ static void send_action_event(bsp_input_action_type_t action, bool state) {
         .args_action.state = state,
     };
     // Offer to hooks first; if consumed, don't queue
-    if (!input_hooks_process(&event)) {
+    if (!bsp_input_hooks_process(&event)) {
         xQueueSend(event_queue, &event, 0);
     }
 }
@@ -199,7 +111,7 @@ static void send_scancode_event(bsp_input_scancode_t scancode, bool state) {
         .args_scancode.scancode = scancode | (state ? 0 : BSP_INPUT_SCANCODE_RELEASE_MODIFIER),
     };
     // Offer to hooks first; if consumed, don't queue
-    if (!input_hooks_process(&event)) {
+    if (!bsp_input_hooks_process(&event)) {
         xQueueSend(event_queue, &event, 0);
     }
 }
@@ -550,8 +462,8 @@ esp_err_t bsp_input_initialize(void) {
         ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
     }
 
-    // Initialize input hooks system
-    input_hooks_init();
+    // Initialize input hooks system (from common/)
+    bsp_input_hooks_init();
 
     /*if (key_repeat_thread_handle == NULL) {
         xTaskCreate(key_repeat_thread, "Key repeat thread", 4096, NULL, tskIDLE_PRIORITY, &key_repeat_thread_handle);

@@ -20,6 +20,7 @@
 #include "freertos/idf_additions.h"
 #include "hal/gpio_types.h"
 #include "hal/lcd_types.h"
+#include "p4_function_ev_hardware.h"
 
 static char const* TAG = "BSP display";
 
@@ -27,11 +28,6 @@ static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
 static bool                     bsp_display_initialized = false;
 static SemaphoreHandle_t        flush_semaphore         = NULL;
 
-#define BSP_LCD_RESET_PIN 7
-#define BSP_LCD_PWM_PIN   8
-
-#define BSP_DSI_LDO_CHAN       3
-#define BSP_DSI_LDO_VOLTAGE_MV 2500
 
 IRAM_ATTR static bool bsp_display_flush_ready(esp_lcd_panel_handle_t panel, esp_lcd_dpi_panel_event_data_t* edata,
                                               void* user_ctx) {

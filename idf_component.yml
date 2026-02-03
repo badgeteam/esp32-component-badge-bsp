@@ -30,6 +30,10 @@ dependencies:
     version: ">=0.0.2"
     rules:
       - if: "target == esp32"
+  espressif/esp_lcd_touch_gt911:
+    version: ">=1.2.0"
+    rules:
+      - if: "target == esp32p4"
 description: Badge BSP
 license: MIT
 issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues

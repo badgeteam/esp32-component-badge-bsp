@@ -55,3 +55,8 @@ esp_err_t __attribute__((weak)) bsp_led_set_pixel_rgbw(uint32_t index, uint8_t r
 esp_err_t __attribute__((weak)) bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation, uint8_t value) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+esp_err_t __attribute__((weak)) bsp_led_get_count(uint32_t* out_count) {
+    (void)out_count;
+    return ESP_ERR_NOT_SUPPORTED;
+}

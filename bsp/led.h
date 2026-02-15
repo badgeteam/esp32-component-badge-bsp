@@ -47,3 +47,7 @@ esp_err_t bsp_led_set_pixel_rgbw(uint32_t index, uint8_t red, uint8_t green, uin
 /// @brief Set LED pixel color (HSV)
 /// @return ESP-IDF error code
 esp_err_t bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation, uint8_t value);
+
+/// @brief Get amount of LEDs available
+/// @return ESP-IDF error code
+esp_err_t bsp_led_get_count(uint32_t* out_count);

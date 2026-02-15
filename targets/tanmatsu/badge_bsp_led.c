@@ -14,7 +14,7 @@
 
 static char const* TAG = "BSP: LEDs";
 
-static uint8_t led_data[3 * BSP_LED_COUNT] = {0};
+static uint8_t led_data[3 * BSP_LED_NUM] = {0};
 
 esp_err_t bsp_led_initialize(void) {
     return ESP_OK;
@@ -81,7 +81,7 @@ esp_err_t bsp_led_set_pixel(uint32_t index, uint32_t color) {
 }
 
 esp_err_t bsp_led_set_pixel_rgb(uint32_t index, uint8_t red, uint8_t green, uint8_t blue) {
-    if (index >= BSP_LED_COUNT) {
+    if (index >= BSP_LED_NUM) {
         return ESP_ERR_INVALID_ARG;
     }
     led_data[index * 3 + 0] = green;
@@ -91,7 +91,7 @@ esp_err_t bsp_led_set_pixel_rgb(uint32_t index, uint8_t red, uint8_t green, uint
 }
 
 esp_err_t bsp_led_set_pixel_rgbw(uint32_t index, uint8_t red, uint8_t green, uint8_t blue, uint8_t white) {
-    if (index >= BSP_LED_COUNT) {
+    if (index >= BSP_LED_NUM) {
         return ESP_ERR_INVALID_ARG;
     }
     // Convert RGBW to RGB by adding white component to each color channel
@@ -165,4 +165,12 @@ esp_err_t bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation
     blue  = (uint8_t)(bf * 255.0f + 0.5f);
 
     return bsp_led_set_pixel_rgb(index, red, green, blue);
+}
+
+esp_err_t bsp_led_get_count(uint32_t* out_count) {
+    if (out_count == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    *out_count = BSP_LED_NUM;
+    return ESP_OK;
 }

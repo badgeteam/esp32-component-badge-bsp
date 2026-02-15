@@ -103,3 +103,11 @@ esp_err_t bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation
     }
     return led_strip_set_pixel_hsv(led_strip, index, hue, saturation, value);
 }
+
+esp_err_t bsp_led_get_count(uint32_t* out_count) {
+    if (out_count == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    *out_count = BSP_LED_NUM;
+    return ESP_OK;
+}

@@ -70,7 +70,7 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     ESP_RETURN_ON_ERROR(spi_bus_initialize(BSP_EPAPER_SPI_BUS, &spi_bus_config, SPI_DMA_CH_AUTO), TAG,
                         "Failed to initialise the SPI bus");
     ESP_RETURN_ON_ERROR(ssd1619_init(&epaper), TAG, "Failed to initialize e-paper display");
-    ESP_RETURN_ON_ERROR(ssd1619_apply_lut(&epaper, lut_1s), TAG, "Failed to apply e-paper LUT");
+    ESP_RETURN_ON_ERROR(ssd1619_apply_lut(&epaper, lut_900ms), TAG, "Failed to apply e-paper LUT");
     return ESP_OK;
 }
 

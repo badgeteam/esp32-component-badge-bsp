@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <string.h>
+#include "badge_bsp_input_hooks.h"
 #include "bsp/i2c.h"
 #include "bsp/input.h"
 #include "driver/gpio.h"
@@ -22,6 +23,35 @@ static char const* TAG = "BSP: INPUT";
 static QueueHandle_t   event_queue = NULL;
 static mpr121_handle_t mpr121      = NULL;
 
+static void mpr121_touch_callback(mpr121_handle_t handle, uint32_t previous_touch_state, uint32_t touch_state) {
+    bsp_input_event_t event = {0};
+
+    const bsp_input_navigation_key_t keys[] = {
+        BSP_INPUT_NAVIGATION_KEY_GAMEPAD_A, BSP_INPUT_NAVIGATION_KEY_GAMEPAD_B, BSP_INPUT_NAVIGATION_KEY_START,
+        BSP_INPUT_NAVIGATION_KEY_SELECT,    BSP_INPUT_NAVIGATION_KEY_DOWN,      BSP_INPUT_NAVIGATION_KEY_RIGHT,
+        BSP_INPUT_NAVIGATION_KEY_UP,        BSP_INPUT_NAVIGATION_KEY_LEFT,      BSP_INPUT_NAVIGATION_KEY_MENU,
+        BSP_INPUT_NAVIGATION_KEY_HOME,
+    };
+
+    for (uint8_t i = 0; i < 10; i++) {
+        uint32_t mask = 1 << i;
+        if ((previous_touch_state & mask) != (touch_state & mask)) {
+            event.type                  = INPUT_EVENT_TYPE_NAVIGATION;
+            event.args_navigation.key   = keys[i];
+            event.args_navigation.state = (touch_state & mask) ? 1 : 0;
+
+            // Process through hooks first; if consumed, don't queue
+            if (!bsp_input_hooks_process(&event)) {
+                xQueueSend(event_queue, &event, portMAX_DELAY);
+            }
+        }
+    }
+}
+
+static void mpr121_input_callback(mpr121_handle_t handle, uint32_t previous_input_state, uint32_t input_state) {
+    printf("MPR121 input state changed: %04" PRIx32 "\r\n", input_state);
+}
+
 esp_err_t bsp_input_initialize(void) {
     if (event_queue == NULL) {
         event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
@@ -39,8 +69,8 @@ esp_err_t bsp_input_initialize(void) {
         .i2c_bus               = i2c_bus_handle_internal,
         .i2c_address           = BSP_MPR121_I2C_ADDRESS,
         .concurrency_semaphore = i2c_concurrency_semaphore,
-        .touch_callback        = NULL,  // TODO
-        .input_callback        = NULL,  // TODO
+        .touch_callback        = mpr121_touch_callback,
+        .input_callback        = mpr121_input_callback,
         .i2c_timeout           = 1000,
     };
 
@@ -54,27 +84,6 @@ esp_err_t bsp_input_initialize(void) {
     mpr121_gpio_set_mode(mpr121, BSP_MPR121_PIN_INPUT_SD_DET, MPR121_INPUT_PULL_UP);
 
     mpr121_touch_configure(mpr121, 10, 0, true);  // Use first 10 electrodes for touch
-
-    /*while (1) {
-        for (uint8_t pin = 0; pin < 10; pin++) {
-            uint16_t value;
-            if (mpr121_touch_get_analog(mpr121, pin, &value) == ESP_OK) {
-                printf("%04x ", value);
-            } else {
-                ESP_LOGE(TAG, "Failed to read touch state from MPR121");
-            }
-        }
-        for (uint8_t pin = 10; pin < 12; pin++) {
-            bool value;
-            if (mpr121_gpio_get_level(mpr121, pin, &value) == ESP_OK) {
-                printf("%s ", value ? "H" : "L");
-            } else {
-                ESP_LOGE(TAG, "Failed to read input state from MPR121");
-            }
-        }
-        printf("\r\n");
-        vTaskDelay(100);
-    }*/
 
     return ESP_OK;
 }

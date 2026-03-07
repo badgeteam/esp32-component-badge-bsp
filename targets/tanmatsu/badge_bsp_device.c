@@ -1,6 +1,5 @@
-// Board support package API: Tanmatsu implementation
-// SPDX-FileCopyrightText: 2024 Nicolai Electronics
-// SPDX-FileCopyrightText: 2024 Orange-Murker
+// SPDX-FileCopyrightText: 2026 Nicolai Electronics
+// SPDX-FileCopyrightText: 2026 Orange-Murker
 // SPDX-License-Identifier: MIT
 
 #include <stdbool.h>
@@ -29,9 +28,6 @@ static bool                          initialized_without_coprocessor = false;
 #if defined(CONFIG_BSP_TARGET_TANMATSU)
 static char const device_name[]         = "Tanmatsu";
 static char const device_manufacturer[] = "Nicolai Electronics";
-#elif defined(CONFIG_BSP_TARGET_HACKERHOTEL_2026)
-static char const device_name[]         = "Hackerhotel 2026 badge";
-static char const device_manufacturer[] = "Badge.Team";
 #else
 static char const device_name[]         = "Konsool";
 static char const device_manufacturer[] = "Badge.Team";

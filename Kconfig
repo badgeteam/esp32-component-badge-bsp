@@ -21,9 +21,6 @@ menu "Badge.Team BSP"
 		config BSP_TARGET_HACKERHOTEL_2024
 			bool "Badge.Team Hackerhotel 2024 badge"
 
-		config BSP_TARGET_HACKERHOTEL_2026
-			bool "Badge.Team Hackerhotel 2026 badge"
-
 		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
 			bool "Espressif ESP32-P4 Function EV Board"
 

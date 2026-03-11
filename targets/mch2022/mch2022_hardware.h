@@ -22,3 +22,9 @@
 // RP2040
 #define BSP_RP2040_I2C_ADDR 0x17
 #define BSP_RP2040_INTR_PIN 34
+
+// ES8156 audio codec
+#define BSP_I2S_MCLK           0
+#define BSP_I2S_BCLK           4
+#define BSP_I2S_WS             12
+#define BSP_I2S_DOUT           13

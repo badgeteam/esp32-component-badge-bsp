@@ -14,7 +14,7 @@ static char const TAG[] = "BSP: device";
 
 // Internal BSP functions to initialize the subsystems
 esp_err_t bsp_device_initialize_custom(void);
-esp_err_t bsp_audio_initialize(uint32_t rate);
+esp_err_t bsp_audio_initialize(void);
 esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration);
 esp_err_t bsp_i2c_primary_bus_initialize(void);
 esp_err_t bsp_input_initialize(void);
@@ -48,7 +48,7 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     BSP_RETURN_ON_FAILURE(bsp_rtc_initialize(), ESP_LOGE(TAG, "Failed to initialize RTC subsystem"));
 
     // Initialize audio
-    BSP_RETURN_ON_FAILURE(bsp_audio_initialize(22050), ESP_LOGE(TAG, "Failed to initialize audio subsystem"));
+    BSP_RETURN_ON_FAILURE(bsp_audio_initialize(), ESP_LOGE(TAG, "Failed to initialize audio subsystem"));
 
     // Initialize LEDs
     BSP_RETURN_ON_FAILURE(bsp_led_initialize(), ESP_LOGE(TAG, "Failed to initialize LED subsystem"));

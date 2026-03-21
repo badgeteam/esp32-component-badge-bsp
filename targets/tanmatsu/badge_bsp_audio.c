@@ -64,7 +64,7 @@ esp_err_t bsp_audio_set_rate(uint32_t rate) {
     return i2s_channel_reconfig_std_clock(i2s_handle, &clk_config);
 }
 
-esp_err_t bsp_audio_initialize(uint32_t rate) {
+esp_err_t bsp_audio_initialize() {
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&codec_i2c_bus_handle), TAG, "Failed to get I2C bus handle");
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&codec_i2c_bus_semaphore), TAG,
                         "Failed to get I2C bus semaphore");

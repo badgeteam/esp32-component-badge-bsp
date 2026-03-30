@@ -26,6 +26,10 @@ esp_err_t __attribute__((weak)) bsp_audio_set_amplifier(bool enable) {
     return ESP_ERR_NOT_SUPPORTED;
 }
 
+esp_err_t __attribute__((weak)) bsp_audio_set_amplifier_force(bool force) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
 esp_err_t __attribute__((weak)) bsp_audio_get_i2s_handle(i2s_chan_handle_t* out_handle) {
     return ESP_ERR_NOT_SUPPORTED;
 }

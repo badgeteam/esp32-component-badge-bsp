@@ -98,6 +98,12 @@ esp_err_t bsp_audio_set_amplifier(bool enable) {
     return tanmatsu_coprocessor_set_amplifier_enable(handle, enable);
 }
 
+esp_err_t bsp_audio_set_amplifier_force(bool force) {
+    tanmatsu_coprocessor_handle_t handle = NULL;
+    ESP_RETURN_ON_ERROR(bsp_tanmatsu_coprocessor_get_handle(&handle), TAG, "Failed to get the coprocessor handle");
+    return tanmatsu_coprocessor_set_amplifier_force(handle, force);
+}
+
 esp_err_t bsp_audio_get_i2s_handle(i2s_chan_handle_t* out_handle) {
     if (out_handle == NULL) {
         return ESP_ERR_INVALID_ARG;

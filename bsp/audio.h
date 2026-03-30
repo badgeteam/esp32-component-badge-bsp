@@ -21,6 +21,10 @@ esp_err_t bsp_audio_set_volume(float percentage);
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_set_amplifier(bool enable);
 
+/// @brief Force amplifier on even when headphones are connected
+/// @return ESP-IDF error code
+esp_err_t bsp_audio_set_amplifier_force(bool force);
+
 /// @brief Get I2S handle
 /// @param out_handle Pointer to I2S handle
 /// @return ESP-IDF error code

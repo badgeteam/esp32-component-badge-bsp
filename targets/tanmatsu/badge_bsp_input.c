@@ -15,6 +15,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/queue.h"
+#include "freertos/timers.h"
 #include "hal/gpio_types.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
@@ -47,23 +48,27 @@ esp_err_t bsp_input_inject_event(bsp_input_event_t* event) {
     return ESP_OK;
 }
 
+// Forward declarations - the deferred handler below uses these.
+static void send_navigation_event(bsp_input_navigation_key_t key, bool state, uint32_t modifiers);
+static void send_scancode_event(bsp_input_scancode_t scancode, bool state);
+
+// Runs on the FreeRTOS Timer Service task; safe to call hook callbacks.
+static void volume_down_deferred(void* pvParameter1, uint32_t ulParameter2) {
+    (void)pvParameter1;
+    bool state = (ulParameter2 != 0);
+    send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_VOLUME_DOWN, state);
+    send_navigation_event(BSP_INPUT_NAVIGATION_KEY_VOLUME_DOWN, state, 0);
+}
+
 IRAM_ATTR static void volume_down_gpio_interrupt_handler(void* pvParameters) {
     bool state = !gpio_get_level(BSP_GPIO_BTN_VOLUME_DOWN);  // GPIO is active low
     if (state != prev_volume_down_state) {
         prev_volume_down_state           = state;
-        bsp_input_event_t scancode_event = {
-            .type = INPUT_EVENT_TYPE_SCANCODE,
-            .args_scancode.scancode =
-                BSP_INPUT_SCANCODE_ESCAPED_VOLUME_DOWN | (state ? 0 : BSP_INPUT_SCANCODE_RELEASE_MODIFIER),
-        };
-        xQueueSendFromISR(event_queue, &scancode_event, false);
-        bsp_input_event_t navigation_event = {
-            .type                      = INPUT_EVENT_TYPE_NAVIGATION,
-            .args_navigation.key       = BSP_INPUT_NAVIGATION_KEY_VOLUME_DOWN,
-            .args_navigation.modifiers = 0,
-            .args_navigation.state     = state,
-        };
-        xQueueSendFromISR(event_queue, &navigation_event, false);
+        // Defer event delivery so we can call the hook chain (which is not
+        // ISR-safe) from the FreeRTOS Timer Service task.
+        BaseType_t higher_priority_woken = pdFALSE;
+        xTimerPendFunctionCallFromISR(volume_down_deferred, NULL, (uint32_t)state, &higher_priority_woken);
+        portYIELD_FROM_ISR(higher_priority_woken);
     }
 }
 

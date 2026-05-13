@@ -11,7 +11,7 @@
 #define BSP_I2C_TIMEOUT 250     // us
 
 // Addressable LEDs
-#define BSP_LED_NUM 5
+#define BSP_LED_NUM      5
 #define BSP_LED_DATA_PIN 0
 
 // SAO port

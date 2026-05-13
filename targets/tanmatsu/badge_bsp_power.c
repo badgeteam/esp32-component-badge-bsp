@@ -70,7 +70,7 @@ esp_err_t bsp_power_get_battery_information(bsp_power_battery_information_t* out
     out_information->battery_available        = battery_attached;
     out_information->charging_disabled        = chrg_disabled;
     out_information->battery_charging         = (charging_status == TANMATSU_CHARGE_STATUS_PRE_CHARGING ||
-                                         charging_status == TANMATSU_CHARGE_STATUS_FAST_CHARGING);
+                                                 charging_status == TANMATSU_CHARGE_STATUS_FAST_CHARGING);
     out_information->maximum_charging_current = imax;
     out_information->current_charging_current = ichgr;
     out_information->voltage                  = vbat;

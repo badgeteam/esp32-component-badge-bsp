@@ -4,20 +4,20 @@
 #include <stdint.h>
 #include "bsp/audio.h"
 #include "bsp/i2c.h"
-#include "mch2022_hardware.h"
 #include "driver/i2s_std.h"
 #include "esp_check.h"
 #include "esp_err.h"
+#include "mch2022_hardware.h"
 
 static char const* TAG = "BSP: audio";
 
-static i2s_chan_handle_t       i2s_handle              = NULL;
+static i2s_chan_handle_t i2s_handle = NULL;
 
 static esp_err_t initialize_i2s(uint32_t rate) {
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(0, I2S_ROLE_MASTER);
 
-    chan_cfg.dma_desc_num  = 4;          // number of DMA buffers
-    chan_cfg.dma_frame_num = 128;        // your SID buffer size (samples per buffer)
+    chan_cfg.dma_desc_num  = 4;    // number of DMA buffers
+    chan_cfg.dma_frame_num = 128;  // your SID buffer size (samples per buffer)
 
     esp_err_t res = i2s_new_channel(&chan_cfg, &i2s_handle, NULL);
     if (res != ESP_OK) {

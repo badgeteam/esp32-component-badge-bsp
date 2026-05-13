@@ -131,10 +131,10 @@ static void handle_keyboard_text_entry(bool curr_state, bool prev_state, char as
                                             ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt)
                                             : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
         bsp_input_event_t event       = {
-                  .type                    = INPUT_EVENT_TYPE_KEYBOARD,
-                  .args_keyboard.ascii     = value_ascii,
-                  .args_keyboard.utf8      = value_utf8,
-                  .args_keyboard.modifiers = modifiers,
+            .type                    = INPUT_EVENT_TYPE_KEYBOARD,
+            .args_keyboard.ascii     = value_ascii,
+            .args_keyboard.utf8      = value_utf8,
+            .args_keyboard.modifiers = modifiers,
         };
         xQueueSend(event_queue, &event, 0);
         key_repeat_ascii = value_ascii;

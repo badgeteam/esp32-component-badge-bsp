@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "badge_bsp_input_hooks.h"
+#include <stddef.h>
 #include "bsp/input.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include <stddef.h>
 
 typedef struct {
     bsp_input_hook_cb_t callback;

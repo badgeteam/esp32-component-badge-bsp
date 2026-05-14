@@ -24,7 +24,7 @@ static char const* TAG = "BSP display";
 
 #define H_RES      BSP_EPAPER_WIDTH
 #define V_RES      BSP_EPAPER_HEIGHT
-#define COLOUR_FMT 999
+#define COLOUR_FMT BSP_DISPLAY_COLOR_FORMAT_2_PAL
 
 static ssd1619_t epaper = {
     .spi_bus               = BSP_EPAPER_SPI_BUS,
@@ -74,8 +74,8 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
-                                     lcd_rgb_data_endian_t* data_endian) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_color_format_t* color_fmt,
+                                     bsp_display_endianness_t* data_endian) {
     if (h_res) *h_res = H_RES;
     if (v_res) *v_res = V_RES;
     if (color_fmt) *color_fmt = COLOUR_FMT;

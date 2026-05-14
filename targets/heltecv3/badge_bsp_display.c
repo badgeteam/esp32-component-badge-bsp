@@ -95,14 +95,22 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
         return res;
     }
 
-    // Vertical addressing
+    /*
+        Normally SSD1306 displays use one byte per 8 vertical pixels arranged horizontally.
+        That doesn't work well with graphics stacks that expect the bytes to be 8 horizontal pixels.
+        To work around this problem the commands below activate vertical addressing and reverse COM
+        output direction. The result is a native portrait screen that has the pixels aligned in a usable
+        manner. The graphics stack is responsible for rotating for landscape use.
+    */
+
+    // Reconfigure the SSD1306 to use vertical addressing
     res = esp_lcd_panel_io_tx_param(io_handle, 0x20, (uint8_t[]){0x01}, 1);
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to set addressing mode: %d", res);
         return res;
     }
 
-    // COM output direction
+    // Reconfigure the SSD1306 to use reverse COM output direction
     res = esp_lcd_panel_io_tx_param(io_handle, 0xC8, NULL, 0);
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to set addressing mode: %d", res);
@@ -114,8 +122,8 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
-                                     lcd_rgb_data_endian_t* data_endian) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_color_format_t* color_fmt,
+                                     bsp_display_endianness_t* data_endian) {
     if (h_res != NULL) {
         *h_res = 64;
     }
@@ -123,10 +131,10 @@ esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb
         *v_res = 128;
     }
     if (color_fmt != NULL) {
-        *color_fmt = 0;
+        *color_fmt = BSP_DISPLAY_COLOR_FORMAT_1_GREY;
     }
     if (data_endian != NULL) {
-        *data_endian = 0;
+        *data_endian = BSP_DISPLAY_ENDIAN_BIG;
     }
     return ESP_OK;
 }
@@ -178,12 +186,5 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
 }
 
 esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
-    printf("%d %d %d %d\r\n", x_start, y_start, x_end, y_end);
-
-    size_t buffer_size = ((x_end - x_start) * (y_end - y_start) / 8);
-    for (size_t i = 0; i < buffer_size; i++) {
-        printf("%02X", ((uint8_t*)buffer)[i]);
-    }
-    printf("\r\n");
     return esp_lcd_panel_draw_bitmap(panel_handle, y_start, x_start, y_end, x_end, buffer);
 }

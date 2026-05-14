@@ -81,14 +81,37 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
-                                     lcd_rgb_data_endian_t* data_endian) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_color_format_t* color_fmt,
+                                     bsp_display_endianness_t* data_endian) {
     if (!bsp_display_initialized) {
         return ESP_FAIL;
     }
-    ek79007_get_parameters(h_res, v_res, color_fmt);
+
+    lcd_color_rgb_pixel_format_t color_fmt_driver;
+    ek79007_get_parameters(h_res, v_res, &color_fmt_driver);
+
+    switch (color_fmt_driver) {
+        case LCD_COLOR_PIXEL_FORMAT_RGB565:
+            if (color_fmt) {
+                *color_fmt = BSP_DISPLAY_COLOR_FORMAT_16_565RGB;
+            }
+            break;
+        case LCD_COLOR_PIXEL_FORMAT_RGB666:
+            if (color_fmt) {
+                *color_fmt = BSP_DISPLAY_COLOR_FORMAT_18_666RGB;
+            }
+            break;
+        case LCD_COLOR_PIXEL_FORMAT_RGB888:
+            if (color_fmt) {
+                *color_fmt = BSP_DISPLAY_COLOR_FORMAT_24_888RGB;
+            }
+            break;
+        default:
+            return ESP_FAIL;
+    };
+
     if (data_endian) {
-        *data_endian = LCD_RGB_DATA_ENDIAN_LITTLE;
+        *data_endian = BSP_DISPLAY_ENDIAN_LITTLE;
     }
     return ESP_OK;
 }

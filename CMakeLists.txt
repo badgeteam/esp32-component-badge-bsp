@@ -46,6 +46,10 @@ set(ESP32P4_BSP_REQUIREMENTS
     "es8156"
 )
 
+# BSP requirements only used on for ESP32-S3 targets
+set(ESP32S3_BSP_REQUIREMENTS
+)
+
 # -------------------------
 
 set(BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
@@ -54,6 +58,8 @@ if("${IDF_TARGET}" STREQUAL "esp32")
     list(APPEND BSP_REQUIRES ${ESP32_BSP_REQUIREMENTS})
 elseif("${IDF_TARGET}" STREQUAL "esp32p4")
     list(APPEND BSP_REQUIRES ${ESP32P4_BSP_REQUIREMENTS})
+elseif("${IDF_TARGET}" STREQUAL "esp32s3")
+    list(APPEND BSP_REQUIRES ${ESP32S3_BSP_REQUIREMENTS})
 else()
     message(WARNING "BSP: unsupported target ${target}")
 endif()

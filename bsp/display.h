@@ -6,10 +6,34 @@
 #include "esp_lcd_types.h"
 #include "freertos/FreeRTOS.h"
 
-typedef struct {
-    lcd_color_rgb_pixel_format_t requested_color_format;  // Requested color format, applied if supported by the display
-    size_t                       num_fbs;                 // Number of framebuffers to allocate
-} bsp_display_configuration_t;
+/// @brief Display color format
+/// @details The color format the display driver for the active target expects the pixel buffer to be in
+typedef enum {
+    BSP_DISPLAY_COLOR_FORMAT_1_PAL = 0,
+    BSP_DISPLAY_COLOR_FORMAT_2_PAL,
+    BSP_DISPLAY_COLOR_FORMAT_4_PAL,
+    BSP_DISPLAY_COLOR_FORMAT_8_PAL,
+    BSP_DISPLAY_COLOR_FORMAT_16_PAL,
+    BSP_DISPLAY_COLOR_FORMAT_1_GREY,
+    BSP_DISPLAY_COLOR_FORMAT_2_GREY,
+    BSP_DISPLAY_COLOR_FORMAT_4_GREY,
+    BSP_DISPLAY_COLOR_FORMAT_8_GREY,
+    BSP_DISPLAY_COLOR_FORMAT_8_332RGB,
+    BSP_DISPLAY_COLOR_FORMAT_16_565RGB,
+    BSP_DISPLAY_COLOR_FORMAT_4_1111ARGB,
+    BSP_DISPLAY_COLOR_FORMAT_8_2222ARGB,
+    BSP_DISPLAY_COLOR_FORMAT_16_4444ARGB,
+    BSP_DISPLAY_COLOR_FORMAT_24_888RGB,
+    BSP_DISPLAY_COLOR_FORMAT_32_8888ARGB,
+    BSP_DISPLAY_COLOR_FORMAT_18_666RGB,
+} bsp_display_color_format_t;
+
+/// @brief Display data endianness
+/// @details Order of the bytes in each pixel
+typedef enum {
+    BSP_DISPLAY_ENDIAN_BIG = 0,
+    BSP_DISPLAY_ENDIAN_LITTLE,
+} bsp_display_endianness_t;
 
 /// @brief Display rotation
 /// @details Relative to how you would rotate the display clockwise
@@ -28,13 +52,18 @@ typedef enum {
     BSP_DISPLAY_TE_V_AND_H_BLANKING,
 } bsp_display_te_mode_t;
 
+typedef struct {
+    bsp_display_color_format_t requested_color_format;  // Requested color format, applied if supported by the display
+    size_t                     num_fbs;                 // Number of framebuffers to allocate
+} bsp_display_configuration_t;
+
 /// @brief Get display parameters
 /// @details Get display parameters
 /// @return ESP-IDF error code
 ///          - ESP_OK if succesful
 ///          - ESP_FAIL if not initialized
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
-                                     lcd_rgb_data_endian_t* data_endian);
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_color_format_t* color_fmt,
+                                     bsp_display_endianness_t* data_endian);
 
 /// @brief Get display panel
 /// @details Get display panel

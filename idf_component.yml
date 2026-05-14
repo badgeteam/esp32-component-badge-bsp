@@ -36,3 +36,4 @@ license: MIT
 issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues
 repository: git://github.com/badgeteam/esp32-component-badge-bsp.git
 url: https://github.com/badgeteam/esp32-component-badge-bsp
+version: 0.9.5

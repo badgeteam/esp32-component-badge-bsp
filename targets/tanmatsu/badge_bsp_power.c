@@ -3,7 +3,6 @@
 // SPDX-FileCopyrightText: 2024-2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "bsp/power.h"
@@ -59,8 +58,27 @@ esp_err_t bsp_power_get_battery_information(bsp_power_battery_information_t* out
     uint16_t vbat;
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_pmic_vbat(handle, &vbat), TAG, "Failed to read battery voltage");
 
-    double battery_voltage    = (double)vbat / 1000.0;
-    double battery_percentage = 123.0 - 123.0 / pow(1.0 + pow(battery_voltage / 3.7, 80.0), 0.165);
+    double battery_voltage = (double)vbat / 1000.0;
+
+    static const double curve_v[] = {3.30, 3.40, 3.50, 3.60, 3.70, 3.80, 3.90, 4.00, 4.05};
+    static const double curve_p[] = {0.0, 10.0, 22.0, 36.0, 51.0, 67.0, 81.0, 93.0, 100.0};
+    static const int    curve_len = sizeof(curve_v) / sizeof(curve_v[0]);
+
+    double battery_percentage = 0.0;
+    if (battery_voltage <= curve_v[0]) {
+        battery_percentage = 0.0;
+    } else if (battery_voltage >= curve_v[curve_len - 1]) {
+        battery_percentage = 100.0;
+    } else {
+        battery_percentage = 0.0;
+        for (int i = 1; i < curve_len; i++) {
+            if (battery_voltage <= curve_v[i]) {
+                double t           = (battery_voltage - curve_v[i - 1]) / (curve_v[i] - curve_v[i - 1]);
+                battery_percentage = curve_p[i - 1] + t * (curve_p[i] - curve_p[i - 1]);
+                break;
+            }
+        }
+    }
 
     uint16_t ichgr;
     ESP_RETURN_ON_ERROR(tanmatsu_coprocessor_get_pmic_ichgr(handle, &ichgr), TAG, "Failed to read charging current");

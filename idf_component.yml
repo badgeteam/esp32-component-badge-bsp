@@ -3,21 +3,34 @@ targets:
   - esp32p4
   - esp32c6
   - esp32c3
+  - linux
 dependencies:
   cmake_utilities: 0.*
   idf: ">=5.3"
   espressif/esp_lcd_ili9341:
     version: "^2.0.2"
+    rules:
+      - if: "target != linux"
   espressif/led_strip:
     version: "^3.0.3"
+    rules:
+      - if: "target != linux"
   nicolaielectronics/ssd1619:
     version: "^0.0.1"
+    rules:
+      - if: "target != linux"
   nicolaielectronics/es8156:
     version: "^0.0.3"
+    rules:
+      - if: "target != linux"
   nicolaielectronics/mpr121:
     version: "^0.0.2"
+    rules:
+      - if: "target != linux"
   nicolaielectronics/bmi270:
     version: "^1.0.1"
+    rules:
+      - if: "target != linux"
   nicolaielectronics/mipi_dsi_abstraction:
     version: "^0.3.3"
     rules:
@@ -35,3 +48,4 @@ license: MIT
 issues: https://github.com/badgeteam/esp32-component-badge-bsp/issues
 repository: git://github.com/badgeteam/esp32-component-badge-bsp.git
 url: https://github.com/badgeteam/esp32-component-badge-bsp
+version: 0.9.5

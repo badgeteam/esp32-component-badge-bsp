@@ -23,13 +23,14 @@ endif()
 # BSP requirements for all targets
 
 set(COMMON_BSP_REQUIREMENTS
+    "driver"
     "esp_lcd"
     "driver"
     "ssd1619"
     "bootloader_support"
 )
 
-# BSP requirements only used for ESP32 targets
+# BSP requirements only used for classic ESP32 targets
 
 set(ESP32_BSP_REQUIREMENTS
     "espressif__esp_lcd_ili9341"
@@ -46,7 +47,9 @@ set(ESP32P4_BSP_REQUIREMENTS
 
 # -------------------------
 
-set(BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
+if(NOT "${IDF_TARGET}" STREQUAL "linux")
+list(APPEND BSP_REQUIRES ${COMMON_BSP_REQUIREMENTS})
+endif()
 
 if("${IDF_TARGET}" STREQUAL "esp32")
     list(APPEND BSP_REQUIRES ${ESP32_BSP_REQUIREMENTS})

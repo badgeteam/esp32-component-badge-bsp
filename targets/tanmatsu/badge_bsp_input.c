@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Nicolai Electronics
 // SPDX-License-Identifier: MIT
 
+#include <assert.h>
 #include <inttypes.h>
 #include <stdint.h>
 #include <string.h>
@@ -89,9 +90,9 @@ static void send_keyboard_event(char ascii, char const* utf8, uint32_t modifiers
     bsp_input_event_t event = {
         .type                    = INPUT_EVENT_TYPE_KEYBOARD,
         .args_keyboard.ascii     = ascii,
-        .args_keyboard.utf8      = utf8,
         .args_keyboard.modifiers = modifiers,
     };
+    strncpy(event.args_keyboard.utf8, utf8, sizeof(event.args_keyboard.utf8));
     // Offer to hooks first; if consumed, don't queue
     if (!bsp_input_hooks_process(&event)) {
         xQueueSend(event_queue, &event, 0);
@@ -133,9 +134,14 @@ static void handle_keyboard_text_entry(bool curr_state, bool prev_state, char as
         bsp_input_event_t event       = {
             .type                    = INPUT_EVENT_TYPE_KEYBOARD,
             .args_keyboard.ascii     = value_ascii,
-            .args_keyboard.utf8      = value_utf8,
             .args_keyboard.modifiers = modifiers,
         };
+        if (value_utf8) {
+            strncpy(event.args_keyboard.utf8, value_utf8, sizeof(event.args_keyboard.utf8));
+        } else {
+            event.args_keyboard.utf8[0] = value_ascii;
+            event.args_keyboard.utf8[1] = 0;
+        }
         xQueueSend(event_queue, &event, 0);
         key_repeat_ascii = value_ascii;
         strncpy(key_repeat_utf8, value_utf8, sizeof(key_repeat_utf8) - 1);

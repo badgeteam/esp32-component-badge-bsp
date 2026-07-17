@@ -229,7 +229,7 @@ typedef struct _bsp_input_event_args_navigation {
 
 typedef struct _bsp_input_event_args_keyboard {
     char        ascii;
-    char const* utf8;
+    char        utf8[7];
     uint32_t    modifiers;
 } bsp_input_event_args_keyboard_t;
 

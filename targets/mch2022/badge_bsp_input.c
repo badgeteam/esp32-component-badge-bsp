@@ -87,7 +87,9 @@ void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state) {
 
     // Process through hooks first; if consumed, don't queue
     if (!bsp_input_hooks_process(&event)) {
-        xQueueSend(event_queue, &event, portMAX_DELAY);
+        if (event_queue != NULL) {
+            xQueueSend(event_queue, &event, portMAX_DELAY);
+        }
     }
 }
 

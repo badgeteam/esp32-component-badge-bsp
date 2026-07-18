@@ -29,7 +29,7 @@ static esp_err_t initialize_i2s(uint32_t rate) {
 
     i2s_std_config_t i2s_config = {
         .clk_cfg  = I2S_STD_CLK_DEFAULT_CONFIG(rate),
-        .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
+        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg =
             {
                 .mclk = BSP_I2S_MCLK,

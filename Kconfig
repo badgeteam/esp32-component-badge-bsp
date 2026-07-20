@@ -32,5 +32,8 @@ menu "Badge.Team BSP"
 
 		config BSP_TARGET_HELTECV3
 			bool "Heltec v3"
+
+		config BSP_TARGET_HACKADAY2025
+			bool "Hackaday 2025 Communicator badge"
 	endchoice
 endmenu

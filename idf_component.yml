@@ -19,6 +19,8 @@ dependencies:
     version: "^0.0.2"
   nicolaielectronics/bmi270:
     version: "^1.0.1"
+  nicolaielectronics/tca8418:
+    version: "^1.0.0"
   nicolaielectronics/mipi_dsi_abstraction:
     version: "^0.3.3"
     rules:

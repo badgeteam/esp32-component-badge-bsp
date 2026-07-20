@@ -31,6 +31,7 @@ set(COMMON_BSP_REQUIREMENTS
     "driver"
     "ssd1619"
     "bootloader_support"
+    "tca8418"
 )
 
 # BSP requirements only used for ESP32 targets

@@ -1,6 +1,10 @@
 #include "bsp/sensors.h"
 #include "esp_err.h"
 
+esp_err_t __attribute__((weak)) bsp_sensor_initialize(void) {
+    return ESP_OK;
+}
+
 bool __attribute__((weak)) bsp_sensor_get_supported(bsp_sensor_type_t type) {
     (void)type;
     return false;

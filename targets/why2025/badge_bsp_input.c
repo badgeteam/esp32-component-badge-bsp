@@ -21,6 +21,7 @@ static bool             prev_button_state = false;
 static tca8418_handle_t tca8418_handle    = {0};
 static uint32_t         active_modifiers  = 0;
 static bool             super_used        = false;
+static i2c_master_bus_handle_t i2c_handle;
 
 typedef enum {
     WHY2025_KEY_ESC       = 1,
@@ -491,15 +492,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
     }
 }
 
-esp_err_t bsp_input_initialize(void) {
-    if (event_queue == NULL) {
-        event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
-        ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
-    }
-
-    i2c_master_bus_handle_t i2c_handle;
-    bsp_i2c_primary_bus_get_handle(&i2c_handle);
-
+esp_err_t why_keyboard_reset_and_init() {
     esp_err_t res = tca8418_initialize(&tca8418_handle, i2c_handle, BSP_KBD_RST, BSP_KBD_INT);
     if (res != ESP_OK) {
         return res;
@@ -527,8 +520,17 @@ esp_err_t bsp_input_initialize(void) {
     // Enable all interrupt sources (overflow, keypad lock, GPI, key events)
     ESP_RETURN_ON_ERROR(tca8418_set_cfg(&tca8418_handle, false, false, false, false, true, true, true, true), TAG,
                         "Failed to configure TCA8418 interrupts");
-
     return ESP_OK;
+}
+
+esp_err_t bsp_input_initialize(void) {
+    if (event_queue == NULL) {
+        event_queue = xQueueCreate(32, sizeof(bsp_input_event_t));
+        ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
+    }
+
+    bsp_i2c_primary_bus_get_handle(&i2c_handle);
+    return why_keyboard_reset_and_init();
 }
 
 esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue) {

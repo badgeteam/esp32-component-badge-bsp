@@ -83,8 +83,8 @@ static esp_err_t bsp_display_initialize_panel(void) {
     };
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num          = BSP_LCD_RESET_PIN,
-        .rgb_ele_order           = LCD_RGB_ELEMENT_ORDER_BGR,  // Implemented by LCD command `36h`
-        .bits_per_pixel          = 16,                         // Implemented by LCD command `3Ah` (16/18/24)
+        .rgb_ele_order           = LCD_RGB_ELEMENT_ORDER_RGB,  // Implemented by LCD command `36h`
+        .bits_per_pixel          = 24,                         // Implemented by LCD command `3Ah` (16/18/24)
         .vendor_config           = &vendor_config,
         .flags.reset_active_high = 1,
     };
@@ -99,7 +99,7 @@ static esp_err_t bsp_display_initialize_flush(void) {
     flush_semaphore = xSemaphoreCreateBinary();
     xSemaphoreGive(flush_semaphore);
     esp_lcd_dpi_panel_event_callbacks_t callbacks = {
-        .on_refresh_done = bsp_display_flush_ready,
+        .on_color_trans_done = bsp_display_flush_ready,
     };
     return esp_lcd_dpi_panel_register_event_callbacks(panel_handle, &callbacks, NULL);
 }
@@ -123,7 +123,7 @@ esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_c
         *v_res = 720;
     }
     if (color_fmt) {
-        *color_fmt = BSP_DISPLAY_COLOR_FORMAT_16_565RGB;
+        *color_fmt = BSP_DISPLAY_COLOR_FORMAT_24_888RGB;
     }
     if (data_endian) {
         *data_endian = BSP_DISPLAY_ENDIAN_LITTLE;

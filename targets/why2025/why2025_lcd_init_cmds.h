@@ -80,7 +80,7 @@ static const st7703_lcd_init_cmd_t custom_init[] =                              
     .dpi_clk_src        = MIPI_DSI_DPI_CLK_SRC_DEFAULT,                                                               \
      .dpi_clock_freq_mhz = 47,                                                                                         \
      .virtual_channel    = 0,                                                                                          \
-     .pixel_format       = LCD_COLOR_PIXEL_FORMAT_RGB565,                                                                    \
+     .pixel_format       = LCD_COLOR_PIXEL_FORMAT_RGB888,                                                                    \
      .num_fbs = 1,\
      .video_timing =                                                                                                   \
          {                                                                                                             \
@@ -100,7 +100,7 @@ static const st7703_lcd_init_cmd_t custom_init[] = {
     {0xB9, (uint8_t[]){0xF1, 0x12, 0x83}, 3, 0},
     {0xB1, (uint8_t[]){0x00, 0x00, 0x00, 0xDA, 0x80}, 5, 0},
     {0xB2, (uint8_t[]){0x3C, 0x02, 0x30}, 3, 0},
-    {0xB3, (uint8_t[]){0x10, 0x10, 0x28, 0x28, 0x03, 0xFF, 0x00, 0x00, 0x00, 0x00}, 10, 0},
+    {0xB3, (uint8_t[]){0x13, 0x10, 0x28, 0x28, 0x03, 0xFF, 0x00, 0x00, 0x00, 0x00}, 10, 0},
     {0xB4, (uint8_t[]){0x80}, 1, 0},
     {0xB5, (uint8_t[]){0x0A, 0x0A}, 2, 0},
     {0xB6, (uint8_t[]){0x97, 0x97}, 2, 0},
@@ -111,7 +111,7 @@ static const st7703_lcd_init_cmd_t custom_init[] = {
     {0xBC, (uint8_t[]){0x47}, 1, 0},
     {0xBF, (uint8_t[]){0x02, 0x11, 0x00}, 3, 0},
     {0xC0, (uint8_t[]){0x73, 0x73, 0x50, 0x50, 0x00, 0x00, 0x12, 0x70, 0x00}, 9, 0},
-    {0xC1, (uint8_t[]){0x43, 0x00, 0x32, 0x32, 0x77, 0xC1, 0xFF, 0xFF, 0xCC, 0xCC, 0x77, 0x77}, 12, 0},
+    {0xC1, (uint8_t[]){0x43, 0x00, 0x32, 0x32, 0x77, 0xC1, 0xFF, 0xFF, 0xCC, 0xCC, 0x77, 0x77}, 12, 0}, // 0x43 might need to be set to 53
     {0xC6, (uint8_t[]){0x82, 0x00, 0xBF, 0xFF, 0x00, 0xFF}, 6, 0},
     {0xC7, (uint8_t[]){0xB8, 0x00, 0x0A, 0x00, 0x00, 0x00}, 6, 0},
     {0xC8, (uint8_t[]){0x10, 0x40, 0x1E, 0x02}, 4, 0},

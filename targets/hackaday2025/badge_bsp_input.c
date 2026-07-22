@@ -21,6 +21,7 @@ static bool             prev_button_state = false;
 static tca8418_handle_t tca8418_handle    = {0};
 static uint32_t         active_modifiers  = 0;
 static bool             super_used        = false;
+static bool             key_state[128]    = {0};
 
 typedef enum {
     HACKADAY2025_KEY_F1       = 2,
@@ -216,6 +217,10 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
 
         hackaday2025_keys_t key = (hackaday2025_keys_t)code;
 
+        if (code < sizeof(key_state) / sizeof(key_state[0])) {
+            key_state[code] = pressed;
+        }
+
         if (key != HACKADAY2025_KEY_SUPER) {
             super_used = true;
         }
@@ -223,6 +228,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
         switch (key) {
             case HACKADAY2025_KEY_F1:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F1, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_F1, pressed);
                 break;
             case HACKADAY2025_KEY_NUM_PLUS:
                 send_scancode_event(BSP_INPUT_SCANCODE_KPPLUS, pressed);
@@ -242,18 +248,23 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_F2:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F2, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_F2, pressed);
                 break;
             case HACKADAY2025_KEY_F3:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F3, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_F3, pressed);
                 break;
             case HACKADAY2025_KEY_F4:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F4, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_F4, pressed);
                 break;
             case HACKADAY2025_KEY_F5:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F5, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_F5, pressed);
                 break;
             case HACKADAY2025_KEY_ESC:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_ESC, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ESC, pressed);
                 break;
             case HACKADAY2025_KEY_Q:
                 send_scancode_event(BSP_INPUT_SCANCODE_Q, pressed);
@@ -293,6 +304,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_TAB:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_TAB, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_TAB, pressed);
                 break;
             case HACKADAY2025_KEY_A:
                 send_scancode_event(BSP_INPUT_SCANCODE_A, pressed);
@@ -390,6 +402,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                         send_navigation_event(BSP_INPUT_NAVIGATION_KEY_SUPER, true, active_modifiers);
                         send_navigation_event(BSP_INPUT_NAVIGATION_KEY_SUPER, false, active_modifiers);
                     }
+                    send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_LEFTMETA, pressed);
                 }
                 break;
             case HACKADAY2025_KEY_LEFT_ALT:
@@ -404,15 +417,19 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_SPACE:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_SPACE_M, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_SPACE, pressed);
                 break;
             case HACKADAY2025_KEY_RIGHT:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_RIGHT, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_RIGHT, pressed);
                 break;
             case HACKADAY2025_KEY_DOWN:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_DOWN, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_DOWN, pressed);
                 break;
             case HACKADAY2025_KEY_LEFT:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_LEFT, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_LEFT, pressed);
                 break;
             case HACKADAY2025_KEY_RIGHT_ALT:
                 if (pressed) {
@@ -420,9 +437,11 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_ALT_R);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_RALT, pressed);
                 break;
             case HACKADAY2025_KEY_NUM_MINUS:
                 send_scancode_event(BSP_INPUT_SCANCODE_KPMINUS, pressed);
+                if (pressed) handle_keyboard_text_entry('-', '-', "-", "-", "-", "-", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_6:
                 send_scancode_event(BSP_INPUT_SCANCODE_6, pressed);
@@ -466,6 +485,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_ENTER:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_RETURN, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ENTER, pressed);
                 break;
             case HACKADAY2025_KEY_APOSTROPHE:
                 send_scancode_event(BSP_INPUT_SCANCODE_APOSTROPHE, pressed);
@@ -477,6 +497,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_NUM_SLASH:
                 send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_KPSLASH, pressed);
+                if (pressed) handle_keyboard_text_entry('/', '/', "/", "/", "/", "/", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_EQUALS:
                 send_scancode_event(BSP_INPUT_SCANCODE_EQUAL, pressed);
@@ -496,12 +517,15 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_SHIFT_R);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_FAKE_RSHIFT, pressed);
                 break;
             case HACKADAY2025_KEY_UP:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_UP, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_UP, pressed);
                 break;
             case HACKADAY2025_KEY_BACKSPACE:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_BACKSPACE, pressed, active_modifiers);
+                send_scancode_event(BSP_INPUT_SCANCODE_BACKSPACE, pressed);
                 break;
             default:
                 ESP_LOGW(TAG, "Unmapped key pressed: %u", code);
@@ -588,7 +612,229 @@ esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* ou
 }
 
 esp_err_t bsp_input_read_scancode(bsp_input_scancode_t key, bool* out_state) {
-    return ESP_ERR_NOT_SUPPORTED;
+    if (out_state == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (key == BSP_INPUT_SCANCODE_ENTER) {
+        // The enter scancode is shared between the keypad and the dedicated hardware button
+        *out_state = key_state[HACKADAY2025_KEY_ENTER] || prev_button_state;
+        return ESP_OK;
+    }
+
+    hackaday2025_keys_t code;
+    switch (key) {
+        case BSP_INPUT_SCANCODE_ESC:
+            code = HACKADAY2025_KEY_ESC;
+            break;
+        case BSP_INPUT_SCANCODE_1:
+            code = HACKADAY2025_KEY_NUM_1;
+            break;
+        case BSP_INPUT_SCANCODE_2:
+            code = HACKADAY2025_KEY_NUM_2;
+            break;
+        case BSP_INPUT_SCANCODE_3:
+            code = HACKADAY2025_KEY_NUM_3;
+            break;
+        case BSP_INPUT_SCANCODE_4:
+            code = HACKADAY2025_KEY_NUM_4;
+            break;
+        case BSP_INPUT_SCANCODE_5:
+            code = HACKADAY2025_KEY_NUM_5;
+            break;
+        case BSP_INPUT_SCANCODE_6:
+            code = HACKADAY2025_KEY_NUM_6;
+            break;
+        case BSP_INPUT_SCANCODE_7:
+            code = HACKADAY2025_KEY_NUM_7;
+            break;
+        case BSP_INPUT_SCANCODE_8:
+            code = HACKADAY2025_KEY_NUM_8;
+            break;
+        case BSP_INPUT_SCANCODE_9:
+            code = HACKADAY2025_KEY_NUM_9;
+            break;
+        case BSP_INPUT_SCANCODE_EQUAL:
+            code = HACKADAY2025_KEY_NUM_EQUALS;
+            break;
+        case BSP_INPUT_SCANCODE_BACKSPACE:
+            code = HACKADAY2025_KEY_BACKSPACE;
+            break;
+        case BSP_INPUT_SCANCODE_TAB:
+            code = HACKADAY2025_KEY_TAB;
+            break;
+        case BSP_INPUT_SCANCODE_Q:
+            code = HACKADAY2025_KEY_Q;
+            break;
+        case BSP_INPUT_SCANCODE_W:
+            code = HACKADAY2025_KEY_W;
+            break;
+        case BSP_INPUT_SCANCODE_E:
+            code = HACKADAY2025_KEY_E;
+            break;
+        case BSP_INPUT_SCANCODE_R:
+            code = HACKADAY2025_KEY_R;
+            break;
+        case BSP_INPUT_SCANCODE_T:
+            code = HACKADAY2025_KEY_T;
+            break;
+        case BSP_INPUT_SCANCODE_Y:
+            code = HACKADAY2025_KEY_Y;
+            break;
+        case BSP_INPUT_SCANCODE_U:
+            code = HACKADAY2025_KEY_U;
+            break;
+        case BSP_INPUT_SCANCODE_I:
+            code = HACKADAY2025_KEY_I;
+            break;
+        case BSP_INPUT_SCANCODE_O:
+            code = HACKADAY2025_KEY_O;
+            break;
+        case BSP_INPUT_SCANCODE_P:
+            code = HACKADAY2025_KEY_P;
+            break;
+        case BSP_INPUT_SCANCODE_LEFTBRACE:
+            code = HACKADAY2025_KEY_LEFT_BRACKET;
+            break;
+        case BSP_INPUT_SCANCODE_RIGHTBRACE:
+            code = HACKADAY2025_KEY_RIGHT_BRACKET;
+            break;
+        case BSP_INPUT_SCANCODE_LEFTCTRL:
+            code = HACKADAY2025_KEY_CTRL;
+            break;
+        case BSP_INPUT_SCANCODE_A:
+            code = HACKADAY2025_KEY_A;
+            break;
+        case BSP_INPUT_SCANCODE_S:
+            code = HACKADAY2025_KEY_S;
+            break;
+        case BSP_INPUT_SCANCODE_D:
+            code = HACKADAY2025_KEY_D;
+            break;
+        case BSP_INPUT_SCANCODE_F:
+            code = HACKADAY2025_KEY_F;
+            break;
+        case BSP_INPUT_SCANCODE_G:
+            code = HACKADAY2025_KEY_G;
+            break;
+        case BSP_INPUT_SCANCODE_H:
+            code = HACKADAY2025_KEY_H;
+            break;
+        case BSP_INPUT_SCANCODE_J:
+            code = HACKADAY2025_KEY_J;
+            break;
+        case BSP_INPUT_SCANCODE_K:
+            code = HACKADAY2025_KEY_K;
+            break;
+        case BSP_INPUT_SCANCODE_L:
+            code = HACKADAY2025_KEY_L;
+            break;
+        case BSP_INPUT_SCANCODE_SEMICOLON:
+            code = HACKADAY2025_KEY_SEMICOLON;
+            break;
+        case BSP_INPUT_SCANCODE_APOSTROPHE:
+            code = HACKADAY2025_KEY_APOSTROPHE;
+            break;
+        case BSP_INPUT_SCANCODE_LEFTSHIFT:
+            code = HACKADAY2025_KEY_LEFT_SHIFT;
+            break;
+        case BSP_INPUT_SCANCODE_BACKSLASH:
+            code = HACKADAY2025_KEY_BACKSLASH;
+            break;
+        case BSP_INPUT_SCANCODE_Z:
+            code = HACKADAY2025_KEY_Z;
+            break;
+        case BSP_INPUT_SCANCODE_X:
+            code = HACKADAY2025_KEY_X;
+            break;
+        case BSP_INPUT_SCANCODE_C:
+            code = HACKADAY2025_KEY_C;
+            break;
+        case BSP_INPUT_SCANCODE_V:
+            code = HACKADAY2025_KEY_V;
+            break;
+        case BSP_INPUT_SCANCODE_B:
+            code = HACKADAY2025_KEY_B;
+            break;
+        case BSP_INPUT_SCANCODE_N:
+            code = HACKADAY2025_KEY_N;
+            break;
+        case BSP_INPUT_SCANCODE_M:
+            code = HACKADAY2025_KEY_M;
+            break;
+        case BSP_INPUT_SCANCODE_COMMA:
+            code = HACKADAY2025_KEY_COMMA;
+            break;
+        case BSP_INPUT_SCANCODE_DOT:
+            code = HACKADAY2025_KEY_DOT;
+            break;
+        case BSP_INPUT_SCANCODE_RIGHTSHIFT:
+            code = HACKADAY2025_KEY_RIGHT_SHIFT;
+            break;
+        case BSP_INPUT_SCANCODE_KPASTERISK:
+            code = HACKADAY2025_KEY_NUM_ASTERISK;
+            break;
+        case BSP_INPUT_SCANCODE_LEFTALT:
+            code = HACKADAY2025_KEY_LEFT_ALT;
+            break;
+        case BSP_INPUT_SCANCODE_SPACE:
+            code = HACKADAY2025_KEY_SPACE;
+            break;
+        case BSP_INPUT_SCANCODE_F1:
+            code = HACKADAY2025_KEY_F1;
+            break;
+        case BSP_INPUT_SCANCODE_F2:
+            code = HACKADAY2025_KEY_F2;
+            break;
+        case BSP_INPUT_SCANCODE_F3:
+            code = HACKADAY2025_KEY_F3;
+            break;
+        case BSP_INPUT_SCANCODE_F4:
+            code = HACKADAY2025_KEY_F4;
+            break;
+        case BSP_INPUT_SCANCODE_F5:
+            code = HACKADAY2025_KEY_F5;
+            break;
+        case BSP_INPUT_SCANCODE_KPMINUS:
+            code = HACKADAY2025_KEY_NUM_MINUS;
+            break;
+        case BSP_INPUT_SCANCODE_KPPLUS:
+            code = HACKADAY2025_KEY_NUM_PLUS;
+            break;
+        case BSP_INPUT_SCANCODE_KP0:
+            code = HACKADAY2025_KEY_NUM_0;
+            break;
+        case BSP_INPUT_SCANCODE_KPDOT:
+            code = HACKADAY2025_KEY_NUM_DOT;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_RALT:
+            code = HACKADAY2025_KEY_RIGHT_ALT;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_GREY_UP:
+            code = HACKADAY2025_KEY_UP;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_GREY_DOWN:
+            code = HACKADAY2025_KEY_DOWN;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_GREY_LEFT:
+            code = HACKADAY2025_KEY_LEFT;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_GREY_RIGHT:
+            code = HACKADAY2025_KEY_RIGHT;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_GREY_KPSLASH:
+            code = HACKADAY2025_KEY_NUM_SLASH;
+            break;
+        case BSP_INPUT_SCANCODE_ESCAPED_LEFTMETA:
+            code = HACKADAY2025_KEY_SUPER;
+            break;
+        default:
+            *out_state = false;
+            return ESP_OK;
+    }
+
+    *out_state = key_state[code];
+    return ESP_OK;
 }
 
 esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state) {

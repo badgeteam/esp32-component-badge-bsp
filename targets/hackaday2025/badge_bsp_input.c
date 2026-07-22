@@ -608,7 +608,64 @@ esp_err_t bsp_input_set_backlight_brightness(uint8_t percentage) {
 }
 
 esp_err_t bsp_input_read_navigation_key(bsp_input_navigation_key_t key, bool* out_state) {
-    return ESP_ERR_NOT_SUPPORTED;
+    if (out_state == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    hackaday2025_keys_t code;
+    switch (key) {
+        case BSP_INPUT_NAVIGATION_KEY_ESC:
+            code = HACKADAY2025_KEY_ESC;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_LEFT:
+            code = HACKADAY2025_KEY_LEFT;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_RIGHT:
+            code = HACKADAY2025_KEY_RIGHT;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_UP:
+            code = HACKADAY2025_KEY_UP;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_DOWN:
+            code = HACKADAY2025_KEY_DOWN;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_RETURN:
+            code = HACKADAY2025_KEY_ENTER;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SUPER:
+            code = HACKADAY2025_KEY_SUPER;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_TAB:
+            code = HACKADAY2025_KEY_TAB;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_BACKSPACE:
+            code = HACKADAY2025_KEY_BACKSPACE;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_SPACE_M:
+            code = HACKADAY2025_KEY_SPACE;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F1:
+            code = HACKADAY2025_KEY_F1;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F2:
+            code = HACKADAY2025_KEY_F2;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F3:
+            code = HACKADAY2025_KEY_F3;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F4:
+            code = HACKADAY2025_KEY_F4;
+            break;
+        case BSP_INPUT_NAVIGATION_KEY_F5:
+            code = HACKADAY2025_KEY_F5;
+            break;
+        default:
+            *out_state = false;
+            return ESP_OK;
+    }
+
+    *out_state = key_state[code];
+    return ESP_OK;
 }
 
 esp_err_t bsp_input_read_scancode(bsp_input_scancode_t key, bool* out_state) {

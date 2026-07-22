@@ -348,6 +348,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_SHIFT_L);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_LEFTSHIFT, pressed);
                 break;
             case HACKADAY2025_KEY_Z:
                 send_scancode_event(BSP_INPUT_SCANCODE_Z, pressed);
@@ -391,6 +392,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_CTRL_L);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_LEFTCTRL, pressed);
                 break;
             case HACKADAY2025_KEY_SUPER:
                 if (pressed) {
@@ -402,8 +404,8 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                         send_navigation_event(BSP_INPUT_NAVIGATION_KEY_SUPER, true, active_modifiers);
                         send_navigation_event(BSP_INPUT_NAVIGATION_KEY_SUPER, false, active_modifiers);
                     }
-                    send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_LEFTMETA, pressed);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_LEFTMETA, pressed);
                 break;
             case HACKADAY2025_KEY_LEFT_ALT:
                 if (pressed) {
@@ -411,6 +413,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_ALT_L);
                 }
+                send_scancode_event(BSP_INPUT_SCANCODE_LEFTALT, pressed);
                 break;
             case HACKADAY2025_KEY_BACKSLASH:
                 send_scancode_event(BSP_INPUT_SCANCODE_BACKSLASH, pressed);
@@ -508,7 +511,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 if (pressed) handle_keyboard_text_entry('.', '.', ".", ".", ".", ".", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_0:
-                send_scancode_event(BSP_INPUT_SCANCODE_KP0, pressed);
+                send_scancode_event(BSP_INPUT_SCANCODE_0, pressed);
                 if (pressed) handle_keyboard_text_entry('0', ')', "0", ")", "’", "̊", active_modifiers);
                 break;
             case HACKADAY2025_KEY_RIGHT_SHIFT:
@@ -517,7 +520,7 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 } else {
                     active_modifiers &= ~(BSP_INPUT_MODIFIER_SHIFT_R);
                 }
-                send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_FAKE_RSHIFT, pressed);
+                send_scancode_event(BSP_INPUT_SCANCODE_RIGHTSHIFT, pressed);
                 break;
             case HACKADAY2025_KEY_UP:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_UP, pressed, active_modifiers);

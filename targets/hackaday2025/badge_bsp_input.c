@@ -226,19 +226,19 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_NUM_PLUS:
                 send_scancode_event(BSP_INPUT_SCANCODE_KPPLUS, pressed);
-                handle_keyboard_text_entry('+', '+', "+", "+", "+", "+", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('+', '+', "+", "+", "+", "+", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_9:
                 send_scancode_event(BSP_INPUT_SCANCODE_9, pressed);
-                handle_keyboard_text_entry('9', '(', "9", "(", "‘", "̆", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('9', '(', "9", "(", "‘", "̆", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_8:
                 send_scancode_event(BSP_INPUT_SCANCODE_8, pressed);
-                handle_keyboard_text_entry('8', '*', "8", "*", "¾", "̨", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('8', '*', "8", "*", "¾", "̨", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_7:
                 send_scancode_event(BSP_INPUT_SCANCODE_7, pressed);
-                handle_keyboard_text_entry('7', '&', "7", "&", "½", "̛", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('7', '&', "7", "&", "½", "̛", active_modifiers);
                 break;
             case HACKADAY2025_KEY_F2:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_F2, pressed, active_modifiers);
@@ -257,78 +257,78 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_Q:
                 send_scancode_event(BSP_INPUT_SCANCODE_Q, pressed);
-                handle_keyboard_text_entry('q', 'Q', "q", "Q", "ä", "Ä", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('q', 'Q', "q", "Q", "ä", "Ä", active_modifiers);
                 break;
             case HACKADAY2025_KEY_W:
                 send_scancode_event(BSP_INPUT_SCANCODE_W, pressed);
-                handle_keyboard_text_entry('w', 'W', "w", "W", "å", "Å", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('w', 'W', "w", "W", "å", "Å", active_modifiers);
                 break;
             case HACKADAY2025_KEY_E:
                 send_scancode_event(BSP_INPUT_SCANCODE_E, pressed);
-                handle_keyboard_text_entry('e', 'E', "e", "E", "é", "É", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('e', 'E', "e", "E", "é", "É", active_modifiers);
                 break;
             case HACKADAY2025_KEY_R:
                 send_scancode_event(BSP_INPUT_SCANCODE_R, pressed);
-                handle_keyboard_text_entry('r', 'R', "r", "R", "®", "™", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('r', 'R', "r", "R", "®", "™", active_modifiers);
                 break;
             case HACKADAY2025_KEY_T:
                 send_scancode_event(BSP_INPUT_SCANCODE_T, pressed);
-                handle_keyboard_text_entry('t', 'T', "t", "T", "þ", "Þ", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('t', 'T', "t", "T", "þ", "Þ", active_modifiers);
                 break;
             case HACKADAY2025_KEY_Y:
                 send_scancode_event(BSP_INPUT_SCANCODE_Y, pressed);
-                handle_keyboard_text_entry('y', 'Y', "y", "Y", "ü", "Ü", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('y', 'Y', "y", "Y", "ü", "Ü", active_modifiers);
                 break;
             case HACKADAY2025_KEY_U:
                 send_scancode_event(BSP_INPUT_SCANCODE_U, pressed);
-                handle_keyboard_text_entry('u', 'U', "u", "U", "ú", "Ú", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('u', 'U', "u", "U", "ú", "Ú", active_modifiers);
                 break;
             case HACKADAY2025_KEY_I:
                 send_scancode_event(BSP_INPUT_SCANCODE_I, pressed);
-                handle_keyboard_text_entry('i', 'I', "i", "I", "í", "Í", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('i', 'I', "i", "I", "í", "Í", active_modifiers);
                 break;
             case HACKADAY2025_KEY_O:
                 send_scancode_event(BSP_INPUT_SCANCODE_O, pressed);
-                handle_keyboard_text_entry('o', 'O', "o", "O", "ó", "Ó", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('o', 'O', "o", "O", "ó", "Ó", active_modifiers);
                 break;
             case HACKADAY2025_KEY_TAB:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_TAB, pressed, active_modifiers);
                 break;
             case HACKADAY2025_KEY_A:
                 send_scancode_event(BSP_INPUT_SCANCODE_A, pressed);
-                handle_keyboard_text_entry('a', 'A', "a", "A", "á", "Á", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('a', 'A', "a", "A", "á", "Á", active_modifiers);
                 break;
             case HACKADAY2025_KEY_S:
                 send_scancode_event(BSP_INPUT_SCANCODE_S, pressed);
-                handle_keyboard_text_entry('s', 'S', "s", "S", "ß", "§", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('s', 'S', "s", "S", "ß", "§", active_modifiers);
                 break;
             case HACKADAY2025_KEY_D:
                 send_scancode_event(BSP_INPUT_SCANCODE_D, pressed);
-                handle_keyboard_text_entry('d', 'D', "d", "D", "ð", "Ð", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('d', 'D', "d", "D", "ð", "Ð", active_modifiers);
                 break;
             case HACKADAY2025_KEY_F:
                 send_scancode_event(BSP_INPUT_SCANCODE_F, pressed);
-                handle_keyboard_text_entry('f', 'F', "f", "F", "ë", "Ë", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('f', 'F', "f", "F", "ë", "Ë", active_modifiers);
                 break;
             case HACKADAY2025_KEY_G:
                 send_scancode_event(BSP_INPUT_SCANCODE_G, pressed);
-                handle_keyboard_text_entry('g', 'G', "g", "G", "g", "G", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('g', 'G', "g", "G", "g", "G", active_modifiers);
                 break;
             case HACKADAY2025_KEY_H:
                 send_scancode_event(BSP_INPUT_SCANCODE_H, pressed);
-                handle_keyboard_text_entry('h', 'H', "h", "H", "h", "H", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('h', 'H', "h", "H", "h", "H", active_modifiers);
                 break;
             case HACKADAY2025_KEY_J:
                 send_scancode_event(BSP_INPUT_SCANCODE_J, pressed);
-                handle_keyboard_text_entry('j', 'J', "j", "J", "ï", "Ï", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('j', 'J', "j", "J", "ï", "Ï", active_modifiers);
                 break;
             case HACKADAY2025_KEY_K:
                 send_scancode_event(BSP_INPUT_SCANCODE_K, pressed);
-                handle_keyboard_text_entry('k', 'K', "k", "K", "œ", "Œ", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('k', 'K', "k", "K", "œ", "Œ", active_modifiers);
                 break;
             case HACKADAY2025_KEY_L:
                 send_scancode_event(BSP_INPUT_SCANCODE_L, pressed);
-                handle_keyboard_text_entry('l', 'L', "l", "L", "ø", "L", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('l', 'L', "l", "L", "ø", "L", active_modifiers);
                 break;
             case HACKADAY2025_KEY_LEFT_SHIFT:
                 if (pressed) {
@@ -339,39 +339,39 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_Z:
                 send_scancode_event(BSP_INPUT_SCANCODE_Z, pressed);
-                handle_keyboard_text_entry('z', 'Z', "z", "Z", "æ", "Æ", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('z', 'Z', "z", "Z", "æ", "Æ", active_modifiers);
                 break;
             case HACKADAY2025_KEY_X:
                 send_scancode_event(BSP_INPUT_SCANCODE_X, pressed);
-                handle_keyboard_text_entry('x', 'X', "x", "X", "·", " ̵", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('x', 'X', "x", "X", "·", " ̵", active_modifiers);
                 break;
             case HACKADAY2025_KEY_C:
                 send_scancode_event(BSP_INPUT_SCANCODE_C, pressed);
-                handle_keyboard_text_entry('c', 'C', "c", "C", "©", "¢", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('c', 'C', "c", "C", "©", "¢", active_modifiers);
                 break;
             case HACKADAY2025_KEY_V:
                 send_scancode_event(BSP_INPUT_SCANCODE_V, pressed);
-                handle_keyboard_text_entry('v', 'V', "v", "V", "v", "V", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('v', 'V', "v", "V", "v", "V", active_modifiers);
                 break;
             case HACKADAY2025_KEY_B:
                 send_scancode_event(BSP_INPUT_SCANCODE_B, pressed);
-                handle_keyboard_text_entry('b', 'B', "b", "B", "b", "B", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('b', 'B', "b", "B", "b", "B", active_modifiers);
                 break;
             case HACKADAY2025_KEY_N:
                 send_scancode_event(BSP_INPUT_SCANCODE_N, pressed);
-                handle_keyboard_text_entry('n', 'N', "n", "N", "ñ", "Ñ", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('n', 'N', "n", "N", "ñ", "Ñ", active_modifiers);
                 break;
             case HACKADAY2025_KEY_M:
                 send_scancode_event(BSP_INPUT_SCANCODE_M, pressed);
-                handle_keyboard_text_entry('m', 'M', "m", "M", "µ", "±", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('m', 'M', "m", "M", "µ", "±", active_modifiers);
                 break;
             case HACKADAY2025_KEY_COMMA:
                 send_scancode_event(BSP_INPUT_SCANCODE_COMMA, pressed);
-                handle_keyboard_text_entry(',', '<', ",", "<", "̧", "̌", active_modifiers);
+                if (pressed) handle_keyboard_text_entry(',', '<', ",", "<", "̧", "̌", active_modifiers);
                 break;
             case HACKADAY2025_KEY_DOT:
                 send_scancode_event(BSP_INPUT_SCANCODE_DOT, pressed);
-                handle_keyboard_text_entry('.', '>', ".", ">", "̇", "̌", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('.', '>', ".", ">", "̇", "̌", active_modifiers);
                 break;
             case HACKADAY2025_KEY_CTRL:
                 if (pressed) {
@@ -426,69 +426,69 @@ static void tca8418_key_callback(tca8418_handle_t* handle) {
                 break;
             case HACKADAY2025_KEY_NUM_6:
                 send_scancode_event(BSP_INPUT_SCANCODE_6, pressed);
-                handle_keyboard_text_entry('6', '^', "6", "^", "¼", "̂", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('6', '^', "6", "^", "¼", "̂", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_5:
                 send_scancode_event(BSP_INPUT_SCANCODE_5, pressed);
-                handle_keyboard_text_entry('5', '%', "5", "%", "€", "¸", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('5', '%', "5", "%", "€", "¸", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_4:
                 send_scancode_event(BSP_INPUT_SCANCODE_4, pressed);
-                handle_keyboard_text_entry('4', '$', "4", "$", "¤", "£", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('4', '$', "4", "$", "¤", "£", active_modifiers);
                 break;
             case HACKADAY2025_KEY_RIGHT_BRACKET:
                 send_scancode_event(BSP_INPUT_SCANCODE_RIGHTBRACE, pressed);
-                handle_keyboard_text_entry(']', '}', "]", "}", "»", "”", active_modifiers);
+                if (pressed) handle_keyboard_text_entry(']', '}', "]", "}", "»", "”", active_modifiers);
                 break;
             case HACKADAY2025_KEY_LEFT_BRACKET:
                 send_scancode_event(BSP_INPUT_SCANCODE_LEFTBRACE, pressed);
-                handle_keyboard_text_entry('[', '{', "[", "{", "«", "“", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('[', '{', "[", "{", "«", "“", active_modifiers);
                 break;
             case HACKADAY2025_KEY_P:
                 send_scancode_event(BSP_INPUT_SCANCODE_P, pressed);
-                handle_keyboard_text_entry('p', 'P', "p", "P", "ö", "Ö", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('p', 'P', "p", "P", "ö", "Ö", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_ASTERISK:
                 send_scancode_event(BSP_INPUT_SCANCODE_KPASTERISK, pressed);
-                handle_keyboard_text_entry('*', '*', "*", "*", "*", "*", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('*', '*', "*", "*", "*", "*", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_3:
                 send_scancode_event(BSP_INPUT_SCANCODE_3, pressed);
-                handle_keyboard_text_entry('3', '#', "3", "#", "³", "̄", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('3', '#', "3", "#", "³", "̄", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_2:
                 send_scancode_event(BSP_INPUT_SCANCODE_2, pressed);
-                handle_keyboard_text_entry('2', '@', "2", "@", "²", "̋", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('2', '@', "2", "@", "²", "̋", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_1:
                 send_scancode_event(BSP_INPUT_SCANCODE_1, pressed);
-                handle_keyboard_text_entry('1', '!', "1", "!", "¡", "¹", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('1', '!', "1", "!", "¡", "¹", active_modifiers);
                 break;
             case HACKADAY2025_KEY_ENTER:
                 send_navigation_event(BSP_INPUT_NAVIGATION_KEY_RETURN, pressed, active_modifiers);
                 break;
             case HACKADAY2025_KEY_APOSTROPHE:
                 send_scancode_event(BSP_INPUT_SCANCODE_APOSTROPHE, pressed);
-                handle_keyboard_text_entry('\'', '"', "'", "\"", "́", "̈", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('\'', '"', "'", "\"", "́", "̈", active_modifiers);
                 break;
             case HACKADAY2025_KEY_SEMICOLON:
                 send_scancode_event(BSP_INPUT_SCANCODE_SEMICOLON, pressed);
-                handle_keyboard_text_entry(';', ':', ";", ":", "̨", "̈", active_modifiers);
+                if (pressed) handle_keyboard_text_entry(';', ':', ";", ":", "̨", "̈", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_SLASH:
                 send_scancode_event(BSP_INPUT_SCANCODE_ESCAPED_GREY_KPSLASH, pressed);
                 break;
             case HACKADAY2025_KEY_NUM_EQUALS:
                 send_scancode_event(BSP_INPUT_SCANCODE_EQUAL, pressed);
-                handle_keyboard_text_entry('=', '+', "=", "+", "̋", "̛", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('=', '+', "=", "+", "̋", "̛", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_DOT:
                 send_scancode_event(BSP_INPUT_SCANCODE_KPDOT, pressed);
-                handle_keyboard_text_entry('.', '.', ".", ".", ".", ".", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('.', '.', ".", ".", ".", ".", active_modifiers);
                 break;
             case HACKADAY2025_KEY_NUM_0:
                 send_scancode_event(BSP_INPUT_SCANCODE_KP0, pressed);
-                handle_keyboard_text_entry('0', ')', "0", ")", "’", "̊", active_modifiers);
+                if (pressed) handle_keyboard_text_entry('0', ')', "0", ")", "’", "̊", active_modifiers);
                 break;
             case HACKADAY2025_KEY_RIGHT_SHIFT:
                 if (pressed) {
@@ -572,7 +572,7 @@ esp_err_t bsp_input_get_queue(QueueHandle_t* out_queue) {
 }
 
 bool bsp_input_needs_on_screen_keyboard(void) {
-    return true;
+    return false;
 }
 
 esp_err_t bsp_input_get_backlight_brightness(uint8_t* out_percentage) {

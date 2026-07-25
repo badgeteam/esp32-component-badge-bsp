@@ -27,8 +27,8 @@ static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
 static bool                     bsp_display_initialized = false;
 static SemaphoreHandle_t        flush_semaphore         = NULL;
 
-#define BSP_LCD_RESET_PIN 7
-#define BSP_LCD_PWM_PIN   8
+#define BSP_LCD_RESET_PIN 21
+#define BSP_LCD_PWM_PIN   23
 
 #define BSP_DSI_LDO_CHAN       3
 #define BSP_DSI_LDO_VOLTAGE_MV 2500

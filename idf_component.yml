@@ -11,6 +11,8 @@ dependencies:
     version: "^2.0.2"
   espressif/led_strip:
     version: "^3.0.3"
+  espressif/esp_lcd_touch_gt911:
+    version: "^1.2.0~3"
   nicolaielectronics/ssd1619:
     version: "^0.0.1"
   nicolaielectronics/es8156:

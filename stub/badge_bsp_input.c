@@ -56,6 +56,12 @@ esp_err_t __attribute__((weak)) bsp_input_read_action(bsp_input_action_type_t ac
     return ESP_ERR_NOT_SUPPORTED;
 }
 
+esp_err_t __attribute__((weak)) bsp_input_get_touch_coordinates(uint16_t* out_x, uint16_t* out_y,
+                                                                uint16_t* out_strength, uint8_t* out_count,
+                                                                uint8_t max_count) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
 // Input hook system stubs
 // Note: Targets that support hooks will override these with implementations
 // from common/badge_bsp_input_hooks.c. ISR-based targets cannot support hooks

@@ -27,10 +27,10 @@
 #define BSP_GPIO_IR_LED 1
 
 // Keyboard
-#define BSP_KBD_INT       13
-#define BSP_KBD_SCL       14
-#define BSP_KBD_SDA       47
-#define BSP_KBD_RST       48
+#define BSP_KBD_INT 13
+#define BSP_KBD_SCL 14
+#define BSP_KBD_SDA 47
+#define BSP_KBD_RST 48
 
 #define BSP_KBD_BUS 0
 

@@ -25,12 +25,12 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     return ESP_OK;
 }
 
-esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, lcd_color_rgb_pixel_format_t* color_fmt,
-                                     lcd_rgb_data_endian_t* data_endian) {
+esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_color_format_t* color_fmt,
+                                     bsp_display_endianness_t* data_endian) {
     if (h_res) *h_res = 0;
     if (v_res) *v_res = 0;
     if (color_fmt) *color_fmt = 0;
-    if (data_endian) *data_endian = LCD_RGB_DATA_ENDIAN_LITTLE;
+    if (data_endian) *data_endian = 0;
     return ESP_OK;
 }
 

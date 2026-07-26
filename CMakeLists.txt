@@ -27,8 +27,11 @@ endif()
 # BSP requirements for all targets
 
 set(COMMON_BSP_REQUIREMENTS
+    esp_driver_i2s
+    esp_driver_i2c
+    esp_driver_spi
+    esp_driver_gpio
     "esp_lcd"
-    "driver"
     "ssd1619"
     "bootloader_support"
     "tca8418"

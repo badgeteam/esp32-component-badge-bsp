@@ -27,7 +27,7 @@ esp_err_t bsp_led_write(const uint8_t* data, uint32_t length) {
         return ESP_ERR_INVALID_SIZE;
     }
     memcpy(led_data, data, length);
-    return tanmatsu_coprocessor_set_led_data(handle, data, length);
+    return tanmatsu_coprocessor_set_led_data(handle, (uint8_t*)data, length);
 }
 
 esp_err_t bsp_led_set_brightness(uint8_t percentage) {

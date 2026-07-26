@@ -87,21 +87,16 @@ esp_err_t bsp_display_get_parameters(size_t* h_res, size_t* v_res, bsp_display_c
         return ESP_FAIL;
     }
 
-    lcd_color_rgb_pixel_format_t color_fmt_driver;
+    lcd_color_format_t color_fmt_driver;
     ek79007_get_parameters(h_res, v_res, &color_fmt_driver);
 
     switch (color_fmt_driver) {
-        case LCD_COLOR_PIXEL_FORMAT_RGB565:
+        case LCD_COLOR_FMT_RGB565:
             if (color_fmt) {
                 *color_fmt = BSP_DISPLAY_COLOR_FORMAT_16_565RGB;
             }
             break;
-        case LCD_COLOR_PIXEL_FORMAT_RGB666:
-            if (color_fmt) {
-                *color_fmt = BSP_DISPLAY_COLOR_FORMAT_18_666RGB;
-            }
-            break;
-        case LCD_COLOR_PIXEL_FORMAT_RGB888:
+        case LCD_COLOR_FMT_RGB888:
             if (color_fmt) {
                 *color_fmt = BSP_DISPLAY_COLOR_FORMAT_24_888RGB;
             }

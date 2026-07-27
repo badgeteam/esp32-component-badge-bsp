@@ -176,6 +176,7 @@ esp_err_t bsp_input_read_action(bsp_input_action_type_t action, bool* out_state)
     switch (action) {
         case BSP_INPUT_ACTION_TYPE_FPGA_CDONE:
             *out_state = (value >> RP2040_INPUT_FPGA_CDONE) & 1;
+            break;
         default:
             *out_state = false;
             break;

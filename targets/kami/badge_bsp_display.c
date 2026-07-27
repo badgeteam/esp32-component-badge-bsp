@@ -45,7 +45,7 @@ static esp_err_t bsp_display_initialize_epaper_lut() {
     if (!ssd1619_get_lut_populated()) {
         ESP_LOGW(TAG, "Display LUT table not initialized");
         res = ssd1619_read_lut(BSP_EPAPER_DATA_PIN, BSP_EPAPER_CLK_PIN, epaper.pin_cs, epaper.pin_dcx, epaper.pin_reset,
-                               epaper.pin_busy);
+                               epaper.pin_busy, NULL);
         if (res != ESP_OK) {
             return res;
         }
@@ -70,7 +70,7 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     ESP_RETURN_ON_ERROR(spi_bus_initialize(BSP_EPAPER_SPI_BUS, &spi_bus_config, SPI_DMA_CH_AUTO), TAG,
                         "Failed to initialise the SPI bus");
     ESP_RETURN_ON_ERROR(ssd1619_init(&epaper), TAG, "Failed to initialize e-paper display");
-    ESP_RETURN_ON_ERROR(ssd1619_apply_lut(&epaper, lut_900ms), TAG, "Failed to apply e-paper LUT");
+    ESP_RETURN_ON_ERROR(ssd1619_apply_lut(&epaper, lut_900ms, 20), TAG, "Failed to apply e-paper LUT");
     return ESP_OK;
 }
 

@@ -6,33 +6,33 @@ targets:
   - esp32s3
 dependencies:
   cmake_utilities: "0.*"
-  idf: ">=5.3"
+  idf: ">=6.0.2"
   espressif/esp_lcd_ili9341:
-    version: "^2.0.2"
+    version: "=2.0.2"
   espressif/led_strip:
-    version: "^3.0.3"
+    version: "=3.0.3"
   espressif/esp_lcd_touch_gt911:
-    version: "^1.2.0~3"
+    version: "=1.2.0~3"
   nicolaielectronics/ssd1619:
     version: "=1.0.0"
   nicolaielectronics/es8156:
-    version: "^0.0.3"
+    version: "=0.0.3"
   nicolaielectronics/mpr121:
-    version: "^0.0.2"
+    version: "=0.0.2"
   nicolaielectronics/bmi270:
-    version: "^1.0.1"
+    version: "=1.0.1"
   nicolaielectronics/tca8418:
-    version: "^1.0.0"
+    version: "=1.0.0"
   nicolaielectronics/mipi_dsi_abstraction:
     version: "=1.0.0"
     rules:
       - if: "target == esp32p4"
   nicolaielectronics/tanmatsu_coprocessor:
-    version: "^0.8.0"
+    version: "=0.8.0"
     rules:
       - if: "target == esp32p4"
   badgeteam/mch2022-rp2040:
-    version: "^0.0.2"
+    version: "=0.0.2"
     rules:
       - if: "target == esp32"
 description: Badge BSP

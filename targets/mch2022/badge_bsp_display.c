@@ -126,7 +126,7 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
 
     esp_lcd_panel_dev_config_t lcd_panel_dev_config = {
         .reset_gpio_num = BSP_LCD_RESET_PIN,
-        .rgb_endian     = LCD_RGB_ENDIAN_BGR,
+        .rgb_ele_order  = LCD_RGB_ELEMENT_ORDER_BGR,
         //.data_endian    = LCD_RGB_DATA_ENDIAN_BIG, // Not used by driver, needs manual action from graphics stack
         .bits_per_pixel = 16,
         .vendor_config  = &vendor_config,

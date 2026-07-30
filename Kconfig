@@ -35,5 +35,9 @@ menu "Badge.Team BSP"
 
 		config BSP_TARGET_HACKADAY2025
 			bool "Hackaday 2025 Communicator badge"
+
+                config BSP_TARGET_WHY2025
+			bool "WHY2025 badge"
+
 	endchoice
 endmenu

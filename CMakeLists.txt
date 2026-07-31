@@ -1,25 +1,36 @@
 # BSP target selection
 
-if (CONFIG_BSP_TARGET_TANMATSU)
-    set(BSP_TARGET "tanmatsu")
-elseif (CONFIG_BSP_TARGET_KONSOOL)
-    set(BSP_TARGET "tanmatsu")
-elseif(CONFIG_BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD)
+## Espressif devkits
+if(CONFIG_BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD)
     set(BSP_TARGET "esp32-p4-function-ev-board")
+elseif(CONFIG_BSP_TARGET_ESP32_S31_KORVO_1)
+    set(BSP_TARGET "esp32-s31-korvo-1")
+
+## Nicolai Electronics products
+elseif (CONFIG_BSP_TARGET_TANMATSU)
+    set(BSP_TARGET "tanmatsu")
+elseif(CONFIG_BSP_TARGET_KAMI)
+    set(BSP_TARGET "kami")
+
+## Badge.Team badges
 elseif(CONFIG_BSP_TARGET_MCH2022)
     set(BSP_TARGET "mch2022")
 elseif(CONFIG_BSP_TARGET_HACKERHOTEL_2024)
     set(BSP_TARGET "hackerhotel-2024")
-elseif(CONFIG_BSP_TARGET_KAMI)
-    set(BSP_TARGET "kami")
+
+## 3rd party badges
 elseif(CONFIG_BSP_TARGET_BORNHACK_2025_CIRCLE)
     set(BSP_TARGET "bornhack-2025-circle")
 elseif(CONFIG_BSP_TARGET_BORNHACK_2024_POV)
     set(BSP_TARGET "bornhack-2024-pov")
-elseif(CONFIG_BSP_TARGET_HELTECV3)
-    set(BSP_TARGET "heltecv3")
 elseif(CONFIG_BSP_TARGET_HACKADAY2025)
     set(BSP_TARGET "hackaday2025")
+
+## Other devices
+elseif(CONFIG_BSP_TARGET_HELTECV3)
+    set(BSP_TARGET "heltecv3")
+
+## Fallback
 else()
     set(BSP_TARGET "stub")
 endif()

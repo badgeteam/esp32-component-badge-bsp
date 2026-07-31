@@ -101,9 +101,6 @@ esp_err_t bsp_input_initialize(void) {
         ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
     }
 
-    // Initialize input hooks system (from common/)
-    bsp_input_hooks_init();
-
     return ESP_OK;
 }
 

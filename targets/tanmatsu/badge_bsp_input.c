@@ -473,9 +473,6 @@ esp_err_t bsp_input_initialize(void) {
         ESP_RETURN_ON_FALSE(event_queue, ESP_ERR_NO_MEM, TAG, "Failed to create input event queue");
     }
 
-    // Initialize input hooks system (from common/)
-    bsp_input_hooks_init();
-
     /*if (key_repeat_thread_handle == NULL) {
         xTaskCreate(key_repeat_thread, "Key repeat thread", 4096, NULL, tskIDLE_PRIORITY, &key_repeat_thread_handle);
         ESP_RETURN_ON_FALSE(key_repeat_thread_handle, ESP_ERR_NO_MEM, TAG, "Failed to create key repeat task");

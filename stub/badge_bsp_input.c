@@ -62,22 +62,14 @@ esp_err_t __attribute__((weak)) bsp_input_get_touch_coordinates(uint16_t* out_x,
     return ESP_ERR_NOT_SUPPORTED;
 }
 
-// Input hook system stubs
-// Note: Targets that support hooks will override these with implementations
-// from common/badge_bsp_input_hooks.c. ISR-based targets cannot support hooks
-// because hook processing requires taking a mutex.
-
-int __attribute__((weak)) bsp_input_hook_register(bsp_input_hook_cb_t callback, void* user_data) {
-    (void)callback;
-    (void)user_data;
-    return -1;  // Not supported
-}
-
-void __attribute__((weak)) bsp_input_hook_unregister(int hook_id) {
-    (void)hook_id;
-}
-
 esp_err_t __attribute__((weak)) bsp_input_inject_event(bsp_input_event_t* event) {
-    (void)event;
-    return ESP_ERR_NOT_SUPPORTED;
+    if (event == NULL || event_queue == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    if (xQueueSend(event_queue, event, pdMS_TO_TICKS(10)) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+
+    return ESP_OK;
 }

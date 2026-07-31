@@ -23,6 +23,7 @@ esp_err_t bsp_power_initialize(void);
 esp_err_t bsp_rtc_initialize(void);
 esp_err_t bsp_orientation_initialize(void);
 esp_err_t bsp_sensor_initialize(void);
+esp_err_t bsp_input_hooks_initialize(void);
 
 esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     // Install the ISR service for GPIO interrupts
@@ -59,6 +60,8 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
 
     // Initialize sensors
     BSP_RETURN_ON_FAILURE(bsp_sensor_initialize(), ESP_LOGE(TAG, "Failed to initialize sensors"));
+
+    bsp_input_hooks_initialize();
 
     return ESP_OK;
 }

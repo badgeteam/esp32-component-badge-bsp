@@ -25,6 +25,8 @@ elseif(CONFIG_BSP_TARGET_BORNHACK_2024_POV)
     set(BSP_TARGET "bornhack-2024-pov")
 elseif(CONFIG_BSP_TARGET_HACKADAY2025)
     set(BSP_TARGET "hackaday2025")
+elseif(CONFIG_BSP_TARGET_WHY2025)
+    set(BSP_TARGET "why2025")
 
 ## Other devices
 elseif(CONFIG_BSP_TARGET_HELTECV3)

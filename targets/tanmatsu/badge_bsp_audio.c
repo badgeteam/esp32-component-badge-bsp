@@ -80,6 +80,8 @@ esp_err_t bsp_audio_initialize() {
     res = es8156_configure(codec_handle);
     if (res != ESP_OK) return res;
 
+    ESP_RETURN_ON_ERROR(bsp_audio_set_volume(90.0f), TAG, "Failed to set default codec volume");
+
     return initialize_i2s(44100);
 }
 

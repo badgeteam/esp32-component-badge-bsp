@@ -6,14 +6,17 @@ menu "Badge.Team BSP"
 		config BSP_TARGET_STUB
 			bool "Generic (stub)"
 
+		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
+			bool "Espressif ESP32-P4 Function EV Board"
+
+		config BSP_TARGET_ESP32_S31_KORVO_1
+			bool "Espressif ESP32-S31 Korvo 1"
+
 		config BSP_TARGET_TANMATSU
 			bool "Nicolai Electronics Tanmatsu"
 
 		config BSP_TARGET_KAMI
 			bool "Nicolai Electronics Kami"
-
-		config BSP_TARGET_KONSOOL
-			bool "Badge.Team Konsool"
 
 		config BSP_TARGET_MCH2022
 			bool "Badge.Team MCH2022 badge"
@@ -21,22 +24,19 @@ menu "Badge.Team BSP"
 		config BSP_TARGET_HACKERHOTEL_2024
 			bool "Badge.Team Hackerhotel 2024 badge"
 
-		config BSP_TARGET_ESP32_P4_FUNCTION_EV_BOARD
-			bool "Espressif ESP32-P4 Function EV Board"
-
 		config BSP_TARGET_BORNHACK_2024_POV
 			bool "Bornhack 2024 POV"
 
 		config BSP_TARGET_BORNHACK_2025_CIRCLE
 			bool "Bornhack 2025 circle"
 
+		config BSP_TARGET_HACKADAY2025
+			bool "Hackaday 2025 Communicator badge"
+ 
 		config BSP_TARGET_HELTECV3
 			bool "Heltec v3"
 
-		config BSP_TARGET_HACKADAY2025
-			bool "Hackaday 2025 Communicator badge"
-
-                config BSP_TARGET_WHY2025
+		config BSP_TARGET_WHY2025
 			bool "WHY2025 badge"
 
 	endchoice

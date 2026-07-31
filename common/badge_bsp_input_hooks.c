@@ -17,7 +17,7 @@ typedef struct {
 static bsp_input_hook_entry_t input_hooks[BSP_INPUT_MAX_HOOKS] = {0};
 static SemaphoreHandle_t      input_hooks_mutex                = NULL;
 
-void bsp_input_hooks_init(void) {
+void bsp_input_hooks_initialize(void) {
     if (input_hooks_mutex == NULL) {
         input_hooks_mutex = xSemaphoreCreateMutex();
     }

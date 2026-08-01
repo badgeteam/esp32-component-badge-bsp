@@ -74,7 +74,6 @@ static esp_err_t bsp_display_initialize_panel(void) {
     .dpi_clk_src        = MIPI_DSI_DPI_CLK_SRC_DEFAULT,
      .dpi_clock_freq_mhz = 47,
      .virtual_channel    = 0,
-     // .pixel_format       = LCD_COLOR_PIXEL_FORMAT_RGB888,
      .in_color_format  = LCD_COLOR_FMT_RGB888,
      .out_color_format = LCD_COLOR_FMT_RGB888,
      .num_fbs = 1,
@@ -89,7 +88,6 @@ static esp_err_t bsp_display_initialize_panel(void) {
              .vsync_pulse_width = 4,
              .vsync_front_porch = 20,
          },
-     // .flags.use_dma2d  = true,
      .flags.disable_lp = false
     };
 
@@ -101,19 +99,20 @@ static esp_err_t bsp_display_initialize_panel(void) {
             },
         .init_cmds      = custom_init,
         .init_cmds_size = sizeof(custom_init) / sizeof(st7703_lcd_init_cmd_t),
+        .init_in_command_mode    = true
     };
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num          = BSP_LCD_RESET_PIN,
-        .rgb_ele_order           = LCD_RGB_ELEMENT_ORDER_RGB,  // Implemented by LCD command `36h`
-        .bits_per_pixel          = 24,                         // Implemented by LCD command `3Ah` (16/18/24)
+        .rgb_ele_order           = LCD_RGB_ELEMENT_ORDER_RGB,
+        .bits_per_pixel          = 24,
         .vendor_config           = &vendor_config,
         .flags.reset_active_high = 1,
     };
+
     ESP_ERROR_CHECK(esp_lcd_new_panel_st7703(mipi_dbi_io, &panel_config, &panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
     ESP_ERROR_CHECK(esp_lcd_dpi_panel_enable_dma2d(panel_handle));
-    // ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(panel_handle, true));
     return ESP_OK;
 }
 

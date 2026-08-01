@@ -109,15 +109,13 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     // Initialize CATT expansion port
     res = bsp_catt_initialize();
     if (res != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize CATT port");
-        return_value = res;
+        ESP_LOGW(TAG, "Failed to initialize CATT port");
     }
 
     // Initialize SAO expansion port
     res = bsp_sao_initialize();
     if (res != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to initialize SAO port");
-        return_value = res;
+        ESP_LOGW(TAG, "Failed to initialize SAO port");
     }
 
     return return_value;

@@ -8,8 +8,6 @@
 typedef enum {
     SAO_PIN_D0  = 0,
     SAO_PIN_D1  = 1,
-    SAO_PIN_SDA = 2,
-    SAO_PIN_SCL = 3,
 } sao_pin_num_t;
 
 /// @brief Get the handle of the I2C bus on SAO connector

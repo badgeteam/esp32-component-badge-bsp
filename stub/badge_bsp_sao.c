@@ -32,10 +32,6 @@ gpio_num_t __attribute__((weak)) bsp_sao_get_gpio(sao_pin_num_t pin) {
             return bsp_catt_get_gpio(CATT_PIN_D5);
         case SAO_PIN_D1:
             return bsp_catt_get_gpio(CATT_PIN_D1);
-        case SAO_PIN_SDA:
-            return bsp_catt_get_gpio(CATT_PIN_D4);
-        case SAO_PIN_SCL:
-            return bsp_catt_get_gpio(CATT_PIN_D0);
         default:
             return GPIO_NUM_NC;
     }

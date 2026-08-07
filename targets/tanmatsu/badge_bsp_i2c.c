@@ -20,7 +20,7 @@ static char const* TAG = "BSP I2C";
 static i2c_master_bus_handle_t i2c_bus_handle_internal   = NULL;
 static SemaphoreHandle_t       i2c_concurrency_semaphore = NULL;
 
-i2c_master_bus_config_t i2c_master_config_internal = {
+static const i2c_master_bus_config_t i2c_master_config_internal = {
     .clk_source                   = I2C_CLK_SRC_DEFAULT,
     .i2c_port                     = BSP_I2C_INTERNAL_BUS,
     .scl_io_num                   = BSP_I2C_INTERNAL_SCL_PIN,

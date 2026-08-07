@@ -24,44 +24,99 @@ esp_err_t bsp_rtc_initialize(void);
 esp_err_t bsp_orientation_initialize(void);
 esp_err_t bsp_sensor_initialize(void);
 esp_err_t bsp_input_hooks_initialize(void);
+esp_err_t bsp_catt_initialize(void);
+esp_err_t bsp_sao_initialize(void);
 
 esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     // Install the ISR service for GPIO interrupts
     gpio_install_isr_service(0);
 
+    esp_err_t return_value = ESP_OK;
+
     // Initialize the primary I2C bus
-    BSP_RETURN_ON_FAILURE(bsp_i2c_primary_bus_initialize(), ESP_LOGE(TAG, "Failed to initialize primary I2C bus"));
+    esp_err_t res = bsp_i2c_primary_bus_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize primary I2C bus");
+        return res;  // Fatal error
+    }
 
     // Initialize device specific hardware
-    BSP_RETURN_ON_FAILURE(bsp_device_initialize_custom(),
-                          ESP_LOGE(TAG, "Failed to initialize device specific hardware"));
+    res = bsp_device_initialize_custom();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize device specific hardware");
+        return res;  // Fatal error
+    }
 
     // Initialize the display
-    BSP_RETURN_ON_FAILURE(bsp_display_initialize(configuration != NULL ? &configuration->display : NULL),
-                          ESP_LOGE(TAG, "Failed to initialize display"));
+    res = bsp_display_initialize(configuration != NULL ? &configuration->display : NULL);
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize display");
+        return_value = res;
+    }
 
     // Initialize the input framework
-    BSP_RETURN_ON_FAILURE(bsp_input_initialize(), ESP_LOGE(TAG, "Failed to initialize input framework"));
+    res = bsp_input_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize input framework");
+        return_value = res;
+    } else {
+        // Initialize input hooks
+        bsp_input_hooks_initialize();
+    }
 
     // Initialize power
-    BSP_RETURN_ON_FAILURE(bsp_power_initialize(), ESP_LOGE(TAG, "Failed to initialize power subsystem"));
+    res = bsp_power_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize power subsystem");
+        return_value = res;
+    }
 
     // Initialize the RTC
-    BSP_RETURN_ON_FAILURE(bsp_rtc_initialize(), ESP_LOGE(TAG, "Failed to initialize RTC subsystem"));
+    res = bsp_rtc_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize RTC subsystem");
+        return_value = res;
+    }
 
     // Initialize audio
-    BSP_RETURN_ON_FAILURE(bsp_audio_initialize(), ESP_LOGE(TAG, "Failed to initialize audio subsystem"));
+    res = bsp_audio_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize audio subsystem");
+        return_value = res;
+    }
 
     // Initialize LEDs
-    BSP_RETURN_ON_FAILURE(bsp_led_initialize(), ESP_LOGE(TAG, "Failed to initialize LED subsystem"));
+    res = bsp_led_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize LED subsystem");
+        return_value = res;
+    }
 
     // Initialize orientation sensor
-    BSP_RETURN_ON_FAILURE(bsp_orientation_initialize(), ESP_LOGE(TAG, "Failed to initialize orientation sensor"));
+    res = bsp_orientation_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize orientation sensor");
+        return_value = res;
+    }
 
     // Initialize sensors
-    BSP_RETURN_ON_FAILURE(bsp_sensor_initialize(), ESP_LOGE(TAG, "Failed to initialize sensors"));
+    res = bsp_sensor_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize sensors");
+        return_value = res;
+    }
 
-    bsp_input_hooks_initialize();
+    // Initialize CATT expansion port
+    res = bsp_catt_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGW(TAG, "Failed to initialize CATT port");
+    }
 
-    return ESP_OK;
+    // Initialize SAO expansion port
+    res = bsp_sao_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGW(TAG, "Failed to initialize SAO port");
+    }
+
+    return return_value;
 }

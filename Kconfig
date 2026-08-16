@@ -40,4 +40,20 @@ menu "Badge.Team BSP"
 			bool "WHY2025 badge"
 
 	endchoice
+
+	config BSP_RESERVE_RTC_RETAIN_MEM
+		bool
+		default y
+		select BOOTLOADER_CUSTOM_RESERVE_RTC
+		help
+			bsp_device_restart_to_launcher() (implemented as a weak
+			fallback in stub/badge_bsp_device.c and always linked into
+			every target because bsp_stub is unconditionally added to
+			the component) calls bootloader_common_get_rtc_retain_mem()
+			from bootloader_support. That function is only declared when
+			CONFIG_BOOTLOADER_CUSTOM_RESERVE_RTC is enabled, and the
+			underlying CONFIG_BOOTLOADER_RESERVE_RTC_MEM symbol it
+			selects has no prompt, so it cannot be set directly from a
+			downstream project's sdkconfig.defaults. Select it here
+			instead of requiring every consumer to discover this.
 endmenu

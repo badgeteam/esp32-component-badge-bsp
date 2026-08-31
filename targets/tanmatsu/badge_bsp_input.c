@@ -170,7 +170,7 @@ void bsp_internal_coprocessor_keyboard_callback(tanmatsu_coprocessor_handle_t ha
         modifiers |= BSP_INPUT_MODIFIER_SHIFT_L;
     }
     if (keys->key_shift_r) {
-        modifiers |= BSP_INPUT_MODIFIER_SHIFT_L;
+        modifiers |= BSP_INPUT_MODIFIER_SHIFT_R;
     }
     if (keys->key_ctrl) {
         modifiers |= BSP_INPUT_MODIFIER_CTRL_L;

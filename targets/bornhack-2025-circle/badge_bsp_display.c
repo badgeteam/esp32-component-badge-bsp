@@ -48,6 +48,6 @@ bsp_display_rotation_t bsp_display_get_default_rotation() {
     return BSP_DISPLAY_ROTATION_0;
 }
 
-esp_err_t bsp_display_blit(size_t x, size_t y, size_t width, size_t height, const void* buffer) {
+esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
     return ESP_OK;
 }

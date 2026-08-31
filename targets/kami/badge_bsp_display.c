@@ -97,8 +97,8 @@ bsp_display_rotation_t bsp_display_get_default_rotation() {
     return BSP_DISPLAY_ROTATION_270;
 }
 
-esp_err_t bsp_display_blit(size_t x, size_t y, size_t width, size_t height, const void* buffer) {
-    if (x != 0 || y != 0 || width != H_RES || height != V_RES) {
+esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
+    if (x_start != 0 || y_start != 0 || x_end != H_RES || y_end != V_RES) {
         ESP_LOGE(TAG, "Display does not support partial updates");
         return ESP_FAIL;
     }

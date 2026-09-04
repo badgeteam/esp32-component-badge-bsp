@@ -54,3 +54,16 @@ esp_err_t __attribute__((weak)) bsp_display_blit(size_t x_start, size_t y_start,
                                                  const void* buffer) {
     return ESP_ERR_NOT_SUPPORTED;
 }
+
+esp_err_t __attribute__((weak)) bsp_display_wait(uint32_t timeout_ms) {
+    (void) timeout_ms;
+    return ESP_OK;
+}
+
+bool __attribute__((weak)) bsp_display_get_busy(void) {
+    return false;
+}
+
+esp_err_t __attribute__((weak)) bsp_display_interrupt(void) {
+    return ESP_OK;
+}

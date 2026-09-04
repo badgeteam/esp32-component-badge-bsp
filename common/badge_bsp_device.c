@@ -37,28 +37,28 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     esp_err_t res = bsp_i2c_primary_bus_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize primary I2C bus");
-        return res;  // Fatal error
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize device specific hardware
     res = bsp_device_initialize_custom();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize device specific hardware");
-        return res;  // Fatal error
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize the display
     res = bsp_display_initialize(configuration != NULL ? &configuration->display : NULL);
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize display");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize the input framework
     res = bsp_input_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize input framework");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     } else {
         // Initialize input hooks
         bsp_input_hooks_initialize();
@@ -68,42 +68,42 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     res = bsp_power_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize power subsystem");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize the RTC
     res = bsp_rtc_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize RTC subsystem");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize audio
     res = bsp_audio_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize audio subsystem");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize LEDs
     res = bsp_led_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize LED subsystem");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize orientation sensor
     res = bsp_orientation_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize orientation sensor");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize sensors
     res = bsp_sensor_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize sensors");
-        return_value = res;
+        if (return_value == ESP_OK) return_value = res;
     }
 
     // Initialize CATT expansion port

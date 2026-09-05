@@ -14,10 +14,9 @@
 
 static char const* TAG = "BSP: audio";
 
-static i2c_master_bus_handle_t codec_i2c_bus_handle    = NULL;
-static SemaphoreHandle_t       codec_i2c_bus_semaphore = NULL;
-static es8156_handle_t         codec_handle            = NULL;
-static i2s_chan_handle_t       i2s_handle              = NULL;
+static i2c_master_bus_handle_t codec_i2c_bus_handle = NULL;
+static es8156_handle_t         codec_handle         = NULL;
+static i2s_chan_handle_t       i2s_handle           = NULL;
 
 static esp_err_t initialize_i2s(uint32_t rate) {
     i2s_chan_config_t chan_cfg = I2S_CHANNEL_DEFAULT_CONFIG(0, I2S_ROLE_MASTER);
@@ -29,7 +28,7 @@ static esp_err_t initialize_i2s(uint32_t rate) {
 
     i2s_std_config_t i2s_config = {
         .clk_cfg  = I2S_STD_CLK_DEFAULT_CONFIG(rate),
-        .slot_cfg = I2S_STD_PHILIPS_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
+        .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, I2S_SLOT_MODE_STEREO),
         .gpio_cfg =
             {
                 .mclk = BSP_I2S_MCLK,
@@ -66,13 +65,10 @@ esp_err_t bsp_audio_set_rate(uint32_t rate) {
 
 esp_err_t bsp_audio_initialize() {
     ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_handle(&codec_i2c_bus_handle), TAG, "Failed to get I2C bus handle");
-    ESP_RETURN_ON_ERROR(bsp_i2c_primary_bus_get_semaphore(&codec_i2c_bus_semaphore), TAG,
-                        "Failed to get I2C bus semaphore");
 
     es8156_config_t configuration = {
-        .i2c_bus               = codec_i2c_bus_handle,
-        .i2c_address           = BSP_ES8156_I2C_ADDRESS,
-        .concurrency_semaphore = codec_i2c_bus_semaphore,
+        .i2c_bus     = codec_i2c_bus_handle,
+        .i2c_address = BSP_ES8156_I2C_ADDRESS,
     };
 
     esp_err_t res = es8156_initialize(&configuration, &codec_handle);
@@ -80,18 +76,17 @@ esp_err_t bsp_audio_initialize() {
     res = es8156_configure(codec_handle);
     if (res != ESP_OK) return res;
 
-    ESP_RETURN_ON_ERROR(bsp_audio_set_volume(90.0f), TAG, "Failed to set default codec volume");
+    ESP_RETURN_ON_ERROR(bsp_audio_set_volume(50.0f), TAG, "Failed to set default codec volume");
 
     return initialize_i2s(44100);
 }
 
 esp_err_t bsp_audio_get_volume(float* out_percentage) {
-    return ESP_ERR_NOT_SUPPORTED;
+    return es8156_get_volume_percentage(codec_handle, out_percentage);
 }
 
 esp_err_t bsp_audio_set_volume(float percentage) {
-    float value = 180.0 * (percentage / 100.0);
-    return es8156_write_volume_control(codec_handle, value);
+    return es8156_set_volume_percentage(codec_handle, percentage);
 }
 
 esp_err_t bsp_audio_set_amplifier(bool enable) {

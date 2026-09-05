@@ -17,7 +17,7 @@ dependencies:
   nicolaielectronics/ssd1619:
     version: "=1.0.0"
   nicolaielectronics/es8156:
-    version: "=0.0.3"
+    version: "=0.1.0"
   nicolaielectronics/mpr121:
     version: "=0.0.2"
   nicolaielectronics/bmi270:

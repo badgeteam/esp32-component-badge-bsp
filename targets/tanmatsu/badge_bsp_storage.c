@@ -8,6 +8,7 @@
 #include "esp_vfs.h"
 #include "esp_vfs_fat.h"
 #include "hal/gpio_types.h"
+#include "sd_protocol_defs.h"
 #include "sd_pwr_ctrl.h"
 #include "sd_pwr_ctrl_by_on_chip_ldo.h"
 #include "sdmmc_cmd.h"
@@ -36,6 +37,27 @@ static char        int_mount_point[MOUNT_POINT_STRING_LENGTH] = "";
 #if SDCARD_WORKAROUND_HOSTED_DOES_SDMMC_HOST_INIT
 static esp_err_t sdmmc_host_init_noop(void) {
     return ESP_OK;
+}
+
+// The SDMMC ISR services the slot of the last transaction (cur_slot_id). If slot 0 is removed while it
+// is still that slot, the next SDIO interrupt from ESP-Hosted dereferences the removed slot and panics.
+// Do a harmless CMD52 read (CCCR address 0) on the ESP-Hosted slot first so the ISR points at a live slot.
+static esp_err_t sdmmc_host_deinit_slot_hosted(int slot) {
+    if (slot != CONFIG_ESP_HOSTED_SDIO_SLOT) {
+        sdmmc_command_t cmd = {
+            .opcode = SD_IO_RW_DIRECT,
+            .arg    = 0,
+            .flags  = SCF_CMD_AC | SCF_RSP_R5,
+            // The raw host call doesn't apply a default timeout; 0 would give up before the
+            // response arrives and leave it pending for ESP-Hosted's next transaction.
+            .timeout_ms = 1000,
+        };
+        esp_err_t res = sdmmc_host_do_transaction(CONFIG_ESP_HOSTED_SDIO_SLOT, &cmd);
+        if (res != ESP_OK) {
+            ESP_LOGW(TAG, "Dummy transaction on ESP-Hosted slot failed (%s)", esp_err_to_name(res));
+        }
+    }
+    return sdmmc_host_deinit_slot(slot);
 }
 #endif
 
@@ -162,10 +184,11 @@ esp_err_t bsp_storage_mount(bsp_storage_type_t type, const char* mountpoint) {
         host.max_freq_khz    = SDMMC_FREQ_HIGHSPEED;  // 40MHz
         host.pwr_ctrl_handle = sd_pwr_handle;
 #if SDCARD_WORKAROUND_HOSTED_DOES_SDMMC_HOST_INIT
-        // ESP-Hosted already owns the shared SDMMC host controller. Only skip init:
-        // deinit shares a union with deinit_p, which must stay sdmmc_host_deinit_slot
-        // so slot 0 is released on unmount (the controller is kept while ESP-Hosted uses it).
-        host.init = &sdmmc_host_init_noop;
+        // ESP-Hosted already owns the shared SDMMC host controller, so skip init. Don't set
+        // host.deinit: it shares a union with deinit_p, which must still release slot 0
+        // on unmount (the controller is kept while ESP-Hosted uses it).
+        host.init     = &sdmmc_host_init_noop;
+        host.deinit_p = &sdmmc_host_deinit_slot_hosted;
 #endif
 
         if (sd_dma_buf == NULL) {

@@ -56,11 +56,13 @@ void __attribute__((weak)) bsp_device_restart_to_launcher(void) {
 #if CONFIG_APPFS_USE_RTC_REG
     // Clear the retained register so the bootloader does not try to boot into AppFS again.
     REG_WRITE(APPFS_RTC_REG, 0);
-#else
+#elif CONFIG_BOOTLOADER_RESERVE_RTC_MEM
     rtc_retain_mem_t* mem = bootloader_common_get_rtc_retain_mem();
 
     // Remove the magic value set by the launcher to invalidated appfs bootloader struct
     memset(mem->custom, 0, sizeof(uint64_t));
+#else
+#warning "Restart to launcher might not work as neither APPFS_USE_RTC_REG or BOOTLOADER_RESERVE_RTC_MEM are set"
 #endif
 
     // Restart the device

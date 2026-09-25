@@ -18,7 +18,7 @@ typedef enum {
 } bsp_sensor_type_t;
 
 /// @brief Check if a specific sensor type is supported
-/// @return ESP-IDF error code
+/// @return Supported
 bool bsp_sensor_get_supported(bsp_sensor_type_t type);
 
 /// @brief Enable a sensor

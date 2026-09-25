@@ -21,8 +21,8 @@ typedef enum {
 bool bsp_storage_get_supported(bsp_storage_type_t type);
 
 /// @brief Get the status of a storage type
-/// @return ESP-IDF error code
-esp_err_t bsp_storage_get_status(bsp_storage_type_t type, bsp_storage_status_t* out_status);
+/// @return Status of the storage type
+bsp_storage_status_t bsp_storage_get_status(bsp_storage_type_t type);
 
 /// @brief Mount a storage device
 /// @return ESP-IDF error code
@@ -34,7 +34,7 @@ esp_err_t bsp_storage_unmount(bsp_storage_type_t type);
 
 /// @brief Check if a storage device is mounted
 /// @return ESP-IDF error code
-esp_err_t bsp_storage_get_mountpoint(bsp_storage_type_t type, bool* out_mounted);
+esp_err_t bsp_storage_get_mounted(bsp_storage_type_t type, bool* out_mounted);
 
 /// @brief Get the mountpoint of a storage device
 /// @return ESP-IDF error code

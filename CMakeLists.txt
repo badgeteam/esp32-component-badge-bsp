@@ -44,6 +44,10 @@ set(COMMON_BSP_REQUIREMENTS
     esp_driver_i2c
     esp_driver_spi
     esp_driver_gpio
+    esp_driver_sdmmc
+    sdmmc
+    fatfs
+    vfs
     "esp_lcd"
     "ssd1619"
     "bootloader_support"

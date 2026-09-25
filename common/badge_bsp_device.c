@@ -6,6 +6,7 @@
 #include "bsp/macro.h"
 #include "bsp/power.h"
 #include "bsp/rtc.h"
+#include "bsp/storage.h"
 #include "driver/gpio.h"
 #include "esp_err.h"
 #include "esp_log.h"
@@ -26,6 +27,7 @@ esp_err_t bsp_sensor_initialize(void);
 esp_err_t bsp_input_hooks_initialize(void);
 esp_err_t bsp_catt_initialize(void);
 esp_err_t bsp_sao_initialize(void);
+esp_err_t bsp_storage_initialize(void);
 
 esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     // Install the ISR service for GPIO interrupts
@@ -89,6 +91,13 @@ esp_err_t bsp_device_initialize(const bsp_configuration_t* configuration) {
     res = bsp_led_initialize();
     if (res != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize LED subsystem");
+        if (return_value == ESP_OK) return_value = res;
+    }
+
+    // Initialize storage
+    res = bsp_storage_initialize();
+    if (res != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize storage subsystem");
         if (return_value == ESP_OK) return_value = res;
     }
 

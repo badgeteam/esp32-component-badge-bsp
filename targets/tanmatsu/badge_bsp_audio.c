@@ -12,6 +12,9 @@
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
 
+// Speaker on Tanmatsu starts clipping above 75% of amplified DAC output volume range
+#define VOLUME_SCALING_FACTOR 0.70
+
 static char const* TAG = "BSP: audio";
 
 static i2c_master_bus_handle_t codec_i2c_bus_handle = NULL;
@@ -82,11 +85,19 @@ esp_err_t bsp_audio_initialize() {
 }
 
 esp_err_t bsp_audio_get_volume(float* out_percentage) {
-    return es8156_get_volume_percentage(codec_handle, out_percentage);
+    if (out_percentage == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    float     hw_percentage = 0;
+    esp_err_t res           = es8156_get_volume_percentage(codec_handle, &hw_percentage);
+    if (res == ESP_OK) {
+        *out_percentage = hw_percentage / VOLUME_SCALING_FACTOR;
+    }
+    return res;
 }
 
 esp_err_t bsp_audio_set_volume(float percentage) {
-    return es8156_set_volume_percentage(codec_handle, percentage);
+    return es8156_set_volume_percentage(codec_handle, percentage * VOLUME_SCALING_FACTOR);
 }
 
 esp_err_t bsp_audio_set_amplifier(bool enable) {

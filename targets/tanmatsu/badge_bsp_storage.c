@@ -45,9 +45,9 @@ static esp_err_t sdmmc_host_init_noop(void) {
 static esp_err_t sdmmc_host_deinit_slot_hosted(int slot) {
     if (slot != CONFIG_ESP_HOSTED_SDIO_SLOT) {
         sdmmc_command_t cmd = {
-            .opcode = SD_IO_RW_DIRECT,
-            .arg    = 0,
-            .flags  = SCF_CMD_AC | SCF_RSP_R5,
+            .opcode     = SD_IO_RW_DIRECT,
+            .arg        = 0,
+            .flags      = SCF_CMD_AC | SCF_RSP_R5,
             // The raw host call doesn't apply a default timeout; 0 would give up before the
             // response arrives and leave it pending for ESP-Hosted's next transaction.
             .timeout_ms = 1000,
@@ -154,6 +154,11 @@ bsp_storage_status_t bsp_storage_get_status(bsp_storage_type_t type) {
 }
 
 esp_err_t bsp_storage_mount(bsp_storage_type_t type, const char* mountpoint) {
+    return bsp_storage_mount_advanced(type, mountpoint, 10, false);  // Default to 10 files and no auto-format
+}
+
+esp_err_t bsp_storage_mount_advanced(bsp_storage_type_t type, const char* mountpoint, int max_files,
+                                     bool format_if_mount_failed) {
     if (mountpoint == NULL || strlen(mountpoint) >= MOUNT_POINT_STRING_LENGTH) {
         ESP_LOGE(TAG, "Invalid mount point");
         return ESP_ERR_INVALID_ARG;
@@ -165,8 +170,9 @@ esp_err_t bsp_storage_mount(bsp_storage_type_t type, const char* mountpoint) {
             bsp_storage_unmount(BSP_STORAGE_TYPE_SDCARD);
         }
 
-        esp_vfs_fat_sdmmc_mount_config_t mount_config = {
-            .format_if_mount_failed = false, .max_files = 10, .allocation_unit_size = 16 * 1024};
+        esp_vfs_fat_sdmmc_mount_config_t mount_config = {.format_if_mount_failed = format_if_mount_failed,
+                                                         .max_files              = max_files,
+                                                         .allocation_unit_size   = 16 * 1024};
 
         ESP_LOGI(TAG, "Initializing SD card");
 
@@ -270,6 +276,17 @@ esp_err_t bsp_storage_get_mountpoint(bsp_storage_type_t type, char* out_mountpoi
     if (type == BSP_STORAGE_TYPE_SDCARD) {
         snprintf(out_mountpoint, max_length, "%s", sd_mount_point);
         return ESP_OK;
+    }
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t bsp_storage_format(bsp_storage_type_t type) {
+    if (type == BSP_STORAGE_TYPE_SDCARD) {
+        bsp_storage_status_t status = bsp_storage_get_status(type);
+        if (status != BSP_STORAGE_STATUS_MOUNTED) {
+            return ESP_ERR_INVALID_STATE;
+        }
+        return esp_vfs_fat_sdcard_format(sd_mount_point, sd_card);
     }
     return ESP_ERR_NOT_SUPPORTED;
 }

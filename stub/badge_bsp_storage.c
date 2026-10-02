@@ -21,6 +21,15 @@ esp_err_t __attribute__((weak)) bsp_storage_mount(bsp_storage_type_t type, const
     return ESP_ERR_NOT_SUPPORTED;
 }
 
+esp_err_t __attribute__((weak)) bsp_storage_mount_advanced(bsp_storage_type_t type, const char* mountpoint,
+                                                           int max_files, bool format_if_mount_failed) {
+    (void)type;
+    (void)mountpoint;
+    (void)max_files;
+    (void)format_if_mount_failed;
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
 esp_err_t __attribute__((weak)) bsp_storage_unmount(bsp_storage_type_t type) {
     (void)type;
     return ESP_ERR_NOT_SUPPORTED;
@@ -36,5 +45,10 @@ esp_err_t __attribute__((weak)) bsp_storage_get_mountpoint(bsp_storage_type_t ty
                                                            size_t max_length) {
     (void)out_mountpoint;
     (void)max_length;
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_storage_format(bsp_storage_type_t type) {
+    (void)type;
     return ESP_ERR_NOT_SUPPORTED;
 }

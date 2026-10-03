@@ -113,7 +113,7 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
 esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer);
 
 /// @brief Wait for display flush to be completed
-/// @return ESP-iDF error code
+/// @return ESP-IDF error code
 esp_err_t bsp_display_wait(uint32_t timeout_ms);
 
 /// @brief Returns true if display is busy (flusing)
@@ -121,5 +121,17 @@ esp_err_t bsp_display_wait(uint32_t timeout_ms);
 bool bsp_display_get_busy(void);
 
 /// @brief Interrupt threads waiting on the bsp_display_wait function
-/// @return ESP-iDF error code
+/// @return ESP-IDF error code
 esp_err_t bsp_display_interrupt(void);
+
+/// @brief Read the current LCD common voltage calibration value
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_vcom(uint8_t* out_vcom);
+
+/// @brief Read the default LCD common voltage calibration value
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_vcom_default(uint8_t* out_vcom);
+
+/// @brief Write the LCD common voltage calibration value
+/// @return ESP-IDF error code
+esp_err_t bsp_display_set_vcom(uint8_t vcom);

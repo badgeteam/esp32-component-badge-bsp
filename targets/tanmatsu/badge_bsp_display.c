@@ -25,8 +25,10 @@
 #include "hal/lcd_types.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
+#include "nvs.h"
 
 static char const* TAG = "BSP display";
+static char const* NVS_NAMESPACE = "system";
 
 static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
 static bool                     bsp_display_initialized = false;
@@ -95,6 +97,29 @@ static esp_err_t bsp_display_initialize_te(void) {
     return res;
 }
 
+static esp_err_t bsp_display_nvs_settings_get_u8(const char* key, uint8_t default_value, uint8_t* out_value) {
+    if (key == NULL || out_value == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+    nvs_handle_t nvs_handle;
+    esp_err_t    res = nvs_open(NVS_NAMESPACE, NVS_READONLY, &nvs_handle);
+    if (res != ESP_OK) {
+        *out_value = default_value;
+        return res;
+    }
+    uint8_t value;
+    res = nvs_get_u8(nvs_handle, key, &value);
+    if (res != ESP_OK) {
+        *out_value = default_value;
+        nvs_close(nvs_handle);
+        return res;
+    }
+    nvs_close(nvs_handle);
+
+    *out_value = value;
+    return res;
+}
+
 // Public functions
 
 esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuration) {
@@ -103,6 +128,18 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     }
     ESP_RETURN_ON_ERROR(bsp_display_enable_dsi_phy_power(), TAG, "Failed to enable DSI PHY power");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(configuration), TAG, "Failed to initialize panel");
+
+    uint8_t vcom = 0;
+    if (bsp_display_get_vcom_default(&vcom) == ESP_OK && bsp_display_nvs_settings_get_u8("lcd_vcom", vcom, &vcom) == ESP_OK) {
+        if (st7701_set_vcom(vcom) == ESP_OK) {
+            ESP_LOGI(TAG, "Applied LCD VCOM from NVS: 0x%02X", vcom);
+        } else {
+            ESP_LOGE(TAG, "Failed to apply LCD VCOM from NVS");
+        }
+    } else {
+        ESP_LOGI(TAG, "No LCD VCOM value stored in NVS");
+    }
+
     ESP_RETURN_ON_ERROR(bsp_display_initialize_flush(), TAG, "Failed to initialize flush callback");
     ESP_RETURN_ON_ERROR(bsp_display_initialize_te(), TAG, "Failed to tearing effect callback");
     bsp_display_initialized = true;
@@ -222,4 +259,16 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
 esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
     xSemaphoreTake(flush_semaphore, pdMS_TO_TICKS(1000));
     return esp_lcd_panel_draw_bitmap(st7701_get_panel(), x_start, y_start, x_end, y_end, buffer);
+}
+
+esp_err_t bsp_display_get_vcom(uint8_t* out_vcom) {
+    return st7701_get_vcom(out_vcom);
+}
+
+esp_err_t bsp_display_get_vcom_default(uint8_t* out_vcom) {
+    return st7701_get_vcom_otp(out_vcom);
+}
+
+esp_err_t bsp_display_set_vcom(uint8_t vcom) {
+    return st7701_set_vcom(vcom);
 }

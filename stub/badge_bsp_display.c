@@ -67,3 +67,15 @@ bool __attribute__((weak)) bsp_display_get_busy(void) {
 esp_err_t __attribute__((weak)) bsp_display_interrupt(void) {
     return ESP_OK;
 }
+
+esp_err_t __attribute__((weak)) bsp_display_get_vcom(uint8_t* out_vcom) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_display_get_vcom_default(uint8_t* out_vcom) {
+    return ESP_ERR_NOT_SUPPORTED;
+}
+
+esp_err_t __attribute__((weak)) bsp_display_set_vcom(uint8_t vcom) {
+    return ESP_ERR_NOT_SUPPORTED;
+}

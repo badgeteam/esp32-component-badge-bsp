@@ -25,7 +25,7 @@ dependencies:
   nicolaielectronics/tca8418:
     version: "=1.0.0"
   nicolaielectronics/mipi_dsi_abstraction:
-    version: "=1.0.0"
+    version: "=1.1.0"
     rules:
       - if: "target == esp32p4"
   nicolaielectronics/tanmatsu_coprocessor:

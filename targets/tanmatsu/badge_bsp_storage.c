@@ -1,5 +1,6 @@
 #include "bsp/input.h"
 #include "bsp/storage.h"
+#include "badge_bsp_storage_retry.h"
 #include "driver/gpio.h"
 #include "driver/sdmmc_host.h"
 #include "esp_err.h"
@@ -117,6 +118,16 @@ static bool get_sd_inserted(void) {
 }
 
 esp_err_t bsp_storage_initialize(void) {
+    if (sd_pwr_handle != NULL) {
+        // Already initialized. The SD rail is an adjustable on-chip LDO, and
+        // esp_ldo lets exactly one reference hold such a channel, so a second
+        // acquire always fails ("already in use by others or not adjustable").
+        // A loader that mounted the card first and an app that calls
+        // bsp_device_initialize() afterwards both end up here, and the second
+        // one has nothing left to do.
+        return ESP_OK;
+    }
+
     sd_pwr_handle = initialize_sd_ldo();
     if (sd_pwr_handle == NULL) {
         return ESP_FAIL;
@@ -230,6 +241,11 @@ esp_err_t bsp_storage_mount_advanced(bsp_storage_type_t type, const char* mountp
             sd_failed = true;
             return res;
         }
+
+        // BEFORE anything writes: IDF's disk layer does not retry, and on this
+        // board one glitch costs a dead file handle and a leaked cluster that
+        // nothing will ever reclaim (badge_bsp_storage_retry.c).
+        bsp_storage_install_retrying_diskio(sd_card);
 
         ESP_LOGI(TAG, "Mounted SD at '%s'", sd_mount_point);
 

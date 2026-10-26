@@ -20,6 +20,10 @@ typedef enum {
 /// @return Supported
 bool bsp_storage_get_supported(bsp_storage_type_t type);
 
+/// @brief Initialize the storage subsystem (power rails for the SD card slot)
+/// @return ESP-IDF error code
+esp_err_t bsp_storage_initialize(void);
+
 /// @brief Get the status of a storage type
 /// @return Status of the storage type
 bsp_storage_status_t bsp_storage_get_status(bsp_storage_type_t type);
@@ -48,3 +52,16 @@ esp_err_t bsp_storage_get_mountpoint(bsp_storage_type_t type, char* out_mountpoi
 /// @brief Format a storage device
 /// @return ESP-IDF error code
 esp_err_t bsp_storage_format(bsp_storage_type_t type);
+
+#if CONFIG_BSP_TARGET_TANMATSU
+/// @brief Counters of the SD card disk layer: how many operations needed more
+/// than one attempt, how many ran out of attempts, and how many had to run on
+/// a bounce buffer because the caller's buffer was one the SDMMC data phase
+/// cannot use. All zero on a healthy card; if `retried` climbs the controller
+/// is being disturbed, if `failed` climbs the card itself is in trouble, and
+/// if `bounced` climbs the allocator is handing out unusable memory.
+/// @param retried Number of operations that succeeded after a retry, may be NULL
+/// @param failed Number of operations that ran out of attempts, may be NULL
+/// @param bounced Number of operations that used the bounce buffer, may be NULL
+void bsp_storage_get_retry_stats(uint32_t* retried, uint32_t* failed, uint32_t* bounced);
+#endif

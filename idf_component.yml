@@ -1,3 +1,4 @@
+version: "1.6.4"
 targets:
   - esp32
   - esp32p4

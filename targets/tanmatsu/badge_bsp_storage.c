@@ -119,12 +119,7 @@ static bool get_sd_inserted(void) {
 
 esp_err_t bsp_storage_initialize(void) {
     if (sd_pwr_handle != NULL) {
-        // Already initialized. The SD rail is an adjustable on-chip LDO, and
-        // esp_ldo lets exactly one reference hold such a channel, so a second
-        // acquire always fails ("already in use by others or not adjustable").
-        // A loader that mounted the card first and an app that calls
-        // bsp_device_initialize() afterwards both end up here, and the second
-        // one has nothing left to do.
+        // Already initialized.
         return ESP_OK;
     }
 
@@ -242,9 +237,6 @@ esp_err_t bsp_storage_mount_advanced(bsp_storage_type_t type, const char* mountp
             return res;
         }
 
-        // BEFORE anything writes: IDF's disk layer does not retry, and on this
-        // board one glitch costs a dead file handle and a leaked cluster that
-        // nothing will ever reclaim (badge_bsp_storage_retry.c).
         bsp_storage_install_retrying_diskio(sd_card);
 
         ESP_LOGI(TAG, "Mounted SD at '%s'", sd_mount_point);
@@ -267,6 +259,9 @@ esp_err_t bsp_storage_unmount(bsp_storage_type_t type) {
             ESP_LOGE(TAG, "SD card unmount returned error: %s", esp_err_to_name(res));
             return res;
         }
+        // The card is gone, so the retry layer's card pointer is dangling and
+        // its bounce buffer is dead weight. Both go here.
+        bsp_storage_release_retrying_diskio();
         ESP_LOGI(TAG, "SD card unmounted");
         sd_card = NULL;
         return ESP_OK;

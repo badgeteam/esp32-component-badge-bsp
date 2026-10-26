@@ -1,75 +1,3 @@
-// =====================================================================
-//  A retrying disk layer for the SD card
-// ---------------------------------------------------------------------
-//  ESP-IDF's own FatFs disk driver does not retry. One transaction that
-//  does not complete is the end of it:
-//
-//      esp_err_t err = sdmmc_write_sectors(card, buff, sector, count);
-//      if (unlikely(err != ESP_OK)) { ESP_LOGE(...); return RES_ERROR; }
-//
-//  and the consequences inside FatFs are out of all proportion to one
-//  glitch, because FatFs has no journal and no repair:
-//
-//    * f_write does ABORT(fs, FR_DISK_ERR), which sets fp->err -- and
-//      every later f_read and f_write on that file object returns
-//      immediately with the stored error, for ever, until the file is
-//      closed and opened again.
-//    * a cluster allocated by create_chain() before the failure stays
-//      marked in use while the directory entry that would reference it
-//      is never written. The space is LOST -- allocated, referenced by
-//      nothing, and only a host-side fsck will ever reclaim it.
-//      Measured on this badge: 45 lost clusters, 720 KB, in six chains.
-//    * sync_window() mirrors the FAT to the second copy and DISCARDS
-//      that write's result, so the two copies can silently diverge.
-//
-//  WHY A RETRY IS THE RIGHT ANSWER, and not merely a bandage: the card
-//  is not the thing that failed. The driver reads the card's status
-//  (CMD13) immediately after a failed transaction and logs it, and on
-//  this badge it comes back 0x900 every time -- READY_FOR_DATA set,
-//  state 4, `tran`. The card is idle and well a microsecond after
-//  "timing out", and the write timeout is five seconds to begin with,
-//  so this is not a card busy with an erase cycle. It is the
-//  transaction that was disturbed, and the obvious suspect is that the
-//  ESP32-P4 has ONE SDMMC controller which the card shares with
-//  ESP-Hosted (see sdcard.c, and the workaround it already needs).
-//
-//  WHAT THE 2026-10-10 RUN SHOWED, and what a retry cannot do about it:
-//  not every failure here is a timeout. 0x106 is ESP_ERR_NOT_SUPPORTED,
-//  not ESP_ERR_TIMEOUT (0x107), and in the write path the only thing that
-//  returns it without printing anything is esp_cache_msync() -- the
-//  buffer sits outside every cacheable range, so the driver refuses the
-//  transaction before the card is ever asked. That is a property of the
-//  buffer's address, which does not move between tries, so the answer is
-//  decided before the first attempt and the backoff is pure cost: five
-//  tries, 372 ms, the same answer five times. The run shows exactly that
-//  -- every attempt failing identically, with the card still answering
-//  0x900.
-//
-//  So the retry stays for the failures it was written for, and the layer
-//  now prints which buffer was refused, because that is the fact the log
-//  was missing, and it does not retry that one. The buffer itself is the
-//  fix: a caller's buffer the driver cannot use is bounced through one
-//  this file allocated, so the transaction runs on an address that is
-//  cacheable and cache-line aligned no matter where malloc put the app's
-//  data. See cacheable(), usable_for_dma() and bounce_buffer().
-//
-//  Writing the same sectors again is idempotent, and the card has just
-//  told us it is ready, so trying again is safe and nearly always
-//  works. What it buys is that a glitch stays a glitch instead of
-//  becoming a dead file handle, a leaked cluster and, one layer up, a
-//  world that stops streaming.
-//
-//  This does NOT fork ESP-IDF. ff_diskio_register() is public API and
-//  the whole disk layer is swappable, so the retry lives here and the
-//  IDF component stays untouched.
-//
-//  It lives in the BSP rather than in the loader that found the problem,
-//  because apps are shipped as binaries: everything an app can reach is a
-//  bsp_storage_* call, so hardening applied here is inherited by every
-//  app without rebuilding any of them. bsp_storage_mount_advanced()
-//  installs it on every successful mount, so nothing has to remember to.
-// =====================================================================
-
 #include "badge_bsp_storage_retry.h"
 #include "bsp/storage.h"
 
@@ -161,9 +89,13 @@ static bool usable_for_dma(void const* buff, size_t bytes) {
 }
 
 // The buffer the transaction runs on when the caller's cannot be used.
-// Allocated once, on first need, in internal RAM with PSRAM as the
-// fallback; sector multiples, so the length is always a multiple of the
-// line. Larger requests are bounced in pieces.
+// Allocated on first need, in PSRAM with internal RAM as the fallback:
+// PSRAM is L2 cacheable, so it is a valid SDMMC DMA target, and 8 KiB does
+// not come out of the internal pool the SDMMC DMA buffer, ESP-Hosted and the
+// task stacks are competing for. Sector multiples, so the length is always a
+// multiple of the line. Larger requests are bounced in pieces. Released by
+// bsp_storage_release_retrying_diskio() on unmount, so it is only held while
+// a card is mounted.
 #define BOUNCE_SECTORS 16
 #define BOUNCE_BYTES   (BOUNCE_SECTORS * 512)
 
@@ -171,10 +103,14 @@ static uint8_t* s_bounce;
 
 static uint8_t* bounce_buffer(void) {
     if (s_bounce != NULL) return s_bounce;
-    size_t const line = CONFIG_CACHE_L1_CACHE_LINE_SIZE;
-    s_bounce = heap_caps_aligned_alloc(line, BOUNCE_BYTES, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    // Whichever region ends up holding it has to be aligned to that region's
+    // cache line, so align for the wider of the two.
+    size_t const line = (CONFIG_CACHE_L2_CACHE_LINE_SIZE > CONFIG_CACHE_L1_CACHE_LINE_SIZE)
+                            ? CONFIG_CACHE_L2_CACHE_LINE_SIZE
+                            : CONFIG_CACHE_L1_CACHE_LINE_SIZE;
+    s_bounce = heap_caps_aligned_alloc(line, BOUNCE_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     if (s_bounce == NULL) {
-        s_bounce = heap_caps_aligned_alloc(line, BOUNCE_BYTES, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        s_bounce = heap_caps_aligned_alloc(line, BOUNCE_BYTES, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
     }
     return s_bounce;
 }
@@ -367,4 +303,15 @@ void bsp_storage_get_retry_stats(uint32_t* retried, uint32_t* failed, uint32_t* 
     if (retried != NULL) *retried = s_retried;
     if (failed != NULL) *failed = s_failed;
     if (bounced != NULL) *bounced = s_bounced;
+}
+
+void bsp_storage_release_retrying_diskio(void) {
+    // The card pointer goes first: every disk callback checks it, so nothing
+    // can reach the buffer while it is being freed or use the card after
+    // esp_vfs_fat_sdcard_unmount() has freed it.
+    s_card = NULL;
+    if (s_bounce != NULL) {
+        heap_caps_free(s_bounce);
+        s_bounce = NULL;
+    }
 }

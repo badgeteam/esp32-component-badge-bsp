@@ -23,6 +23,18 @@
 #define BSP_RP2040_I2C_ADDR 0x17
 #define BSP_RP2040_INTR_PIN 34
 
+// SD card (1-bit mode, D1/D2/D3 are repurposed as I2S pins)
+#define BSP_SDCARD_CLK_PIN 14
+#define BSP_SDCARD_CMD_PIN 15
+#define BSP_SDCARD_D0_PIN  2
+
+// Shared power switch for the SD card and the addressable LEDs
+#define BSP_SDCARD_LED_POWER_PIN 19
+
+// Addressable LEDs
+#define BSP_LED_DATA_PIN 5
+#define BSP_LED_NUM      5
+
 // ES8156 audio codec
 #define BSP_I2S_MCLK 0
 #define BSP_I2S_BCLK 4

@@ -5,6 +5,10 @@
 #include "display.h"
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     bsp_display_configuration_t display;
 } bsp_configuration_t;
@@ -40,3 +44,7 @@ bool bsp_device_get_initialized_without_coprocessor(void);
 
 /// @brief Restarts the device, returning to the launcher
 void bsp_device_restart_to_launcher(void);
+
+#ifdef __cplusplus
+}
+#endif

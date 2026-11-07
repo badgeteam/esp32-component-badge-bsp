@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Write data to LEDs (deprecated)
 /// @return ESP-IDF error code
 esp_err_t bsp_led_write(const uint8_t* data, uint32_t length);
@@ -51,3 +55,7 @@ esp_err_t bsp_led_set_pixel_hsv(uint32_t index, uint16_t hue, uint8_t saturation
 /// @brief Get amount of LEDs available
 /// @return ESP-IDF error code
 esp_err_t bsp_led_get_count(uint32_t* out_count);
+
+#ifdef __cplusplus
+}
+#endif

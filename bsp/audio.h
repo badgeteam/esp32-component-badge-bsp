@@ -5,6 +5,10 @@
 #include "driver/i2s_types.h"
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Set audio sample rate
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_set_rate(uint32_t rate);
@@ -29,3 +33,7 @@ esp_err_t bsp_audio_set_amplifier_force(bool force);
 /// @param out_handle Pointer to I2S handle
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_get_i2s_handle(i2s_chan_handle_t* out_handle);
+
+#ifdef __cplusplus
+}
+#endif

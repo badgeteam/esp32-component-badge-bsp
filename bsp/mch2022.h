@@ -7,6 +7,10 @@
 #include "freertos/queue.h"
 #include "rp2040.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Get coprocessor handle
 /// @return ESP-IDF error code
 esp_err_t bsp_mch2022_coprocessor_get_handle(RP2040* handle);
@@ -17,3 +21,7 @@ esp_err_t bsp_mch2022_coprocessor_get_queue(QueueHandle_t* queue);
 
 /// @brief Coprocessor input callback
 void bsp_mch2022_coprocessor_input_callback(rp2040_input_t input, bool state);
+
+#ifdef __cplusplus
+}
+#endif

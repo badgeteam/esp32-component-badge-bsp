@@ -6,6 +6,10 @@
 #include "esp_lcd_types.h"
 #include "freertos/FreeRTOS.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Display color format
 /// @details The color format the display driver for the active target expects the pixel buffer to be in
 typedef enum {
@@ -147,3 +151,7 @@ esp_err_t bsp_display_get_vcom_default(uint8_t* out_vcom);
 /// @brief Write the LCD common voltage calibration value
 /// @return ESP-IDF error code
 esp_err_t bsp_display_set_vcom(uint8_t vcom);
+
+#ifdef __cplusplus
+}
+#endif

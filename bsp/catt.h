@@ -5,6 +5,10 @@
 #include "driver/i2c_master.h"
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     CATT_PIN_D0  = 0,  // I2C SCL
     CATT_PIN_D1  = 1,
@@ -33,3 +37,7 @@ esp_err_t bsp_catt_i2c_bus_get_handle(i2c_master_bus_handle_t* out_handle);
 /// @brief Get the GPIO pin number of a CATT data pin
 /// @return ESP-IDF error code
 gpio_num_t bsp_catt_get_gpio(catt_pin_num_t pin);
+
+#ifdef __cplusplus
+}
+#endif

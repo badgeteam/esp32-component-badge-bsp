@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     BSP_POWER_CHARGING_FAULT_NONE        = 0,
     BSP_POWER_CHARGING_FAULT_TEMPERATURE = 1,
@@ -73,3 +77,7 @@ esp_err_t bsp_power_set_radio_state(bsp_radio_state_t state);
 /// @brief Power off
 /// @return ESP-IDF error code
 esp_err_t bsp_power_off(bool enable_alarm_wakeup);
+
+#ifdef __cplusplus
+}
+#endif

@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     BSP_STORAGE_TYPE_INTERNAL = 0,
     BSP_STORAGE_TYPE_SDCARD   = 1,
@@ -48,3 +52,7 @@ esp_err_t bsp_storage_get_mountpoint(bsp_storage_type_t type, char* out_mountpoi
 /// @brief Format a storage device
 /// @return ESP-IDF error code
 esp_err_t bsp_storage_format(bsp_storage_type_t type);
+
+#ifdef __cplusplus
+}
+#endif

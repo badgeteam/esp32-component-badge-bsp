@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     BSP_SENSOR_TYPE_TEMPERATURE         = 0,   // Degrees Celsius
     BSP_SENSOR_TYPE_RELATIVE_HUMIDITY   = 1,   // Percentage
@@ -36,3 +40,7 @@ esp_err_t bsp_sensor_status(bsp_sensor_type_t type, bool* out_ready);
 /// @brief Read a sensor
 /// @return ESP-IDF error code, returns ESP_ERR_NOT_FOUND if not supported
 esp_err_t bsp_sensor_read(bsp_sensor_type_t type, float* out_value);
+
+#ifdef __cplusplus
+}
+#endif

@@ -7,6 +7,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Get the primary I2C bus handle
 /// @return ESP-IDF error code
 esp_err_t bsp_i2c_primary_bus_get_handle(i2c_master_bus_handle_t* handle);
@@ -22,3 +26,7 @@ esp_err_t bsp_i2c_primary_bus_claim(void);
 /// @brief Release private access to the primary I2C bus
 /// @return ESP-IDF error code
 esp_err_t bsp_i2c_primary_bus_release(void);
+
+#ifdef __cplusplus
+}
+#endif

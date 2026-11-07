@@ -4,6 +4,10 @@
 #include <stdint.h>
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// @brief Get time
 /// @return ESP-IDF error code
 esp_err_t bsp_rtc_get_time(uint32_t* value);
@@ -23,3 +27,7 @@ esp_err_t bsp_rtc_get_alarm(uint32_t* value);
 /// @brief Set alarm
 /// @return ESP-IDF error code
 esp_err_t bsp_rtc_set_alarm(uint32_t value);
+
+#ifdef __cplusplus
+}
+#endif

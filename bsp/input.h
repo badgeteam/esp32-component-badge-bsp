@@ -6,6 +6,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum _bsp_input_event_type {
     INPUT_EVENT_TYPE_NONE       = 0,
     INPUT_EVENT_TYPE_NAVIGATION = 1,  // Keyboard: navigation keys
@@ -313,3 +317,7 @@ void bsp_input_hook_unregister(int hook_id);
 /// @param event The event to inject
 /// @return ESP-IDF error code
 esp_err_t bsp_input_inject_event(bsp_input_event_t* event);
+
+#ifdef __cplusplus
+}
+#endif

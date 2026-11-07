@@ -2,6 +2,10 @@
 
 #include "esp_err.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define BSP_RETURN_ON_FAILURE(x, ...)                                          \
     do {                                                                       \
         esp_err_t err_rc_ = (x);                                               \
@@ -10,3 +14,7 @@
             return err_rc_;                                                    \
         }                                                                      \
     } while (0)
+
+#ifdef __cplusplus
+}
+#endif

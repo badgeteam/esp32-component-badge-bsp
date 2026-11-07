@@ -67,10 +67,12 @@ set(ESP32P4_BSP_REQUIREMENTS
     "nicolaielectronics__tanmatsu_coprocessor"
     "nicolaielectronics__mipi_dsi_abstraction"
     "es8156"
+    "esp_driver_usb_serial_jtag"
 )
 
 # BSP requirements only used on for ESP32-S3 targets
 set(ESP32S3_BSP_REQUIREMENTS
+    "esp_driver_usb_serial_jtag"
 )
 
 # -------------------------

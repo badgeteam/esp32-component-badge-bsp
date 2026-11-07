@@ -23,11 +23,11 @@
 #include "freertos/projdefs.h"
 #include "hal/gpio_types.h"
 #include "hal/lcd_types.h"
+#include "nvs.h"
 #include "tanmatsu_coprocessor.h"
 #include "tanmatsu_hardware.h"
-#include "nvs.h"
 
-static char const* TAG = "BSP display";
+static char const* TAG           = "BSP display";
 static char const* NVS_NAMESPACE = "system";
 
 static esp_ldo_channel_handle_t ldo_mipi_phy            = NULL;
@@ -35,11 +35,14 @@ static bool                     bsp_display_initialized = false;
 static bsp_display_te_mode_t    display_te_mode         = BSP_DISPLAY_TE_DISABLED;
 static SemaphoreHandle_t        te_semaphore            = NULL;
 static SemaphoreHandle_t        flush_semaphore         = NULL;
+static volatile bool            flush_busy              = false;
 
 IRAM_ATTR static bool bsp_display_flush_ready(esp_lcd_panel_handle_t panel, esp_lcd_dpi_panel_event_data_t* edata,
                                               void* user_ctx) {
-    xSemaphoreGiveFromISR(flush_semaphore, NULL);
-    return false;
+    BaseType_t higher_priority_task_woken = pdFALSE;
+    flush_busy                            = false;
+    xSemaphoreGiveFromISR(flush_semaphore, &higher_priority_task_woken);
+    return higher_priority_task_woken == pdTRUE;
 }
 
 static esp_err_t bsp_display_enable_dsi_phy_power(void) {
@@ -71,7 +74,9 @@ IRAM_ATTR static void te_gpio_interrupt_handler(void* pvParameters) {
 
 static esp_err_t bsp_display_initialize_flush(void) {
     flush_semaphore = xSemaphoreCreateBinary();
-    xSemaphoreGive(flush_semaphore);
+    if (flush_semaphore == NULL) {
+        return ESP_ERR_NO_MEM;
+    }
     esp_lcd_dpi_panel_event_callbacks_t callbacks = {
         .on_color_trans_done = bsp_display_flush_ready,
     };
@@ -130,7 +135,8 @@ esp_err_t bsp_display_initialize(const bsp_display_configuration_t* configuratio
     ESP_RETURN_ON_ERROR(bsp_display_initialize_panel(configuration), TAG, "Failed to initialize panel");
 
     uint8_t vcom = 0;
-    if (bsp_display_get_vcom_default(&vcom) == ESP_OK && bsp_display_nvs_settings_get_u8("lcd_vcom", vcom, &vcom) == ESP_OK) {
+    if (bsp_display_get_vcom_default(&vcom) == ESP_OK &&
+        bsp_display_nvs_settings_get_u8("lcd_vcom", vcom, &vcom) == ESP_OK) {
         if (st7701_set_vcom(vcom) == ESP_OK) {
             ESP_LOGI(TAG, "Applied LCD VCOM from NVS: 0x%02X", vcom);
         } else {
@@ -257,8 +263,69 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
 }
 
 esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer) {
-    xSemaphoreTake(flush_semaphore, pdMS_TO_TICKS(1000));
-    return esp_lcd_panel_draw_bitmap(st7701_get_panel(), x_start, y_start, x_end, y_end, buffer);
+    if (!bsp_display_initialized) {
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    // Stall until the previous transfer has completed, signals from bsp_display_interrupt are ignored here
+    while (flush_busy) {
+        if (xSemaphoreTake(flush_semaphore, pdMS_TO_TICKS(1000)) != pdTRUE) {
+            ESP_LOGE(TAG, "Timeout while waiting for previous transfer to complete");
+            return ESP_ERR_TIMEOUT;
+        }
+    }
+
+    // Discard stale completion or interrupt signals so that a subsequent wait only returns for this transfer.
+    // The busy flag is set before starting the transfer because the completion callback may be called
+    // before esp_lcd_panel_draw_bitmap returns.
+    xSemaphoreTake(flush_semaphore, 0);
+    flush_busy = true;
+
+    esp_err_t res = esp_lcd_panel_draw_bitmap(st7701_get_panel(), x_start, y_start, x_end, y_end, buffer);
+    if (res != ESP_OK) {
+        flush_busy = false;
+    }
+    return res;
+}
+
+esp_err_t bsp_display_wait(uint32_t timeout_ms) {
+    if (!flush_busy) {
+        return ESP_OK;
+    }
+
+    TickType_t timeout_ticks = (timeout_ms == UINT32_MAX) ? portMAX_DELAY : pdMS_TO_TICKS(timeout_ms);
+    if (xSemaphoreTake(flush_semaphore, timeout_ticks) != pdTRUE) {
+        return ESP_ERR_TIMEOUT;
+    }
+
+    if (flush_busy) {
+        // Woken up by bsp_display_interrupt while the transfer is still in progress
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    // Wake up the next thread waiting for the same transfer, if any
+    xSemaphoreGive(flush_semaphore);
+    return ESP_OK;
+}
+
+bool bsp_display_get_busy(void) {
+    return flush_busy;
+}
+
+esp_err_t bsp_display_interrupt(void) {
+    if (flush_semaphore == NULL) {
+        return ESP_ERR_INVALID_STATE;
+    }
+    xSemaphoreGive(flush_semaphore);
+    return ESP_OK;
+}
+
+esp_err_t bsp_display_get_framebuffer(uint8_t** out_framebuffer_ptr) {
+    return bsp_display_get_framebuffer_n(0, out_framebuffer_ptr);
+}
+
+esp_err_t bsp_display_get_framebuffer_n(uint8_t buffer, uint8_t** out_framebuffer_ptr) {
+    return esp_lcd_dpi_panel_get_frame_buffer(st7701_get_panel(), buffer, (void**)out_framebuffer_ptr);
 }
 
 esp_err_t bsp_display_get_vcom(uint8_t* out_vcom) {

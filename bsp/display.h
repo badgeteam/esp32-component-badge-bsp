@@ -103,7 +103,9 @@ esp_err_t bsp_display_get_tearing_effect_mode(bsp_display_te_mode_t* mode);
 /// @return ESP-IDF error code
 esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore);
 
-/// @brief Send pixel data to the display
+/// @brief Start sending pixel data to the display without waiting for the transfer to complete
+/// @note Use bsp_display_wait to wait for the transfer to complete, the buffer must stay valid until then.
+///       If a previous transfer is still in progress this function blocks until it has completed.
 /// @param x_start Start pixel index on the x-axis, included
 /// @param y_start Start pixel index on the y-axis, included
 /// @param x_end End pixel index on the x-axis, not included
@@ -112,8 +114,10 @@ esp_err_t bsp_display_get_tearing_effect_semaphore(SemaphoreHandle_t* semaphore)
 /// @return ESP-IDF error code
 esp_err_t bsp_display_blit(size_t x_start, size_t y_start, size_t x_end, size_t y_end, const void* buffer);
 
-/// @brief Wait for display flush to be completed
-/// @return ESP-IDF error code
+/// @brief Wait for display flush to be completed, returns immediately if no flush is in progress
+/// @param timeout_ms Timeout in milliseconds, UINT32_MAX waits forever
+/// @return ESP_OK when the flush completed, ESP_ERR_TIMEOUT on timeout,
+///         ESP_ERR_INVALID_STATE when interrupted using bsp_display_interrupt
 esp_err_t bsp_display_wait(uint32_t timeout_ms);
 
 /// @brief Returns true if display is busy (flusing)
@@ -123,6 +127,14 @@ bool bsp_display_get_busy(void);
 /// @brief Interrupt threads waiting on the bsp_display_wait function
 /// @return ESP-IDF error code
 esp_err_t bsp_display_interrupt(void);
+
+/// @brief Get framebuffer pointer
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_framebuffer(uint8_t** out_framebuffer_ptr);
+
+/// @brief Get framebuffer pointer (for multiple framebuffers)
+/// @return ESP-IDF error code
+esp_err_t bsp_display_get_framebuffer_n(uint8_t buffer, uint8_t** out_framebuffer_ptr);
 
 /// @brief Read the current LCD common voltage calibration value
 /// @return ESP-IDF error code

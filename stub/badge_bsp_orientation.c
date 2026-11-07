@@ -1,6 +1,3 @@
-// SPDX-FileCopyrightText: 2025 Nicolai Electronics
-// SPDX-License-Identifier: MIT
-
 #include "bsp/orientation.h"
 #include "esp_err.h"
 

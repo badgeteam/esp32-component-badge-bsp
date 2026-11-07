@@ -1,7 +1,3 @@
-// Board support package API: Generic stub implementation
-// SPDX-FileCopyrightText: 2025 Nicolai Electronics
-// SPDX-License-Identifier: MIT
-
 #include <stdint.h>
 #include "bsp/audio.h"
 #include "esp_err.h"

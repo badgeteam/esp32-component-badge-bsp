@@ -16,11 +16,11 @@
 
 static char const* TAG = "BSP INPUT";
 
-static QueueHandle_t    event_queue       = NULL;
-static bool             prev_button_state = false;
-static tca8418_handle_t tca8418_handle    = {0};
-static uint32_t         active_modifiers  = 0;
-static bool             super_used        = false;
+static QueueHandle_t           event_queue       = NULL;
+static bool                    prev_button_state = false;
+static tca8418_handle_t        tca8418_handle    = {0};
+static uint32_t                active_modifiers  = 0;
+static bool                    super_used        = false;
 static i2c_master_bus_handle_t i2c_handle;
 
 typedef enum {
@@ -90,13 +90,13 @@ typedef enum {
     WHY2025_KEY_ENTER       = 59,
     WHY2025_KEY_EQUAL       = 60,
 
-    WHY2025_KEY_CTRL      = 61,
-    WHY2025_KEY_SUPER     = 62,
-    WHY2025_KEY_LEFT_ALT  = 63,
-    WHY2025_KEY_BACKSLASH = 64,
-    WHY2025_KEY_SPACE     = 65,
-    WHY2025_KEY_RIGHT_ALT = 68,
-    WHY2025_KEY_P         = 69,
+    WHY2025_KEY_CTRL         = 61,
+    WHY2025_KEY_SUPER        = 62,
+    WHY2025_KEY_LEFT_ALT     = 63,
+    WHY2025_KEY_BACKSLASH    = 64,
+    WHY2025_KEY_SPACE        = 65,
+    WHY2025_KEY_RIGHT_ALT    = 68,
+    WHY2025_KEY_P            = 69,
     WHY2025_KEY_LEFT_BRACKET = 70,
 
     WHY2025_KEY_RIGHT_BRACKET = 80,
@@ -159,9 +159,9 @@ static void handle_keyboard_text_entry(char ascii, char ascii_shift, char const*
                                         ? ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift_alt : utf8_alt)
                                         : ((modifiers & BSP_INPUT_MODIFIER_SHIFT) ? utf8_shift : utf8);
     bsp_input_event_t event       = {
-              .type                    = INPUT_EVENT_TYPE_KEYBOARD,
-              .args_keyboard.ascii     = value_ascii,
-              .args_keyboard.modifiers = modifiers,
+        .type                    = INPUT_EVENT_TYPE_KEYBOARD,
+        .args_keyboard.ascii     = value_ascii,
+        .args_keyboard.modifiers = modifiers,
     };
     if (value_utf8) {
         strlcpy(event.args_keyboard.utf8, value_utf8, sizeof(event.args_keyboard.utf8));

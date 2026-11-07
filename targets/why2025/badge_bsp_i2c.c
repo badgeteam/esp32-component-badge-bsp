@@ -18,8 +18,8 @@ static i2c_master_bus_handle_t i2c_bus_handle_internal   = NULL;
 static SemaphoreHandle_t       i2c_concurrency_semaphore = NULL;
 
 static uint8_t scan_i2c_bus(uint8_t* buf, uint8_t num) {
-    uint8_t device_count = 0;
-    esp_err_t ret = ESP_OK;
+    uint8_t   device_count = 0;
+    esp_err_t ret          = ESP_OK;
     for (uint8_t dev_address = 1; dev_address < 127; dev_address++) {
         ret = i2c_master_probe(i2c_bus_handle_internal, dev_address, 100);
         if (ret == ESP_OK) {
@@ -49,9 +49,9 @@ esp_err_t bsp_i2c_primary_bus_initialize(void) {
     }
     ESP_RETURN_ON_ERROR(i2c_new_master_bus(&i2c_master_config_internal, &i2c_bus_handle_internal), TAG,
                         "Failed to initialize I2C bus");
-    uint8_t addresses_found[20]= {0};
+    uint8_t addresses_found[20] = {0};
 
-    uint8_t                    device_count = scan_i2c_bus(addresses_found, sizeof(addresses_found));
+    uint8_t device_count = scan_i2c_bus(addresses_found, sizeof(addresses_found));
     ESP_LOGI(TAG, "Found %d I2C devices", device_count);
     xSemaphoreGive(i2c_concurrency_semaphore);
     return ESP_OK;

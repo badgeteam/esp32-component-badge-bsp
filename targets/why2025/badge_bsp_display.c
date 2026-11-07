@@ -70,37 +70,33 @@ static esp_err_t bsp_display_initialize_panel(void) {
     ESP_ERROR_CHECK(esp_lcd_new_panel_io_dbi(mipi_dsi_bus, &dbi_config, &mipi_dbi_io));
 
     ESP_LOGI(TAG, "Install ST7703 panel driver");
-    const esp_lcd_dpi_panel_config_t dpi_config = {
-    .dpi_clk_src        = MIPI_DSI_DPI_CLK_SRC_DEFAULT,
-     .dpi_clock_freq_mhz = 47,
-     .virtual_channel    = 0,
-     .in_color_format  = LCD_COLOR_FMT_RGB888,
-     .out_color_format = LCD_COLOR_FMT_RGB888,
-     .num_fbs = 1,
-     .video_timing =
-         {
-             .h_size            = 720,
-             .v_size            = 720,
-             .hsync_back_porch  = 120,
-             .hsync_pulse_width = 60,
-             .hsync_front_porch = 106,
-             .vsync_back_porch  = 20,
-             .vsync_pulse_width = 4,
-             .vsync_front_porch = 20,
-         },
-     .flags.disable_lp = false
-    };
+    const esp_lcd_dpi_panel_config_t dpi_config = {.dpi_clk_src        = MIPI_DSI_DPI_CLK_SRC_DEFAULT,
+                                                   .dpi_clock_freq_mhz = 47,
+                                                   .virtual_channel    = 0,
+                                                   .in_color_format    = LCD_COLOR_FMT_RGB888,
+                                                   .out_color_format   = LCD_COLOR_FMT_RGB888,
+                                                   .num_fbs            = 1,
+                                                   .video_timing =
+                                                       {
+                                                           .h_size            = 720,
+                                                           .v_size            = 720,
+                                                           .hsync_back_porch  = 120,
+                                                           .hsync_pulse_width = 60,
+                                                           .hsync_front_porch = 106,
+                                                           .vsync_back_porch  = 20,
+                                                           .vsync_pulse_width = 4,
+                                                           .vsync_front_porch = 20,
+                                                       },
+                                                   .flags.disable_lp = false};
 
-    st7703_vendor_config_t vendor_config = {
-        .mipi_config =
-            {
-                .dsi_bus    = mipi_dsi_bus,
-                .dpi_config = &dpi_config,
-            },
-        .init_cmds      = custom_init,
-        .init_cmds_size = sizeof(custom_init) / sizeof(st7703_lcd_init_cmd_t),
-        .init_in_command_mode    = true
-    };
+    st7703_vendor_config_t vendor_config = {.mipi_config =
+                                                {
+                                                    .dsi_bus    = mipi_dsi_bus,
+                                                    .dpi_config = &dpi_config,
+                                                },
+                                            .init_cmds            = custom_init,
+                                            .init_cmds_size       = sizeof(custom_init) / sizeof(st7703_lcd_init_cmd_t),
+                                            .init_in_command_mode = true};
     const esp_lcd_panel_dev_config_t panel_config = {
         .reset_gpio_num          = BSP_LCD_RESET_PIN,
         .rgb_ele_order           = LCD_RGB_ELEMENT_ORDER_RGB,

@@ -56,7 +56,7 @@ esp_err_t __attribute__((weak)) bsp_display_blit(size_t x_start, size_t y_start,
 }
 
 esp_err_t __attribute__((weak)) bsp_display_wait(uint32_t timeout_ms) {
-    (void) timeout_ms;
+    (void)timeout_ms;
     return ESP_OK;
 }
 

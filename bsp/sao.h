@@ -6,8 +6,8 @@
 #include "esp_err.h"
 
 typedef enum {
-    SAO_PIN_D0  = 0,
-    SAO_PIN_D1  = 1,
+    SAO_PIN_D0 = 0,
+    SAO_PIN_D1 = 1,
 } sao_pin_num_t;
 
 /// @brief Get the handle of the I2C bus on SAO connector

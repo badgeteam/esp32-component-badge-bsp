@@ -5,15 +5,15 @@
 #include "driver/i2s_types.h"
 #include "esp_err.h"
 
-/// @brief BSP audio set sample rate
+/// @brief Set audio sample rate
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_set_rate(uint32_t rate);
 
-/// @brief BSP audio get volume
+/// @brief Get audio volume
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_get_volume(float* out_percentage);
 
-/// @brief BSP audio set volume
+/// @brief Set audio volume
 /// @return ESP-IDF error code
 esp_err_t bsp_audio_set_volume(float percentage);
 

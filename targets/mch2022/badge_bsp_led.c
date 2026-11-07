@@ -37,7 +37,7 @@ esp_err_t bsp_led_initialize(void) {
     led_strip_rmt_config_t rmt_config = {
         .clk_src           = RMT_CLK_SRC_DEFAULT,
         .resolution_hz     = (10 * 1000 * 1000),
-        .mem_block_symbols  = 0,
+        .mem_block_symbols = 0,
         .flags =
             {
                 .with_dma = false,

@@ -16,7 +16,7 @@
 
 static char const TAG[] = "BSP: storage";
 
-static sdmmc_card_t* sd_card                                  = NULL;
+static sdmmc_card_t* sd_card                                   = NULL;
 static char          sd_mount_point[MOUNT_POINT_STRING_LENGTH] = "";
 static bool          sd_failed                                 = false;
 

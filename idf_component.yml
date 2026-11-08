@@ -7,7 +7,7 @@ targets:
   - esp32s31
 dependencies:
   cmake_utilities: "0.*"
-  idf: ">=6.0.2"
+  idf: ">=5.5.1"
   espressif/esp_lcd_ili9341:
     version: "=2.0.2"
   espressif/led_strip:
@@ -15,7 +15,7 @@ dependencies:
   espressif/esp_lcd_touch_gt911:
     version: "=1.2.0~3"
   nicolaielectronics/ssd1619:
-    version: "=1.0.0"
+    version: "=1.0.1"
   nicolaielectronics/es8156:
     version: "=0.1.0"
   nicolaielectronics/mpr121:
@@ -25,7 +25,7 @@ dependencies:
   nicolaielectronics/tca8418:
     version: "=1.0.0"
   nicolaielectronics/mipi_dsi_abstraction:
-    version: "=2.0.0"
+    version: "=2.0.1"
     rules:
       - if: "target == esp32p4"
   nicolaielectronics/tanmatsu_coprocessor:
